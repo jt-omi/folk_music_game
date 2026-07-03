@@ -1,0 +1,2179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>音符旅行家：四川民族音乐游戏</title>
+  <style>
+    :root {
+      --ink: #263238;
+      --muted: #68766f;
+      --paper: #fffaf0;
+      --cream: #f4ead4;
+      --red: #b64032;
+      --red-dark: #7f2f2a;
+      --gold: #e1a83b;
+      --green: #47785e;
+      --blue: #4e7d8d;
+      --shadow: 0 14px 40px rgba(53, 48, 35, .16);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(225,168,59,.22), transparent 25%),
+        radial-gradient(circle at 88% 8%, rgba(78,125,141,.18), transparent 24%),
+        #efe5cf;
+    }
+
+    button { font: inherit; }
+    .app { width: min(1180px, 100%); margin: 0 auto; padding: 24px; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      background: rgba(255,250,240,.88); border: 1px solid rgba(127,47,42,.12);
+      border-radius: 24px; padding: 14px 18px; box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      display: grid; place-items: center; width: 48px; height: 48px;
+      border-radius: 15px; color: white; font-size: 27px;
+      background: linear-gradient(145deg, var(--red), var(--red-dark));
+      box-shadow: 0 8px 18px rgba(127,47,42,.25);
+    }
+    h1 { margin: 0; font-size: clamp(20px, 3vw, 30px); letter-spacing: .04em; }
+    .subtitle { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+    .stats { display: flex; gap: 10px; }
+    .stat {
+      min-width: 90px; padding: 9px 12px; border-radius: 14px;
+      text-align: center; background: #fff; border: 1px solid #eadcc0;
+    }
+    .stat b { display: block; color: var(--red); font-size: 18px; }
+    .stat span { font-size: 12px; color: var(--muted); }
+
+    .layout { display: grid; grid-template-columns: 250px 1fr; gap: 20px; margin-top: 20px; }
+    .panel { background: rgba(255,250,240,.92); border-radius: 24px; box-shadow: var(--shadow); }
+    .profile { padding: 20px; }
+    .avatar {
+      position: relative; display: grid; place-items: center; width: 190px; height: 210px;
+      margin: 4px auto 16px; border-radius: 24px; background: #e9c796;
+      border: 7px solid #fff; box-shadow: 0 7px 18px rgba(75,56,35,.18); font-size: 66px;
+      overflow: hidden;
+    }
+    .avatar::after { content: "♪"; position: absolute; right: -4px; top: 0; color: var(--red); font-size: 30px; }
+    .avatar img { display: none; width: 100%; height: 100%; object-fit: contain; background: #fffaf0; }
+    .avatar .student-avatar { line-height: 1; }
+    .profile h2 { margin: 0; text-align: center; font-size: 21px; }
+    .level { margin: 5px 0 16px; text-align: center; color: var(--muted); font-size: 13px; }
+    .progress { height: 9px; overflow: hidden; border-radius: 99px; background: #e7ddc9; }
+    .progress span { display: block; width: 18%; height: 100%; background: linear-gradient(90deg,var(--gold),var(--red)); }
+    .menu { display: grid; gap: 9px; margin-top: 18px; }
+    .menu button, .primary, .choice {
+      border: 0; cursor: pointer; border-radius: 14px; transition: transform .16s, box-shadow .16s;
+    }
+    .menu button { padding: 12px; color: var(--ink); text-align: left; background: #f4ead8; }
+    .menu button:hover, .primary:hover, .choice:hover { transform: translateY(-2px); }
+    .menu button.active { color: white; background: var(--red); }
+    .research-note {
+      margin-top: 18px; padding: 12px; border-radius: 14px; color: #5f4a27;
+      background: #fff1c9; font-size: 12px; line-height: 1.6;
+    }
+
+    .world { position: relative; min-height: 690px; overflow: hidden; padding: 28px; }
+    .world::before {
+      content: ""; position: absolute; inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,.2), rgba(255,255,255,.2)),
+        repeating-linear-gradient(35deg, transparent 0 80px, rgba(71,120,94,.045) 81px 83px);
+      pointer-events: none;
+    }
+    .map {
+      position: relative; margin-top: 0; border-radius: 28px; overflow: hidden;
+      aspect-ratio: 1448 / 1086; min-height: 0;
+      border: 6px solid rgba(255,255,255,.72); background: #069adf;
+      box-shadow: 0 22px 44px rgba(9,18,26,.25);
+    }
+    .terrain-map {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; opacity: 1; filter: none;
+      pointer-events: none; z-index: 1;
+    }
+    .river, .route { display: none; }
+    .node {
+      position: absolute; z-index: 4; width: auto; min-width: 66px; padding: 7px 12px;
+      border: 2px solid rgba(255,255,255,.86); border-radius: 999px; color: #fffdf6;
+      background: rgba(155,50,42,.9); box-shadow: 0 8px 16px rgba(24,23,18,.24), 0 0 0 3px rgba(255,221,127,.22);
+      transform: translate(-50%, -50%); cursor: default; transition: transform .18s ease, box-shadow .18s ease, filter .18s ease, background .18s ease;
+      backdrop-filter: blur(5px); white-space: nowrap;
+    }
+    .node::before {
+      content: ""; position: absolute; left: 50%; bottom: -7px; width: 10px; height: 10px;
+      transform: translateX(-50%) rotate(45deg); background: inherit; border-right: 2px solid rgba(255,255,255,.86); border-bottom: 2px solid rgba(255,255,255,.86);
+    }
+    .node .icon, .node small { display: none; }
+    .node strong { display: block; font-size: 15px; line-height: 1.15; letter-spacing: .04em; text-shadow: 0 2px 5px rgba(0,0,0,.35); }
+    .node.locked { filter: grayscale(.88) saturate(.35) brightness(.78); opacity: .58; cursor: default; background: rgba(72,80,85,.72); box-shadow: 0 5px 10px rgba(0,0,0,.16); }
+    .node.featured { cursor: pointer; }
+    .node.featured:hover, .node.featured:focus-visible {
+      transform: translate(-50%, calc(-50% - 8px)) scale(1.08);
+      filter: brightness(1.16) saturate(1.16); background: rgba(255,248,220,.98); color: var(--red-dark);
+      box-shadow: 0 16px 30px rgba(127,47,42,.3), 0 0 0 6px rgba(225,168,59,.2);
+      outline: none;
+    }
+    .chengdu { left: 51%; top: 45%; }
+    .aba { left: 49%; top: 22%; }
+    .ganzi { left: 24%; top: 44%; }
+    .liangshan { left: 48%; top: 72%; }
+    .panxi { left: 38%; top: 87%; }
+    .lisu { left: 51%; top: 87%; }
+    .chuannan { left: 74%; top: 73%; }
+.overlay {
+      position: fixed; z-index: 20; inset: 0; display: none; place-items: center;
+      padding: 20px; background: rgba(31,36,34,.62); backdrop-filter: blur(7px);
+    }
+    .overlay.show { display: grid; }
+    .modal { width: min(720px, 100%); max-height: 90vh; overflow: auto; padding: 26px; border-radius: 26px; background: var(--paper); box-shadow: 0 24px 70px rgba(0,0,0,.3); }
+    .tag { display: inline-block; padding: 5px 10px; border-radius: 99px; color: white; background: var(--red); font-size: 12px; }
+    .modal h2 { margin: 12px 0 8px; font-size: 27px; }
+    .modal p { line-height: 1.8; }
+    .badge-cabinet-modal { width: min(980px, 100%); }
+    .badge-cabinet-intro { margin: 0 0 14px; color: var(--muted); }
+    .badge-cabinet {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 18px 0 8px;
+    }
+    .badge-card {
+      position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 430px;
+      padding: 16px; border: 1px solid #eadcc0; border-radius: 22px; background: #fff8ea;
+      box-shadow: 0 10px 24px rgba(53,48,35,.08);
+    }
+    .badge-card.locked { opacity: .88; }
+    .badge-card.locked img { filter: grayscale(1) brightness(.74); }
+    .badge-card.locked::after {
+      content: "未获得"; position: absolute; top: 14px; right: 14px; padding: 5px 9px;
+      border-radius: 999px; color: white; background: rgba(38,50,56,.78); font-size: 12px;
+    }
+    .badge-card.unlocked::after {
+      content: "已获得"; position: absolute; top: 14px; right: 14px; padding: 5px 9px;
+      border-radius: 999px; color: white; background: var(--green); font-size: 12px;
+    }
+    .badge-card img {
+      align-self: center; width: 132px; height: 132px; object-fit: cover; border-radius: 50%;
+      background: white; box-shadow: 0 12px 24px rgba(127,47,42,.16);
+    }
+    .badge-card h3 { margin: 4px 0 0; color: var(--red-dark); font-size: 18px; }
+    .badge-card p { margin: 0; color: #5f4a27; font-size: 13px; line-height: 1.75; }
+    .badge-card .badge-source { margin-top: auto; color: var(--muted); font-size: 12px; }
+    .dialogue {
+      position: relative; display: flex; align-items: flex-end; gap: 16px; margin: 20px 0; padding: 18px;
+      border: 2px solid rgba(255,255,255,.74); border-radius: 22px;
+      background: linear-gradient(145deg, rgba(48,39,45,.92), rgba(120,55,45,.88));
+      color: #fff8ea; box-shadow: 0 14px 32px rgba(56,38,30,.18);
+    }
+    .dialogue::before {
+      content: "剧情对话"; position: absolute; right: 16px; top: -11px; padding: 4px 9px;
+      border-radius: 999px; color: #6b3e16; background: #ffe0a3; font-size: 11px; letter-spacing: .08em;
+    }
+    .portrait {
+      flex: 0 0 78px; display: grid; place-items: center; height: 78px; border-radius: 22px;
+      background: linear-gradient(160deg, #ffe0a3, #d88a54); border: 4px solid rgba(255,255,255,.72);
+      box-shadow: 0 10px 18px rgba(0,0,0,.18); font-size: 40px;
+    }
+    .dialogue b {
+      display: inline-block; margin-bottom: 7px; padding: 5px 10px; border-radius: 999px;
+      color: #fff; background: rgba(182,64,50,.9); font-size: 14px;
+    }
+    .dialogue p { margin: 0; color: #fff8ea; line-height: 1.85; font-size: 15px; }
+    .dialogue .protagonist { background: rgba(71,120,94,.92); }
+    .primary { padding: 12px 20px; color: white; background: var(--red); box-shadow: 0 7px 15px rgba(127,47,42,.2); }
+    .secondary { margin-left: 8px; padding: 12px 18px; border: 0; border-radius: 14px; cursor: pointer; background: #eadfc9; }
+    .task { display: none; }
+    .task.active { display: block; }
+    .task:not(.active) { display: none !important; }
+    .task.active.result { display: block; }
+    .instrument-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 18px 0; }
+    .instrument-grid.three { grid-template-columns: repeat(3, 1fr); }
+    .instrument-card {
+      position: relative; overflow: hidden; min-height: 180px; padding: 0; border: 2px solid #e5d7bd;
+      border-radius: 16px; cursor: pointer; color: var(--ink); background: white; text-align: left;
+    }
+    .instrument-card img { display: block; width: 100%; height: 108px; object-fit: cover; background: #eee4d1; cursor: zoom-in; transition: transform .18s ease, filter .18s ease; }
+    .instrument-card img:hover { transform: scale(1.03); filter: brightness(1.04); }
+    .instrument-card span { display: block; padding: 9px 10px 2px; font-weight: bold; }
+    .instrument-card small { display: block; padding: 0 10px 10px; color: var(--muted); }
+    .instrument-card.collected { border-color: var(--green); box-shadow: 0 0 0 3px rgba(71,120,94,.16); }
+    .instrument-card.collected::after { content: "已收集"; position: absolute; top: 8px; right: 8px; padding: 4px 7px; border-radius: 99px; color: white; background: var(--green); font-size: 11px; }
+    .instrument-card.locked { cursor: not-allowed; opacity: .46; filter: grayscale(.8); }
+    .instrument-card.locked::before { content: "剧情未解锁"; position: absolute; inset: 0; display: grid; place-items: center; color: white; background: rgba(38,50,56,.52); font-size: 13px; font-weight: bold; z-index: 2; }
+    .instrument-card.current { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(225,168,59,.22); }
+    .story-unit-label { display: inline-block; margin-bottom: 9px; padding: 5px 10px; border-radius: 999px; color: white; background: var(--green); font-size: 12px; }
+    .story-fact { padding: 13px; border-radius: 14px; background: #fff8ea; }
+    .knowledge-panel { min-height: 210px; margin: 14px 0; padding: 14px; border-radius: 22px; background: #efe0c8; }
+    .knowledge-panel h3 { margin: 0 0 8px; color: var(--red-dark); }
+    .gal-stage {
+      position: relative; min-height: 470px; margin: 8px 0 14px; overflow: hidden; border-radius: 28px;
+      border: 6px solid rgba(255,248,234,.9);
+      background: radial-gradient(circle at 50% 12%, rgba(255,237,179,.9), rgba(198,91,62,.48) 35%, rgba(61,52,76,.92) 100%),
+        linear-gradient(135deg, rgba(91,126,119,.95), rgba(134,67,63,.95));
+      background-size: cover; background-position: center; background-repeat: no-repeat;
+      box-shadow: 0 20px 42px rgba(53,38,30,.22);
+    }
+    .gal-stage.stage-panxi { background-image: linear-gradient(transparent 42%, rgba(20,18,24,.48)), url("assets/stage-panxi.png"); }
+    .gal-stage.stage-liangshan { background-image: linear-gradient(transparent 42%, rgba(20,18,24,.5)), url("assets/stage-liangshan.png"); }
+    .gal-stage.stage-tibetan { background-image: linear-gradient(transparent 42%, rgba(20,18,24,.48)), url("assets/stage-tibetan.png"); }
+    .gal-stage.stage-qiang { background-image: linear-gradient(transparent 42%, rgba(20,18,24,.48)), url("assets/stage-qiang.png"); }
+    .gal-stage.stage-miao { background-image: linear-gradient(transparent 42%, rgba(20,18,24,.48)), url("assets/stage-miao.png"); }
+    .gal-stage::before {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(transparent 62%, rgba(25,19,28,.48)), radial-gradient(circle at 18% 22%, rgba(255,255,255,.24), transparent 28%);
+      pointer-events: none;
+    }
+    .gal-sprites { position: absolute; left: 0; right: 0; top: 16px; bottom: 168px; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 52px; z-index: 1; pointer-events: none; }
+    .gal-character { position: relative; width: 42%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; opacity: .48; transform: scale(.94); transition: transform .22s ease, opacity .22s ease, filter .22s ease; filter: grayscale(.42) brightness(.82); pointer-events: none; }
+    .gal-character.speaking { opacity: 1; transform: scale(1.01); filter: drop-shadow(0 16px 22px rgba(0,0,0,.26)); z-index: 2; }
+    .gal-character img { max-width: min(88%, 210px); max-height: 245px; object-fit: contain; object-position: bottom center; }
+    .gal-character.npc img { max-width: min(96%, 220px); max-height: 258px; }
+    .gal-character.npc .emoji-sprite { display: grid; place-items: center; width: 158px; height: 196px; border-radius: 34px 34px 22px 22px; border: 5px solid rgba(255,255,255,.72); background: linear-gradient(160deg, #ffe0a3, #bb5d48); font-size: 80px; box-shadow: 0 16px 26px rgba(0,0,0,.18); }
+    .gal-character-name { margin-top: -4px; padding: 6px 12px; border-radius: 999px; color: #fff8ea; background: rgba(36,31,43,.74); font-size: 13px; font-weight: 800; }
+    .gal-dialogue-box { position: absolute; left: 24px; right: 24px; bottom: 22px; z-index: 20; pointer-events: auto; min-height: 118px; padding: 18px 20px 16px; border-radius: 22px; color: #fff8ea; background: rgba(29,24,34,.94); border: 2px solid rgba(255,224,163,.86); box-shadow: 0 14px 28px rgba(0,0,0,.26); }
+    .gal-name { display: inline-block; margin-bottom: 8px; padding: 5px 13px; border-radius: 999px; color: #fff; background: var(--red); font-weight: 800; }
+    .gal-dialogue-box p { margin: 0; font-size: 16px; line-height: 1.85; }
+    .gal-actions { position: relative; z-index: 21; display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .dialogue-choice-panel { width: 100%; margin-top: 6px; }
+    .dialogue-choice-panel .question { margin: 0 0 8px; color: #ffe0a3; font-weight: 800; font-size: 14px; }
+    .dialogue-choice-panel .choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+    .dialogue-choice-panel .choice { padding: 10px 12px; border-radius: 12px; font-size: 13px; line-height: 1.45; }
+    .image-preview-modal { width: min(760px, 94vw); text-align: center; }
+    .image-preview-modal img { width: 100%; max-height: 68vh; object-fit: contain; border-radius: 20px; background: #fffaf0; box-shadow: 0 12px 30px rgba(53,48,35,.18); }
+    .image-preview-modal h2 { margin-bottom: 12px; }
+    .gal-choice-panel { margin-top: 12px; padding: 14px; border-radius: 18px; background: #fff8ea; border: 2px solid #eadcc0; }
+    .gal-choice-panel h3 { margin-top: 0; }
+    @media (max-width: 720px) {
+      .gal-stage { min-height: 430px; }
+      .gal-sprites { padding: 0 18px; bottom: 172px; }
+      .gal-character img { max-height: 205px; }
+      .gal-character.npc img { max-height: 212px; }
+      .gal-character.npc .emoji-sprite { width: 112px; height: 148px; font-size: 58px; }
+      .gal-dialogue-box { left: 12px; right: 12px; bottom: 12px; }
+      .dialogue-choice-panel .choices { grid-template-columns: 1fr; }
+    }
+    .build-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin: 12px 0; }
+    .build-step { padding: 9px; border-radius: 11px; background: #fff8ea; font-size: 12px; line-height: 1.5; }
+    .build-step b { display: block; color: var(--red-dark); }
+    .collection-progress { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .source-list { margin-top: 20px; padding: 16px; border-radius: 14px; background: #eee6d7; font-size: 12px; line-height: 1.7; }
+    .source-list a { color: var(--blue); }
+    .gender-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 20px 0; }
+    .wardrobe-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 20px 0; }
+    .gender-card, .outfit-card { padding: 15px; border: 2px solid #eadcc0; border-radius: 18px; background: white; text-align: center; }
+    .gender-card { cursor: pointer; }
+    .gender-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .student-look { display: grid; place-items: center; height: 190px; border-radius: 14px; background: linear-gradient(160deg,#d9ecf2,#fff4d6); font-size: 86px; }
+    .outfit-card img { width: 100%; height: 260px; object-fit: contain; border-radius: 12px; background: #f8f4ed; }
+    .outfit-card h3, .gender-card h3 { margin: 10px 0 5px; }
+    .outfit-card p, .gender-card p { min-height: 42px; color: var(--muted); font-size: 13px; }
+    .outfit-card.wearing { border-color: var(--green); box-shadow: 0 0 0 3px rgba(71,120,94,.14); }
+    .outfit-card.locked img { filter: none; }
+    .lock-note { padding: 11px; border-radius: 10px; color: #76582b; background: #fff0c8; font-size: 12px; }
+    .reward-outfit, .badge-award { display: flex; align-items: center; gap: 18px; margin: 16px 0; padding: 14px; border-radius: 18px; background: #f4ead8; text-align: left; }
+    .reward-outfit img { width: 130px; height: 150px; object-fit: contain; border-radius: 12px; background: white; }
+    .badge-award img { width: 126px; height: 126px; object-fit: cover; border-radius: 50%; background: white; box-shadow: 0 8px 20px rgba(127,47,42,.18); }
+    .badge-award h3 { margin: 0 0 6px; color: var(--red-dark); }
+    .reward-popup-modal { position: relative; overflow: hidden; width: min(560px, 94vw); text-align: center; border: 3px solid rgba(225,168,59,.55); background: radial-gradient(circle at 50% 0%, #fff8da, var(--paper) 48%, #f3e1bd); }
+    .reward-popup-modal::before { content: ""; position: absolute; inset: -45%; background: conic-gradient(from 0deg, transparent, rgba(255,218,106,.55), transparent, rgba(255,255,255,.7), transparent); animation: rewardSpin 3.2s linear infinite; pointer-events: none; }
+    .reward-popup-content { position: relative; z-index: 1; }
+    .reward-popup-title { margin: 8px 0 6px; color: var(--red-dark); font-size: 28px; }
+    .reward-popup-image { width: min(260px, 70vw); height: 260px; object-fit: contain; margin: 10px auto; border-radius: 24px; background: rgba(255,255,255,.72); box-shadow: 0 18px 38px rgba(127,47,42,.22); animation: rewardPop .55s cubic-bezier(.2,1.35,.38,1); }
+    .reward-popup-text { margin: 4px auto 14px; color: #5f4a27; max-width: 420px; }
+    .reward-sparkles { position: absolute; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(circle at 18% 22%, rgba(255,255,255,.95) 0 3px, transparent 4px), radial-gradient(circle at 78% 18%, rgba(255,221,109,.9) 0 4px, transparent 5px), radial-gradient(circle at 84% 72%, rgba(255,255,255,.9) 0 3px, transparent 4px), radial-gradient(circle at 25% 78%, rgba(225,168,59,.9) 0 4px, transparent 5px); animation: sparklePulse 1.25s ease-in-out infinite alternate; }
+    @keyframes rewardPop { from { opacity: 0; transform: scale(.72) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes rewardSpin { to { transform: rotate(360deg); } }
+    @keyframes sparklePulse { from { opacity: .45; transform: scale(.96); } to { opacity: 1; transform: scale(1.03); } }
+    .costume-placeholder { display: flex; align-items: center; gap: 13px; margin: 14px 0; padding: 13px; border: 1px dashed #b99a68; border-radius: 15px; background: #fff7e6; }
+    .costume-placeholder .frame { display: grid; place-items: center; flex: 0 0 62px; height: 62px; border-radius: 12px; background: #eadcc1; font-size: 26px; }
+    #chapterOverlay .costume-placeholder .frame { display: none; }
+    .theory-card { margin: 16px 0; padding: 16px; border-left: 5px solid var(--gold); border-radius: 12px; background: #fff2cf; }
+    .story-complete-card { margin: 18px 0 0; padding: 18px; border-radius: 18px; background: rgba(255,248,234,.96); box-shadow: inset 0 0 0 1px rgba(210,164,65,.18); }
+    .story-complete-card h3 { margin: 0 0 8px; color: var(--red-dark); }
+    .completion-actions { margin-top: 14px; }
+    .meter { display: flex; gap: 8px; margin: 20px 0; }
+    .beat { flex: 1; padding: 18px 8px; border-radius: 13px; text-align: center; background: #eee3ce; font-size: 22px; }
+    .beat.on { color: white; background: var(--green); transform: translateY(-3px); }
+    .quiz-meta { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+    .quiz-pill { padding: 7px 10px; border-radius: 999px; color: #76582b; background: #fff0c8; font-size: 12px; }
+    .quiz-question { margin: 12px 0; padding: 14px; border-radius: 16px; background: #fff8ea; }
+    .quiz-question h3 { margin: 0 0 10px; color: var(--red-dark); font-size: 16px; }
+    .quiz-choice.selected, .lisu-quiz-choice.selected, .liangshan-quiz-choice.selected, .tibetan-quiz-choice.selected { border-color: var(--gold); background: #fff0c8; box-shadow: 0 0 0 3px rgba(210,164,65,.18); }
+    .quiz-score { display: none; margin: 14px 0; padding: 14px; border-radius: 16px; background: #f0e5d0; }
+    .quiz-score.show { display: block; }
+    .video-section-hidden { display: none !important; }
+    .video-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; margin: 16px 0; }
+    .video-card { padding: 14px; border-radius: 18px; background: #fff8ea; border: 1px solid #eadcc0; text-align: left; }
+    .video-card h3 { margin: 0 0 8px; color: var(--red-dark); font-size: 16px; }
+    .video-card p { margin: 7px 0; color: var(--muted); line-height: 1.65; }
+    .video-card.collected { border-color: var(--green); box-shadow: 0 0 0 3px rgba(71,120,94,.14); }
+    .video-card.collected::after { content: "已观看"; display: inline-block; margin-top: 8px; padding: 4px 8px; border-radius: 99px; color: white; background: var(--green); font-size: 12px; }
+    .video-card.viewed:not(.collected) { border-color: #8bb6c8; }
+    .video-card.answered:not(.collected) { box-shadow: 0 0 0 3px rgba(225,168,59,.14); }
+    .video-status { margin-top: 9px; padding: 7px 9px; border-radius: 10px; color: #76582b; background: #fff0c8; font-size: 12px; line-height: 1.5; }
+    .video-card.collected .video-status { color: #315f47; background: #d9eadb; }
+    .video-card.locked { cursor: not-allowed; opacity: .48; filter: grayscale(.8); }
+    .video-card.locked video { pointer-events: none; }
+    .video-card.current { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(225,168,59,.18); }
+    .video-card video, .video-placeholder { width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; background: #2d241f; }
+    .video-placeholder { display: grid; place-items: center; padding: 18px; color: #fff0c8; text-align: center; }
+    .video-link { display: inline-block; margin-top: 8px; padding: 8px 11px; border-radius: 999px; color: white; background: var(--green); text-decoration: none; font-size: 13px; }
+    .choices { display: grid; gap: 10px; margin: 18px 0; }
+    .choice { padding: 14px; text-align: left; color: var(--ink); background: #f0e5d0; border: 2px solid transparent; }
+    .choice:disabled { cursor: not-allowed; opacity: .62; }
+    .choice.correct { border-color: var(--green); background: #d9eadb; }
+    .choice.wrong { border-color: var(--red); background: #f3d8d2; }
+    .result { display: none; text-align: center; padding: 16px 0; }
+    .result.show { display: block; }
+    .reward { font-size: 54px; }
+    .toast { position: fixed; z-index: 30; right: 24px; bottom: 24px; padding: 12px 18px; border-radius: 14px; color: white; background: var(--ink); opacity: 0; transform: translateY(12px); transition: .25s; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 780px) {
+      .app { padding: 12px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .layout { grid-template-columns: 1fr; }
+      .profile { display: block; }
+      .world { min-height: 700px; padding: 16px; }
+      .map { min-height: 420px; aspect-ratio: 1448 / 1086; }
+      .terrain-map { inset: 0; width: 100%; height: 100%; }
+      .node { min-width: 54px; padding: 6px 9px; }
+      .node strong { font-size: 12px; }
+      .instrument-grid, .instrument-grid.three { grid-template-columns: repeat(2, 1fr); }
+      .build-steps { grid-template-columns: repeat(2, 1fr); }
+      .gender-grid, .wardrobe-grid { grid-template-columns: 1fr; }
+      .stats { width: 100%; }
+      .badge-cabinet { grid-template-columns: 1fr; }
+      .badge-card { min-height: 0; }
+      .stat { flex: 1; min-width: 0; }
+      .chengdu { left: 51%; top: 45%; }
+      .aba { left: 49%; top: 22%; }
+      .ganzi { left: 24%; top: 44%; }
+      .liangshan { left: 48%; top: 72%; }
+      .panxi { left: 38%; top: 87%; }
+      .lisu { left: 51%; top: 87%; }
+      .chuannan { left: 74%; top: 73%; }
+}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">🎵</div>
+        <div><h1>音符旅行家</h1><p class="subtitle">四川篇 · 四至六年级音乐文化探索游</p></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="coins">0</b><span>音符币</span></div>
+        <div class="stat"><b id="badges">0 / 6</b><span>文化徽章</span></div>
+      </div>
+    </header>
+
+    <section class="layout">
+      <aside class="panel profile">
+        <div class="avatar"><span class="student-avatar" id="studentAvatar">🧑</span><img id="avatarOutfit" alt="当前穿戴服装"></div>
+        <h2 id="profileName">成都小乐</h2>>
+        <p class="level">见习音乐旅行者 · Lv.1</p>
+        <div class="progress"><span id="levelProgress"></span></div>
+        <nav class="menu">
+          <button class="active">🗺️ 四川旅行地图</button>
+          <button id="bookButton">📖 音乐文化图鉴</button>
+          <button id="closetButton">👕 我的服装衣柜</button>
+        </nav>
+        <div class="research-note"><b>特色章节</b><br>攀西 · 俚濮彝族谈经古乐<br>攀西 · 傈僳族常用乐器<br>大凉山 · 彝族山地音乐<br>跟随音乐伙伴完成声音冒险</div>
+      </aside>
+
+      <section class="panel world">
+        <div class="map" aria-label="四川省民族音乐关卡地图">
+          <img class="terrain-map" src="assets/sichuan-map-start.png" alt="四川省地图">
+          <div class="river"></div><div class="route"></div>
+          <button class="node aba locked" type="button" aria-disabled="true"><span class="icon">关卡</span><strong>羌族</strong><small>待解锁</small></button>
+          <button class="node ganzi featured" id="tibetanNode" type="button"><span class="icon">关卡</span><strong>藏族</strong><small>可体验</small></button>
+          <button class="node liangshan featured" id="liangshanNode" type="button"><span class="icon">关卡</span><strong>凉山彝族</strong><small>可体验</small></button>
+          <button class="node chuannan locked" type="button" aria-disabled="true"><span class="icon">关卡</span><strong>苗族</strong><small>待解锁</small></button>
+          <button class="node panxi featured" id="panxiNode" type="button"><span class="icon">关卡</span><strong>俚濮彝族</strong><small>可体验</small></button>
+          <button class="node lisu featured" id="lisuNode" type="button"><span class="icon">关卡</span><strong>傈僳族</strong><small>可体验</small></button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="overlay" id="chapterOverlay">
+    <section class="modal">
+      <div id="intro" class="task active">
+        <span class="tag">特色关卡 01</span>
+        <h2>攀西：重组谈经古乐</h2>
+        <p>旅行手册来到攀枝花市仁和区平地镇。古乐图鉴中的五件声音信物散落了，收集它们、读懂它们在合奏中的作用，才能重新点亮“俚濮谈经古乐”</p>
+        <div class="dialogue">
+          <div class="portrait">🧒</div>
+          <div><b>小洛（虚构引导角色）</b><p>“每件乐器都有自己的声音位置。竹笛、三弦、月琴、响篾和树叶都找到后，我们再让它们共同加入古乐图鉴！</p></div>
+        </div>
+        <div class="theory-card"><b>声音背景：</b>谈经古乐包含器乐合奏与经腔演唱两种形态，音乐多呈现民族五声徵调式色彩，旋律平直舒缓、节奏律动规整</div>
+        <div class="costume-placeholder"><div class="frame">🏅</div><div><b>小测奖励规则</b><br><small>乐器知识小测正确率达到 80% 可获得“古乐守护者”徽章；正确率达到 100% 才发放角色专属服装</small></div></div>
+        <p><button class="primary" id="startTask">进入声音收藏</button><button class="secondary close">返回地图</button></p>
+      </div>
+
+      <div id="collectionTask" class="task">
+        <span class="tag">主任务</span>
+        <h2>收集五件声音信物</h2>
+        <div class="dialogue"><div class="portrait">🧒</div><div><b>小洛</b><p>“旅行家，声音信物就藏在这些图鉴卡里。你点开一件，我就把它的线索告诉你；答对观察题，它就会回到古乐图鉴。”</p>
+        <div class="knowledge-panel" id="knowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div></div></div>
+        <div class="collection-progress"><p>跟随小洛依次完成五个声音单元。当前单元回答正确后，下一段剧情才会解锁</p><b id="collectionCount">已收集 0 / 5</b></div>
+        <div class="instrument-grid" id="instrumentGrid">
+          <button class="instrument-card" data-key="dizi"><img src="assets/dizi.jpg" alt="馆藏笛子实物参考"><span>竹笛</span><small>吹奏 · 旋律</small></button>
+          <button class="instrument-card" data-key="sanxian"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Sanxian%2C_Tengwangge_%28Prince_of_Teng_Pavilion%29_%2831167793750%29.jpg/960px-Sanxian%2C_Tengwangge_%28Prince_of_Teng_Pavilion%29_%2831167793750%29.jpg" alt="三弦实物"><span>三弦</span><small>弹拨 · 低音</small></button>
+          <button class="instrument-card" data-key="yueqin"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Yi_musical_instrument_%28yueqin%29_-_Yunnan_Provincial_Museum-_DSC02056.JPG/960px-Yi_musical_instrument_%28yueqin%29_-_Yunnan_Provincial_Museum-_DSC02056.JPG" alt="彝族月琴实物"><span>月琴</span><small>弹拨 · 中音填充</small></button>
+          <button class="instrument-card" data-key="xiangmie"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/5_Leaf_Kouxian.jpg/960px-5_Leaf_Kouxian.jpg" alt="口弦类实物参考"><span>响篾</span><small>竹制簧片 · 口腔共鸣</small></button>
+          <button class="instrument-card" data-key="leaf"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Aaron_Burden_2015-07-28_%28Unsplash%29.jpg/960px-Aaron_Burden_2015-07-28_%28Unsplash%29.jpg" alt="真实树叶"><span>树叶</span><small>自然材料 · 用于伴奏</small></button>
+        </div>
+        <button class="primary" id="assembleButton" disabled">五件齐备，进入乐器知识小测</button>
+        <button class="secondary close">暂时返回地图</button>
+      </div>
+
+      <div id="assembleTask" class="task">
+        <span class="tag">掌握检测</span>
+        <h2>乐器知识小测</h2>
+        <div class="dialogue"><div class="portrait">🧒</div><div><b>小洛</b><p>“最后一道机关开启了。别急着乱选，回想每件声音信物的位置、类别和发声方式，古乐图鉴会回应真正读懂它的人。</p></div></div>
+        <div class="theory-card"><b>检测目标：</b>从乐器类别、声部分层、发声方式和地方音乐材料四个方面，检验你是否真正读懂五件声音信物</div>
+        <div class="quiz-meta"><span class="quiz-pill">10 题</span><span class="quiz-pill">8 题及以上：徽章</span><span class="quiz-pill">10 题全对：服装</span></div>
+        <div id="quizPanel"></div>
+        <div class="quiz-score" id="quizScoreBox"><b id="quizScoreText"></b><p id="quizScoreHint"></p></div>
+        <button class="primary" id="submitQuizButton">提交小测</button><button class="secondary" id="retryQuizButton">重新作答</button>
+      </div>
+
+      <div id="result" class="task result">
+        <div class="reward">🎼</div><h2 id="resultTitle">谈经古乐图鉴点亮</h2>>
+        <div class="dialogue"><div class="portrait">🧒</div><div><b>小洛</b><p>“听，五件声音信物已经重新合在一起了。你不只是答完了题，也把谈经古乐的一段记忆带回了图鉴。</p></div></div>
+        <p id="resultSummary">五件声音信物已经归位。竹笛承担旋律，月琴填充中音，三弦支持低音；响篾与树叶展示了地方音乐里多样的声音材料</p>
+        <div class="theory-card"><b>重要说明：</b>真实谈经古乐乐队远不止这五件乐器，完整乐队还会出现唢呐、锣鼓、二胡、京胡、琵琶、扬琴等。本关采用“关键乐器收集”玩法，不等同于完整乐队复原</div>
+        <div class="theory-card" id="rewardSummary"><b>获得奖励：</b>300 音符币 · “古乐守护者”徽章 · 俚濮谈经古乐图鉴</div>
+        <div class="badge-award" id="badgeAwardBlock"><img src="assets/gule-badge.png" alt="古乐守护者徽章"><div><h3>古乐守护者徽章</h3><p>正确率达到 80% 后点亮，代表你已经掌握本关核心乐器知识</p></div></div>
+        <div class="reward-outfit" id="rewardOutfitBlock"><img id="rewardOutfitImage" src="assets/reward-male.png" alt="通关服装奖励"><div><b id="rewardOutfitTitle">获得角色专属服装</b><p id="rewardOutfitText">已放入你的服装衣柜，可以随时选择穿戴</p><button class="primary" id="openRewardWardrobe">打开衣柜</button></div></div>
+        <div class="source-list"><b>参考文献：</b><br>
+          [1]彭健敏.迤沙拉谈经古乐音乐特征与演唱分析[D].四川师范大学,2020.DOI:10.27347/d.cnki.gssdu.2020.000727.<br>
+          [2]陈波.俚濮谈经古乐考[J].内蒙古大学艺术学院学报,2007,(3):40-43.<br>
+          [3]李生军.关于迤沙拉“谈经古乐”研究文献综述——以传承脉络及音乐属性为综述对象[J].攀枝花学院学报,2018,35(1):6-10.DOI:10.13773/j.cnki.51-1637/z.2018.01.002.<br>
+          <b>图片来源：</b><a href="https://commons.wikimedia.org/wiki/File:Dizi_MET_mi65.149.R.jpg" target="_blank">笛子实物参考（The Metropolitan Museum of Art，CC0）</a>；<a href="https://commons.wikimedia.org/wiki/File:Sanxian,_Tengwangge_(Prince_of_Teng_Pavilion)_(31167793750).jpg" target="_blank">三弦（Gary Todd，CC0）</a>；          <a href="https://commons.wikimedia.org/wiki/File:Yi_musical_instrument_(yueqin)_-_Yunnan_Provincial_Museum-_DSC02056.JPG" target="_blank">彝族月琴（Daderot，公共领域）</a>；          <a href="https://commons.wikimedia.org/wiki/File:5_Leaf_Kouxian.jpg" target="_blank">口弦类实物参考（Codell，公共领域）</a>；          <a href="https://commons.wikimedia.org/wiki/File:Aaron_Burden_2015-07-28_(Unsplash).jpg" target="_blank">树叶（Aaron Burden，CC0）</a>；          <br>响篾制作与发声的广义比较参考：<a href="https://zh.wikipedia.org/wiki/%E5%8F%A3%E7%B0%A7%E7%90%B4" target="_blank">口簧琴：结构形制、演奏与调音</a>。俚濮响篾的地方性细节以田野资料为最终依据。        </div>
+        <p><button class="secondary" id="replayChapterButton">重新游玩本关</button><button class="secondary" id="retryFromResultButton">再挑战满分拿服装</button><button class="primary close" id="finishButton">收下奖励，返回地图</button></p>
+      </div>
+
+      <div id="lisuIntro" class="task">
+        <span class="tag">特色关卡 02</span>
+        <h2>攀西：寻找傈僳三件乐器</h2>
+        <p>旅行手册来到傈僳族音乐资料馆。这里留下了许多传统乐器的名字，但今天我们先聚焦仍较常见、适合本关探索的三件：起奔（期奔）、笛哩吐和葫芦笙（阿咪直陆）</p>
+        <div class="dialogue">
+          <div class="portrait">🎧</div>
+          <div><b>阿洛（虚构傈僳族音乐伙伴）</b><p>“起奔用四根弦弹出旋律，笛哩吐用短竹管吹出歌声，葫芦笙（阿咪直陆）靠葫芦笙斗和竹管里的簧片发声。你能把这三件乐器的声音身份分清楚吗？</p></div>
+        </div>
+        <div class="theory-card"><b>声音背景：</b>傈僳族传统乐器种类丰富，本关先聚焦起奔（期奔）、笛哩吐和葫芦笙（阿咪直陆）三种适合探索的声音信物</div>
+        <div class="costume-placeholder"><div class="frame">🏅</div><div><b>关卡奖励规则</b><br><small>傈僳族乐器小测正确率达到 80% 可获得徽章；正确率达到 100% 解锁角色专属服装</small></div></div>
+        <p><button class="primary" id="startLisuTask">进入傈僳乐器收藏</button><button class="secondary close">返回地图</button></p>
+      </div>
+
+      <div id="lisuCollectionTask" class="task">
+        <span class="tag">主任务</span>
+        <h2>收集三件傈僳族声音信</h2>>
+        <div class="dialogue"><div class="portrait">🎧</div><div><b>阿洛</b><p>“这里的三件乐器性格很不一样：起奔会弹，笛哩吐会吹，葫芦笙会让簧片在气息里歌唱。你来点开它们，我陪你判断它们的声音身份。”</p>
+        <div class="knowledge-panel" id="lisuKnowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div></div></div>
+        <div class="collection-progress"><p>跟随阿洛依次完成三个乐器单元。当前单元回答正确后，下一段剧情才会解锁</p><b id="lisuCollectionCount">已收集 0 / 3</b></div>
+        <div class="instrument-grid three" id="lisuInstrumentGrid">
+          <button class="instrument-card" data-key="qiben"><img src="assets/lisu-qiben.jpg" alt="傈僳族起奔实物参考"><span>起奔（期奔）</span><small>四弦弹拨 · 常用乐器</small></button>
+          <button class="instrument-card" data-key="dilitu"><img src="assets/lisu-dilitu.png" alt="傈僳族笛哩吐实物参考"><span>笛哩吐</span><small>短竹管吹?· 常用乐器</small></button>
+          <button class="instrument-card" data-key="hulusheng"><img src="assets/lisu-hulusheng.jpg" alt="傈僳族葫芦笙实物参考"><span>葫芦笙（阿咪直陆）</span><small>葫芦笙类 · 簧管乐器</small></button>
+        </div>
+        <button class="primary" id="lisuQuizButton" disabled">三件齐备，进入乐器知识小测</button>
+        <button class="secondary close">暂时返回地图</button>
+      </div>
+
+      <div id="lisuQuizTask" class="task">
+        <span class="tag">掌握检测</span>
+        <h2>傈僳族乐器知识小</h2>>
+        <div class="dialogue"><div class="portrait">🎧</div><div><b>阿洛</b><p>“现在轮到你独自辨认了。看清楚题目里的关键词：四弦、短竹管、葫芦笙斗、簧片，它们会带你找到答案。</p></div></div>
+        <div class="theory-card"><b>检测目标：</b>从起奔、笛哩吐、葫芦笙（阿咪直陆）的乐器类别、形制特征和文化功能三个方面检验探索成果</div>
+        <div class="quiz-meta"><span class="quiz-pill">5 题</span><span class="quiz-pill">4 题及以上：徽章</span><span class="quiz-pill">5 题全对：服装</span></div>
+        <div id="lisuQuizPanel"></div>
+        <div class="quiz-score" id="lisuQuizScoreBox"><b id="lisuQuizScoreText"></b><p id="lisuQuizScoreHint"></p></div>
+        <button class="primary" id="submitLisuQuizButton">提交小测</button><button class="secondary" id="retryLisuQuizButton">重新作答</button>
+      </div>
+
+      <div id="lisuResult" class="task result">
+        <div class="reward">🎵</div><h2 id="lisuResultTitle">傈僳族乐器图鉴点亮！</h2>
+        <div class="dialogue"><div class="portrait">🎧</div><div><b>阿洛</b><p>“很好，三件乐器的声音身份已经被你分清了。下一次听见它们，你应该能想起它们怎样发声、怎样进入族群的音乐生活。</p></div></div>
+        <p id="lisuResultSummary">你已经认识了起奔、笛哩吐和葫芦笙（阿咪直陆）三种乐器：一个弹拨、一个短竹管吹奏，一个由葫芦与竹管组合发声</p>
+        <div class="theory-card"><b>重要说明：</b>傈僳族传统乐器远不止三件，还包括撒旧期奔、举咧、哼嗨、玛钮、处处、四茄等。本关先聚焦适合本次旅程探索的三件</div>
+        <div class="theory-card" id="lisuRewardSummary"><b>获得奖励：</b>傈僳族乐器徽章 · 傈僳族乐器图鉴</div>
+        <div class="badge-award" id="lisuBadgeAwardBlock"><img src="assets/lisu-badge.png" alt="傈僳族乐器徽章"><div><h3>傈僳族乐器徽章</h3><p>正确率达到 80% 后点亮，代表你已认识起奔、笛哩吐和葫芦笙（阿咪直陆）</p></div></div>
+        <div class="reward-outfit" id="lisuRewardOutfitBlock"><img id="lisuRewardOutfitImage" src="assets/lisu-reward-male.png" alt="傈僳族通关服装奖励"><div><b id="lisuRewardOutfitTitle">获得傈僳族角色服</b><p id="lisuRewardOutfitText">小测满分后放入角色衣柜</p><button class="primary" id="openLisuRewardWardrobe">打开衣柜</button></div></div>
+        <div class="source-list"><b>参考文献：</b><br>
+          [1]李忻.男弹“期奔”女吹“笛哩图”：傈僳乐器拾贝[J].大众文艺,2026,(10):57-59.DOI:10.20112/j.cnki.ISSN1007-5828.2026.10.019.<br>
+          [2]傈僳族民间乐器——起本[J].民族音乐,2014,(6):2.<br>
+          [3]马贞维.新中国成立初期怒江傈僳族传统歌种、乐器、舞种考[J].音乐研究,2025,(5):110-130.<br>
+          <b>图片与网络资料：</b><a href="https://www.lisuarchive.com/music" target="_blank">Lisu Cultural Archive: Music</a>（含 Qiben、Dilitu 图文介绍）；葫芦笙图片参考：<a href="https://baike.so.com/doc/6172307-6385557.html" target="_blank">360百科：葫芦笙</a>。        </div>
+        <p><button class="secondary" id="replayLisuChapterButton">重新游玩本关</button><button class="secondary" id="retryLisuFromResultButton">再挑战小测</button><button class="primary close">收下记录，返回地图</button></p>
+      </div>
+
+      <div id="liangshanIntro" class="task">
+        <span class="tag">特色关卡 03</span>
+        <h2>凉山：听见彝族山地音</h2>>
+        <p>旅行手册来到大凉山。这里的彝族音乐与火把节、婚丧礼俗、放牧生产和日常情感紧紧相连。本关先认识三件代表性乐器：胡惹、马布、克西举尔，再通过两段视频探索，感受凉山彝族传统音乐的声音气质</p>
+        <div class="dialogue">
+          <div class="portrait">🔥</div>
+          <div><b>阿支（虚构凉山彝族音乐伙伴）</b><p>“有的声音像山风一样悠长，有的声音像火把节的脚步一样热烈。先听、再看、再答题，我们把乐器的形状、发声方法和音乐场景一起记住。”</p></div>
+        </div>
+        <div class="theory-card"><b>声音背景：</b>凉山彝族民间器乐与山地生活、节庆礼俗和情感表达紧密相连。本关围绕胡惹、马布、克西举尔三件乐器展开探索</div>
+        <div class="costume-placeholder"><div class="frame">🏅</div><div><b>关卡奖励规则</b><br><small>凉山彝族音乐小测正确率达到 80% 可获得徽章；正确率达到 100% 解锁角色专属服装</small></div></div>
+        <p><button class="primary" id="startLiangshanTask">进入凉山音乐探索</button><button class="secondary close">返回地图</button></p>
+      </div>
+
+      <div id="liangshanCollectionTask" class="task">
+        <span class="tag">主任务</span>
+        <h2>收集三件凉山彝族声音信物</h2>
+        <div class="dialogue"><div class="portrait">🔥</div><div><b>阿支</b><p>“大凉山的声音线索已经摆在眼前。胡惹、马布、克西举尔各有自己的发声秘密；视频里还有歌舞场景，别只看热闹，要听出它们和生活的连接。”</p>
+        <div class="knowledge-panel" id="liangshanKnowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div></div></div>
+        <div class="collection-progress"><p>跟随阿支依次完成三段乐器剧情，再解锁两段视频剧情。当前单元完成后，下一段剧情才会亮起</p><b id="liangshanCollectionCount">已收集 0 / 3</b></div>
+        <div class="instrument-grid three" id="liangshanInstrumentGrid">
+          <button class="instrument-card" data-key="hure"><img src="assets/liangshan-hure-photo.png" alt="胡惹乐器展示图"><span>胡惹</span><small>拉弦乐器 · 音色明亮</small></button>
+          <button class="instrument-card" data-key="mabu"><img src="assets/liangshan-mabu-photo.png" alt="马布乐器展示图"><span>马布</span><small>单簧气鸣 · 竹管牛角</small></button>
+          <button class="instrument-card" data-key="kexijuer"><img src="assets/liangshan-kexijuer-photo.png" alt="克西举尔乐器展示图"><span>克西举尔</span><small>咬着吹的笛 · 竹质管身</small></button>
+        </div>
+        <div class="theory-card" id="liangshanVideoIntro"><b>视频赏析任务：</b>两张视频卡会带你从画面、歌舞动作和声音一起感受凉山彝族传统音乐。每段视频都需要看完整段，并答对对应选择题，才会记录为完成</div>
+        <div class="video-grid" id="liangshanVideoGrid">
+          <div class="video-card" data-key="duoluhe" tabindex="0"><h3>视频一：凉山彝族传统歌舞《朵洛荷</h3><video controls preload="metadata" src="assets/liangshan-duoluohe.mp4"></video><p>《朵洛荷》常被作为凉山彝族歌舞文化的代表性材料来欣赏，你可以观察队形、步伐、呼喊式衬词和集体歌舞氛围，理解传统音乐不只是“听”，也和节庆、身体动作、群体交流连在一起</p></div>
+          <div class="video-card" data-key="amoniuniu" tabindex="0"><h3>视频二：凉山彝族歌曲《阿嫫妞妞</h3><video controls preload="metadata" src="assets/liangshan-amoniuniu.mp4"></video><p>《阿嫫妞妞》适合用来感受彝族歌曲中亲切、抒情的一面。你可以关注旋律走向、彝语演唱的音色，以及歌曲如何表达亲情、赞美和地方生活情感</p></div>
+        </div>
+        <button class="primary" id="liangshanQuizButton" disabled">乐器与视频齐备，进入知识小测</button>
+        <button class="secondary close">暂时返回地图</button>
+      </div>
+
+      <div id="liangshanQuizTask" class="task">
+        <span class="tag">掌握检测</span>
+        <h2>凉山彝族音乐知识小测</h2>
+        <div class="dialogue"><div class="portrait">🔥</div><div><b>阿支</b><p>“火光照到最后一关了。把乐器形态、发声方式和视频里的音乐场景连起来，答案就在你的旅行记录里。</p></div></div>
+        <div class="theory-card"><b>检测目标：</b>从胡惹、马布、克西举尔的乐器类别、结构发声、民俗功能，以及两段传统音乐的听辨任务四个方面检验探索成果</div>
+        <div class="quiz-meta"><span class="quiz-pill">5 题</span><span class="quiz-pill">4 题及以上：徽章</span><span class="quiz-pill">5 题全对：服装</span></div>
+        <div id="liangshanQuizPanel"></div>
+        <div class="quiz-score" id="liangshanQuizScoreBox"><b id="liangshanQuizScoreText"></b><p id="liangshanQuizScoreHint"></p></div>
+        <button class="primary" id="submitLiangshanQuizButton">提交小测</button><button class="secondary" id="retryLiangshanQuizButton">重新作答</button>
+      </div>
+
+      <div id="liangshanResult" class="task result">
+        <div class="reward">🔥</div><h2 id="liangshanResultTitle">凉山彝族音乐图鉴点亮</h2>>
+        <div class="dialogue"><div class="portrait">🔥</div><div><b>阿支</b><p>“你已经把三件乐器和两段传统音乐收入旅程。大凉山的声音不会停在这里，它会继续在你的图鉴里回响。</p></div></div>
+        <p id="liangshanResultSummary">你已经认识胡惹、马布、克西举尔，也完成了两段凉山彝族传统音乐试听</p>
+        <div class="theory-card"><b>重要说明：</b>凉山彝族传统音乐远不止本关内容。本关先选择三件有代表性的乐器和两段可探索的音乐作为入门材料</div>
+        <div class="theory-card" id="liangshanRewardSummary"><b>获得奖励：</b>凉山彝族音乐徽章 · 凉山彝族音乐图鉴</div>
+        <div class="badge-award" id="liangshanBadgeAwardBlock"><img src="assets/liangshan-badge.png" alt="凉山彝族音乐徽章"><div><h3>凉山彝族音乐徽章</h3><p>正确率达到 80% 后点亮。徽章中的太阳火焰、鹰翼、弓箭和黑红黄纹样，象征大凉山音乐里的光、勇气、守护与节庆生命力</p></div></div>
+        <div class="reward-outfit" id="liangshanRewardOutfitBlock"><img id="liangshanRewardOutfitImage" src="assets/liangshan-reward-male.png" alt="凉山彝族通关服装奖励"><div><b id="liangshanRewardOutfitTitle">获得凉山彝族角色服装</b><p id="liangshanRewardOutfitText">小测满分后放入角色衣柜</p><button class="primary" id="openLiangshanRewardWardrobe">打开衣柜</button></div></div>
+        <div class="source-list"><b>参考文献：</b><br>
+          [1]曾令士.凉山彝族民间器乐研究[J].音乐探索.四川音乐学院学报,1989,(1):47-55.DOI:10.15929/j.cnki.1004-2172.1989.01.010.<br>
+          [2]罗嘉琪,唐衡.非遗语境下彝族民间乐器克西举尔之形态考述[J].四川戏剧,2023,(12):110-113.<br>
+          [3]四川非遗.非遗日历｜彝族马布音乐[EB/OL].微信公众号“四川非遗”,2020-04-30.<br>
+          [4]四川非遗.非遗日历｜彝族“胡惹”制作技艺[EB/OL].微信公众号“四川非遗”,2024-10-25.<br>
+          [5]作者不详.藏在大凉山的千年绝响——彝族克西举尔，咬着吹的“心灵偶像”正濒临消失[EB/OL].微信公众号,发布日期不详.<br>
+          <b>徽章元素说明：</b>太阳火焰、鹰翼、弓箭与黑红黄纹样为本关徽章的游戏化文化意象，分别呼应火把节、英雄射日神话、高山守护与彝族服饰色彩传统。<br>
+          <b>图片与视频说明：</b>胡惹、马布、克西举尔已根据教师提供的实物参考图处理成干净展示图，便于玩家观察乐器本体。视频中《朵洛荷》和《阿嫫妞妞》均已接入本地文件，可在关卡中直接播放探索。        </div>
+        <p><button class="secondary" id="replayLiangshanChapterButton">重新游玩本关</button><button class="secondary" id="retryLiangshanFromResultButton">再挑战小测</button><button class="primary close">收下记录，返回地图</button></p>
+      </div>
+
+      <div id="tibetanIntro" class="task">
+        <span class="tag">特色关卡 04</span>
+        <h2>甘孜：雪域康巴回</h2>>
+        <p>旅行手册来到甘孜藏族自治州。雪山、草地、寺院和歌舞场在同一片风里回响：你要跟随新的音乐伙伴，先辨认三件藏族声音信物，再从视频里听见曲调与舞步的关系</p>
+        <div class="dialogue"><div class="portrait">🏔</div><div><b>雪央（虚构藏族音乐伙伴）</b><p>“甘孜的声音，有的从弦上弹出，有的随弓弦歌唱，有的像雪山长风一样吹向远处。准备好把这些声音放进你的图鉴了吗？”</p></div></div>
+        <div class="theory-card"><b>声音背景：</b>本关聚焦甘孜藏族音乐中适合游戏学习的三条线索：扎念（扎木聂）的弹拨伴唱、毕旺与弦子歌舞的拉弦伴奏、筒钦在藏传礼仪音乐中的长号声响；视频部分用《格桑拉》的酒歌“昌鲁”和巴塘弦子资料引导玩家联系“曲目、仪式、弦乐、舞蹈、生活场景”</div>
+        <div class="costume-placeholder"><div class="frame">🏅</div><div><b>关卡奖励规则</b><br><small>藏族音乐小测正确率达到 80% 可获得徽章；正确率达到 100% 时，等后续服饰素材补齐后可发放对应服装奖励</small></div></div>
+        <p><button class="primary" id="startTibetanTask">进入甘孜藏族声音旅程</button><button class="secondary close">返回地图</button></p>
+      </div>
+
+      <div id="tibetanCollectionTask" class="task">
+        <span class="tag">主任务</span>
+        <h2>收集三件甘孜藏族声音信物</h2>
+        <div class="dialogue"><div class="portrait">🏔</div><div><b>雪央</b><p>“先从三件声音信物开始。点开图鉴卡，听我讲完故事后，在对话框里回答问题；答对以后，下一段旅程才会亮起。”</p>
+        <div class="knowledge-panel" id="tibetanKnowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div></div></div>
+        <div class="collection-progress"><p>依次完成三段乐器剧情，再进入视频赏析。每个视频都需要点选“我已看完”并答对对应问题，才算完成</p><b id="tibetanCollectionCount">剧情进度 0 / 3</b></div>
+        <div class="instrument-grid three" id="tibetanInstrumentGrid">
+          <button class="instrument-card" data-key="dramyin"><img src="assets/tibetan-dramyin.jpg" alt="扎念（扎木聂）乐器参考图"><span>扎念（扎木聂</span><small>六弦弹拨 · 歌舞伴奏</small></button>
+          <button class="instrument-card" data-key="piwang"><img src="assets/tibetan-piwang.jpg" alt="毕旺拉弦乐器参考图"><span>毕旺</span><small>拉弦乐器 · 弦子歌舞</small></button>
+          <button class="instrument-card" data-key="dungchen"><img src="assets/tibetan-dungchen.png" alt="筒钦藏族长号参考图"><span>筒钦</span><small>长号吹奏 · 礼仪声响</small></button>
+        </div>
+        <div class="theory-card video-section-hidden" id="tibetanVideoIntro"><b>视频赏析任务：</b>先看《格桑拉》如何把酒歌“昌鲁”、敬酒仪式和祝福歌声连接起来，再看巴塘弦子如何呈现边唱边舞、弦乐伴奏、队形和生活场景。每段资料需要“看完确认 + 答对问题”两个条件</div>
+        <div class="video-grid video-section-hidden" id="tibetanVideoGrid">
+          <div class="video-card" data-key="gesangla" tabindex="0"><h3>视频一：《格桑拉</h3><video controls preload="metadata" src="assets/tibetan-gesangla.mp4"></video><p>《格桑拉》可作为认识藏族酒歌“昌鲁”的入口。酒歌常在喝酒、敬酒时唱起，也可以伴随简单舞蹈动作；在传统节日、婚礼等场合，歌声会和接杯、弹酒、饮酒、干杯等礼仪动作连接，表达祝福、祈祷、爱情与欢聚情感</p><button class="secondary tibetan-video-viewed" data-key="gesangla">我已看完视频</button></div>
+          <div class="video-card" data-key="xianzi" tabindex="0"><h3>视频二：巴塘弦子</h3><video controls preload="metadata" src="assets/tibetan-batang-xianzi.mp4"></video><p>巴塘弦子也常被称作巴塘弦子舞，是甘孜巴塘一带有代表性的藏族歌舞形态。赏析时不要只听旋律，还要观察弦乐伴奏、边唱边舞、队形变化、甩袖步伐，以及节奏从舒展到热烈的推进方式</p><button class="secondary tibetan-video-viewed" data-key="xianzi">我已看完视频</button></div>
+        </div>
+        <button class="primary" id="tibetanQuizButton" disabled">乐器与视频齐备，进入知识小测</button>
+        <button class="secondary close">暂时返回地图</button>
+      </div>
+
+      <div id="tibetanQuizTask" class="task">
+        <span class="tag">掌握检测</span>
+        <h2>甘孜藏族音乐知识小测</h2>
+        <div class="dialogue"><div class="portrait">🏔</div><div><b>雪央</b><p>“最后一关到了。把乐器的声音身份、舞蹈场景和曲目记忆串起来，雪山回声就会留在你的图鉴里。</p></div></div>
+        <div class="theory-card"><b>检测目标：</b>从扎念、毕旺、筒钦的乐器类别，酒歌“昌鲁”与《格桑拉》的礼仪场景，以及巴塘弦子的歌舞特征五个方面检查探索成果</div>
+        <div class="quiz-meta"><span class="quiz-pill">5 题</span><span class="quiz-pill">4 题及以上：徽章</span><span class="quiz-pill">5 题全对：服装奖励</span></div>
+        <div id="tibetanQuizPanel"></div>
+        <div class="quiz-score" id="tibetanQuizScoreBox"><b id="tibetanQuizScoreText"></b><p id="tibetanQuizScoreHint"></p></div>
+        <button class="primary" id="submitTibetanQuizButton">提交小测</button><button class="secondary" id="retryTibetanQuizButton">重新作答</button>
+      </div>
+
+      <div id="tibetanResult" class="task result">
+        <div class="reward">🏔</div><h2 id="tibetanResultTitle">甘孜藏族音乐图鉴点亮</h2>>
+        <div class="dialogue"><div class="portrait">🏔</div><div><b>雪央</b><p>“你已经把弦声、长号声和歌舞场景收进旅程。若能满分回应雪山回声，藏族服装也会进入你的衣柜。</p></div></div>
+        <p id="tibetanResultSummary">你已经认识扎念（扎木聂）、毕旺、筒钦，也完成了两段视频赏析</p>
+        <div class="theory-card"><b>重要说明：</b>甘孜藏族音乐内容非常丰富，本关先选取适合入门的乐器、舞蹈与曲目线索。后续可以继续扩展藏戏、热巴、山歌、寺院音乐等内容</div>
+        <div class="theory-card" id="tibetanRewardSummary"><b>获得奖励：</b>甘孜藏族音乐徽章 · 甘孜藏族音乐图鉴</div>
+        <div class="badge-award" id="tibetanBadgeAwardBlock"><img src="assets/tibetan-badge.png" alt="甘孜藏族音乐徽章"><div><h3>甘孜藏族音乐徽章</h3><p>这枚徽章化用了甘孜雪山、白牦牛、经幡、祥云、绿松石与藏式吉祥结纹样。雪山像康巴高原的远路，白牦牛呼应牧区生活里坚韧、珍贵、守护旅程的意象；五色经幡与风马旗把祝福交给山风，祥云像歌声越过山口。徽章下方的吉祥结纹样，则把扎念、毕旺、筒钦、《格桑拉》和巴塘弦子这些声音线索连成一条“雪域回声”的旅程</p></div></div>
+        <div class="reward-outfit" id="tibetanRewardOutfitBlock"><img id="tibetanRewardOutfitImage" src="assets/unknown-outfit.png" alt="甘孜藏族通关服装奖励"><div><b id="tibetanRewardOutfitTitle">甘孜藏族服装奖励待解</b><p id="tibetanRewardOutfitText">甘孜藏族音乐小测 100% 正确后，这套服装会放入角色衣柜</p><button class="primary" id="openTibetanRewardWardrobe">打开衣柜</button></div></div>
+        <div class="source-list"><b>参考资料：</b><br>
+          [1] 中国非物质文化遗产网. 弦子舞（巴塘弦子）项目资料[EB/OL].<br>
+          [3] Wikipedia contributors. Dramyin; Dungchen[EB/OL].<br>
+          [4] 甘孜藏区音乐文化网络资料综合整理：扎念（扎木聂）、毕旺、筒钦、酒歌“昌鲁”、《格桑拉》与巴塘弦子。<br>
+          <b>图片与视频说明：</b>乐器图片采用开放网络资料作为教学参考；视频使用公开在线播放入口，若内嵌无法播放，可通过关卡中的外链打开观看。        </div>
+        <p><button class="secondary" id="replayTibetanChapterButton">重新游玩本关</button><button class="secondary" id="retryTibetanFromResultButton">再挑战小测</button><button class="primary close">收下记录，返回地图</button></p>
+      </div>
+    </section>
+  </div>
+
+  <div class="overlay" id="characterOverlay">
+    <section class="modal">
+      <span class="tag">创建角色</span><h2>选择你的音乐旅行</h2>>
+      <p>选择后将获得对应的初始旅行装；通关奖励服装也会根据角色分别发放</p>
+      <div class="gender-grid">
+        <button class="gender-card" data-gender="male"><img src="assets/student-male.png" alt="男生初始旅行装" style="width:100%;height:290px;object-fit:contain"><h3>男生角色</h3><p>蓝白运动旅行装、长裤与运动</p></button>
+        <button class="gender-card" data-gender="female"><img src="assets/student-female.png" alt="女生初始旅行装" style="width:100%;height:290px;object-fit:contain"><h3>女生角色</h3><p>蓝白运动旅行装、百褶裙与运动鞋</p></button>
+      </div>
+    </section>
+  </div>
+
+  <div class="overlay" id="wardrobeOverlay">
+    <section class="modal">
+      <span class="tag">角色衣柜</span><h2>选择穿戴服装</h2>
+      <p id="wardrobeIntro">你的服装会显示在左侧角色栏中</p>
+      <div class="wardrobe-grid">
+        <div class="outfit-card" id="studentOutfitCard"><img id="studentOutfitImage" src="assets/student-male.png" alt="初始旅行装"><h3>初始旅行</h3><p>创建角色时获得，适合日常音乐旅行</p><button class="primary wear-button" data-outfit="student">穿上旅行</button></div>
+        <div class="outfit-card" id="rewardOutfitCard"><img id="wardrobeRewardImage" src="assets/reward-male.png" alt="攀西关卡奖励服装"><h3 id="wardrobeRewardTitle">攀西关卡奖励服</h3><p id="rewardLockText">乐器知识小测 100% 正确后解锁</p><button class="primary wear-button" id="wearRewardButton" data-outfit="reward" disabled">尚未解锁</button></div>
+        <div class="outfit-card" id="lisuRewardOutfitCard"><img id="wardrobeLisuRewardImage" src="assets/lisu-reward-male.png" alt="傈僳族关卡奖励服装"><h3 id="wardrobeLisuRewardTitle">傈僳族关卡奖励服</h3><p id="lisuRewardLockText">傈僳族乐器小测 100% 正确后解锁</p><button class="primary wear-button" id="wearLisuRewardButton" data-outfit="lisuReward" disabled">尚未解锁</button></div>
+        <div class="outfit-card" id="liangshanRewardOutfitCard"><img id="wardrobeLiangshanRewardImage" src="assets/liangshan-reward-male.png" alt="凉山彝族关卡奖励服装"><h3 id="wardrobeLiangshanRewardTitle">凉山彝族关卡奖励服装</h3><p id="liangshanRewardLockText">凉山彝族音乐小测 100% 正确后解锁</p><button class="primary wear-button" id="wearLiangshanRewardButton" data-outfit="liangshanReward" disabled">尚未解锁</button></div>
+        <div class="outfit-card locked" id="qiangRewardOutfitCard"><img src="assets/unknown-outfit.png" alt="羌族奖励服装未获得"><h3>羌族奖励服装</h3><p>尚未获得该服装，还不清楚有什么具体内容哦。</p><button class="primary" disabled">尚未解锁</button></div>
+        <div class="outfit-card locked" id="tibetanRewardOutfitCard"><img id="wardrobeTibetanRewardImage" src="assets/unknown-outfit.png" alt="藏族关卡奖励服装"><h3 id="wardrobeTibetanRewardTitle">藏族关卡奖励服装</h3><p id="tibetanRewardLockText">藏族音乐小测 100% 正确后解锁</p><button class="primary wear-button" id="wearTibetanRewardButton" data-outfit="tibetanReward" disabled">尚未解锁</button></div>
+        <div class="outfit-card locked" id="miaoRewardOutfitCard"><img src="assets/unknown-outfit.png" alt="苗族奖励服装未获得"><h3>苗族奖励服装</h3><p>尚未获得该服装，还不清楚有什么具体内容哦。</p><button class="primary" disabled">尚未解锁</button></div>
+      </div>
+      <button class="secondary" id="changeGenderButton">重新选择角色</button><button class="primary" id="closeWardrobe">关闭衣柜</button>
+    </section>
+  </div>
+
+  <div class="overlay" id="infoOverlay">
+    <section class="modal badge-cabinet-modal">
+      <span class="tag">音乐文化图鉴</span>
+      <h2>徽章展示</h2>>
+      <p class="badge-cabinet-intro">完成各关卡的小测后，徽章会在这里被点亮。每一枚徽章都记录一段民族音乐背后的文化记忆</p>
+      <div class="badge-cabinet" id="badgeCabinet">
+        <article class="badge-card locked" id="lipuBadgeCard">
+          <img src="assets/gule-badge.png" alt="俚濮彝族古乐守护者徽章">
+          <h3>俚濮彝族 · 古乐守护</h3>
+          <p>这枚徽章借用了葫芦意象：在俚濮彝族相关的洪水神话叙事中，祖先曾在大洪水中坐进葫芦里得以存活，生命和族群记忆由此延续。游戏把葫芦化作“古乐守护”的象征，它提醒你：谈经古乐不只是旋律，也是祖先故事、生命记忆和乡土文化一起留下来的声音</p>
+          <p class="badge-source">获得条件：俚濮彝族乐器知识小测正确率达到 80%</p>
+        </article>
+        <article class="badge-card locked" id="lisuBadgeCard">
+          <img src="assets/lisu-badge.png" alt="傈僳族乐器徽章">
+          <h3>傈僳族 · 红带守护</h3>
+          <p>这枚徽章取意于傈僳族红蛇与红腰带传说：民间叙事常把红蛇、红色腰带和祖先护佑联系在一起，红腰带既是醒目的服饰标识，也寄托着族群记忆、勇敢守护和吉祥祝愿。放在本关中，它象征你认识起奔、笛哩吐、葫芦笙（阿咪直陆）之后，也把傈僳族乐器背后的文化身份系在了心里</p>
+          <p class="badge-source">获得条件：傈僳族乐器知识小测正确率达到 80%</p>
+        </article>
+        <article class="badge-card locked" id="liangshanBadgeCard">
+          <img src="assets/liangshan-badge.png" alt="凉山彝族音乐徽章">
+          <h3>凉山彝族 · 山地回声徽章</h3>
+          <p>这枚徽章把凉山彝族的太阳火焰、鹰翼、弓箭与黑红黄纹样组合在一起：中心太阳和火焰呼应火把节中以火驱邪、祈愿丰收的传统；弓箭连接彝族英雄神话里“射日”和守护族人的勇敢意象；鹰翼象征大凉山高地、飞翔与守护；黑、红、黄和刺绣几何纹样则呼应彝族服饰中常见的色彩与装饰传统。获得它，代表你把凉山彝族音乐里的热烈、勇气和山地回声收入了图鉴</p>
+          <p class="badge-source">获得条件：凉山彝族乐器与视频探索小测正确率达到 80%</p>
+        </article>
+        <article class="badge-card locked" id="qiangBadgeCard"><img src="assets/unknown-badge.png" alt="羌族徽章未获得"><h3>羌族 · 未知徽章</h3><p>尚未获得该勋章，还不清楚有什么具体内容哦。</p><p class="badge-source">获得条件：后续羌族关卡开放后可挑战</p></article>
+        <article class="badge-card locked" id="tibetanBadgeCard"><img src="assets/tibetan-badge.png" alt="藏族 · 雪域回声徽章"><h3>藏族 · 雪域回声徽章</h3><p>这枚徽章化用了甘孜雪山、白牦牛、经幡、祥云、绿松石与藏式吉祥结纹样。雪山像康巴高原的远路，白牦牛呼应牧区生活里坚韧、珍贵、守护旅程的意象；五色经幡与风马旗把祝福交给山风，祥云像歌声越过山口。徽章下方的吉祥结纹样，则把扎念、毕旺、筒钦、《格桑拉》和巴塘弦子这些声音线索连成一条“雪域回声”的旅程</p><p class="badge-source">获得条件：甘孜藏族音乐小测正确率达到 80%。</p></article>
+        <article class="badge-card locked" id="miaoBadgeCard"><img src="assets/unknown-badge.png" alt="苗族徽章未获得"><h3>苗族 · 未知徽章</h3><p>尚未获得该勋章，还不清楚有什么具体内容哦。</p><p class="badge-source">获得条件：后续苗族关卡开放后可挑战</p></article>
+      </div>
+      <button class="primary info-close">知道了</button>
+    </section>
+  </div>
+
+  <div class="overlay" id="imagePreviewOverlay">
+    <section class="modal image-preview-modal">
+      <h2 id="imagePreviewTitle">乐器图像</h2>
+      <img id="imagePreviewImage" alt="乐器放大图">
+      <p><button class="primary" id="closeImagePreview">继续对话</button></p>
+    </section>
+  </div>
+  <div class="overlay" id="rewardPopupOverlay">
+    <section class="modal reward-popup-modal">
+      <div class="reward-sparkles"></div>
+      <div class="reward-popup-content">
+        <span class="tag" id="rewardPopupType">奖励获得</span>
+        <h2 class="reward-popup-title" id="rewardPopupTitle">获得奖励</h2>>
+        <img class="reward-popup-image" id="rewardPopupImage" src="assets/unknown-badge.png" alt="奖励图片">
+        <p class="reward-popup-text" id="rewardPopupText">新的奖励已经放入你的图鉴。</p>
+        <button class="primary" id="closeRewardPopup">收下奖励</button>
+      </div>
+    </section>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const state = JSON.parse(localStorage.getItem('sichuanMusicGameV2') || '{"coins":0,"badges":0,"finished":false,"badgeUnlocked":false,"outfitUnlocked":false,"lastQuizScore":0,"collected":[],"gender":null,"outfit":"student"}');
+    if (!Array.isArray(state.collected)) state.collected = [];
+    if (!state.outfit) state.outfit = 'student';
+    if (typeof state.badgeUnlocked === 'undefined') state.badgeUnlocked = !!state.finished;
+    if (typeof state.outfitUnlocked === 'undefined') state.outfitUnlocked = false;
+    if (typeof state.lastQuizScore === 'undefined') state.lastQuizScore = state.finished ? 8 : 0;
+    if (!state.lisu) state.lisu = { finished: false, collected: [], lastQuizScore: 0, coinsAwarded: false, badgeUnlocked: false, outfitUnlocked: false };
+    if (!state.liangshan) state.liangshan = { finished: false, collected: [], videoWatched: [], lastQuizScore: 0, coinsAwarded: false, badgeUnlocked: false, outfitUnlocked: false };
+    if (!state.tibetan) state.tibetan = { finished: false, collected: [], videoWatched: [], videoViewed: [], videoAnswered: [], lastQuizScore: 0, coinsAwarded: false, badgeUnlocked: false, outfitUnlocked: false };
+    if (!Array.isArray(state.lisu.collected)) state.lisu.collected = [];
+    if (typeof state.lisu.lastQuizScore === 'undefined') state.lisu.lastQuizScore = state.lisu.finished ? 4 : 0;
+    if (typeof state.lisu.coinsAwarded === 'undefined') state.lisu.coinsAwarded = !!state.lisu.finished;
+    if (typeof state.lisu.badgeUnlocked === 'undefined') state.lisu.badgeUnlocked = !!state.lisu.finished;
+    if (typeof state.lisu.outfitUnlocked === 'undefined') state.lisu.outfitUnlocked = false;
+    if (!Array.isArray(state.liangshan.collected)) state.liangshan.collected = [];
+    if (!Array.isArray(state.liangshan.videoWatched)) state.liangshan.videoWatched = [];
+    if (!Array.isArray(state.liangshan.videoViewed)) state.liangshan.videoViewed = [];
+    if (!Array.isArray(state.liangshan.videoAnswered)) state.liangshan.videoAnswered = [];
+    if (typeof state.liangshan.lastQuizScore === 'undefined') state.liangshan.lastQuizScore = state.liangshan.finished ? 4 : 0;
+    if (typeof state.liangshan.coinsAwarded === 'undefined') state.liangshan.coinsAwarded = !!state.liangshan.finished;
+    if (typeof state.liangshan.badgeUnlocked === 'undefined') state.liangshan.badgeUnlocked = !!state.liangshan.finished;
+    if (typeof state.liangshan.outfitUnlocked === 'undefined') state.liangshan.outfitUnlocked = false;
+    if (!Array.isArray(state.tibetan.collected)) state.tibetan.collected = [];
+    if (!Array.isArray(state.tibetan.videoWatched)) state.tibetan.videoWatched = [];
+    if (!Array.isArray(state.tibetan.videoViewed)) state.tibetan.videoViewed = [];
+    if (!Array.isArray(state.tibetan.videoAnswered)) state.tibetan.videoAnswered = [];
+
+    const overlay = document.querySelector('#chapterOverlay');
+    const tasks = document.querySelectorAll('.task');
+    const coins = document.querySelector('#coins');
+    const badges = document.querySelector('#badges');
+    const imagePreviewOverlay = document.querySelector('#imagePreviewOverlay');
+    const imagePreviewTitle = document.querySelector('#imagePreviewTitle');
+    const imagePreviewImage = document.querySelector('#imagePreviewImage');
+    if (typeof state.tibetan.lastQuizScore === 'undefined') state.tibetan.lastQuizScore = state.tibetan.finished ? 4 : 0;
+    if (typeof state.tibetan.coinsAwarded === 'undefined') state.tibetan.coinsAwarded = !!state.tibetan.finished;
+    if (typeof state.tibetan.badgeUnlocked === 'undefined') state.tibetan.badgeUnlocked = !!state.tibetan.finished;
+    if (typeof state.tibetan.outfitUnlocked === 'undefined') state.tibetan.outfitUnlocked = false;
+    const lipuInstrumentKeys = ['dizi', 'sanxian', 'yueqin', 'xiangmie', 'leaf'];
+    const lisuInstrumentKeys = ['qiben', 'dilitu', 'hulusheng'];
+    const liangshanInstrumentKeys = ['hure', 'mabu', 'kexijuer'];
+    const liangshanVideoKeys = ['duoluhe', 'amoniuniu'];
+    const tibetanInstrumentKeys = ['dramyin', 'piwang', 'dungchen'];
+    const tibetanVideoKeys = ['gesangla', 'xianzi'];
+    const instrumentData = {
+      dizi: { name: '竹笛', question: '竹笛主要属于哪一类乐器？', choices: ['吹管乐器，用气息吹奏发声', '弹拨乐器，用手指拨弦发声', '拉弦乐器，用弓摩擦琴弦发声', '打击乐器，用敲击发声'], correct: 0 },
+      sanxian: { name: '三弦', question: '三弦在谈经古乐中最典型的声音身份是什么？', choices: ['三根弦的弹拨乐器，可提供旋律与节奏支撑', '靠嘴唇和口腔共鸣的簧鸣乐器', '用树叶边缘振动发声的自然乐器', '大型铜管吹奏乐器'], correct: 0 },
+      yueqin: { name: '月琴', question: '月琴的名称与外形最相关的是哪一点？', choices: ['圆形或近圆形共鸣箱，像一轮月亮', '用马尾弓拉奏', '由牛角做成喇叭口', '必须用树叶吹奏'], correct: 0 },
+      xiangmie: { name: '响篾', question: '响篾主要依靠什么发声？', choices: ['薄竹片或簧片振动，并借助口腔改变共鸣', '敲击鼓面形成低音', '弓毛摩擦金属弦', '拍打木板形成节奏'], correct: 0 },
+      leaf: { name: '树叶', question: '树叶为什么能成为乐器？', choices: ['叶片边缘在气流中振动，口腔帮助改变音高和音色', '树叶内部有固定簧片', '树叶必须装上琴弦', '树叶只能当装饰，不能发声'], correct: 0 }
+    };
+    const lisuInstrumentData = {
+      qiben: { name: '起奔（期奔）', question: '起奔（期奔）最稳定的形制特点是什么？', choices: ['四弦弹拨，是傈僳族常见乐器', '三孔短箫，竖吹发声', '六管芦笙，只能合奏使用', '单片口弦，靠口腔共鸣'], correct: 0 },
+      dilitu: { name: '笛哩吐', question: '笛哩吐在本关中属于哪类乐器？', choices: ['短竹管吹奏乐器，常被称为三孔短箫', '四弦弹拨乐器', '葫芦笙类簧管乐器', '拉弦乐器'], correct: 0 },
+      hulusheng: { name: '葫芦笙（阿咪直陆）', question: '葫芦笙（阿咪直陆）的发声关键是什么？', choices: ['葫芦笙斗和竹管里的簧片共同发声', '用弓拉动两根琴弦', '拍击木板形成节奏', '吹动一片树叶边缘'], correct: 0 }
+    };
+    const liangshanInstrumentData = {
+      hure: { name: '胡惹', question: '胡惹属于哪一种凉山彝族传统乐器？', choices: ['拉弦乐器，造型古朴、音色明亮', '牛角口的单簧气鸣乐器', '咬着吹的竹质竖吹乐器', '四弦弹拨乐器'], correct: 0 },
+      mabu: { name: '马布', question: '马布的结构最典型的是哪一项？', choices: ['簧片、竹制管身和牛角喇叭口', '圆形琴箱与四根弦', '葫芦笙斗和多根竹管', '叶片边缘和口腔共鸣'], correct: 0 },
+      kexijuer: { name: '克西举尔', question: '克西举尔最独特的演奏方式是什么？', choices: ['将管端抵近牙齿，形成“咬着吹”的方式', '用马尾弓拉奏', '用手指拨动四根弦', '用酒杯敲击节奏'], correct: 0 }
+    };
+    const tibetanInstrumentData = {
+      dramyin: { name: '扎木聂', question: '扎木聂通常属于哪类乐器？', choices: ['弹拨乐器，常用于歌舞伴奏', '长号类吹奏法器', '拉弦乐器', '簧管乐器'], correct: 0 },
+      piwang: { name: '毕旺', question: '毕旺的声音身份更接近哪一类？', choices: ['藏族拉弦乐器', '大型打击乐器', '短笛类乐器', '口弦类乐器'], correct: 0 },
+      dungchen: { name: '铜钦', question: '铜钦给人的音响印象通常是什么？', choices: ['低沉浑厚、庄严悠长的大型吹奏声', '轻快短促的弹拨声', '清脆细小的树叶声', '明亮跳跃的口弦声'], correct: 0 }
+    };
+    const lipuStoryLines = {
+      dizi: { unit: '第一幕 · 葫芦谷的风之匙', npc: '小洛', portrait: '🧒', scenes: [
+        { speaker: 'npc', text: '“旅行家，攀枝花的山风把你带到了葫芦谷。传说大洪水后，祖先的记忆藏进一只葫芦里。”' },
+        { speaker: 'hero', text: '“葫芦里传来亮亮的声音，是第一把钥匙吗？”' },
+        { speaker: 'npc', text: '“对，竹笛是风之匙。它把谈经古乐的旋律先吹醒，高音、低音竹笛都能把曲调送出去。”' },
+        { speaker: 'hero', text: '“所以竹笛守着旋律层。答对这题，葫芦谷的第一道纹路就会亮起。”' }
+      ] },
+      sanxian: { unit: '第二幕 · 洪水石下的低声', npc: '小洛', portrait: '🧒', scenes: [
+        { speaker: 'hero', text: '“葫芦纹路亮了，可谷底还有一块洪水石压着低低的回声。”' },
+        { speaker: 'npc', text: '“那是三弦。它是弹拨乐器，在本关的古乐分层里更靠近低音声部。”' },
+        { speaker: 'npc', text: '“你可以把三弦想成葫芦船的船底：声音不一定最耀眼，却托住整段合奏。”' },
+        { speaker: 'hero', text: '“弹拨、低音支撑。让我把这块洪水石上的答案解开。”' }
+      ] },
+      yueqin: { unit: '第三幕 · 月纹桥的中声纹', npc: '小洛', portrait: '🧒', scenes: [
+        { speaker: 'npc', text: '“前面是月纹桥。桥上缺一段节奏纹，只有月琴能补上。”' },
+        { speaker: 'hero', text: '“月琴也是弹拨乐器，它和三弦一样负责低音吗？”' },
+        { speaker: 'npc', text: '“不一样。月琴像编织桥面的手，在中音层弹出规整节奏型与和音，让古乐走得更稳。”' },
+        { speaker: 'hero', text: '“月琴是中音填充与节奏型和音。答对后，我们就能过桥。”' }
+      ] },
+      xiangmie: { unit: '第四幕 · 竹篾会说话', npc: '小洛', portrait: '🧒', scenes: [
+        { speaker: 'npc', text: '“桥那头有一片会震动的竹篾。它很小，却像在用口腔讲悄悄话。”' },
+        { speaker: 'hero', text: '“这就是响篾吗？它不是吹孔发声？”' },
+        { speaker: 'npc', text: '“响篾通常用竹片削制出簧舌，靠拨动簧片振动，再借口腔改变共鸣，形成细微而有弹性的声音。”' },
+        { speaker: 'hero', text: '“原来它的关键是竹制簧片和口腔共鸣。”' }
+      ] },
+      leaf: { unit: '第五幕 · 树叶送回山风', npc: '小洛', portrait: '🧒', scenes: [
+        { speaker: 'npc', text: '“最后一件信物落在树梢。别小看一片叶子，它也能把山风变成旋律。”' },
+        { speaker: 'hero', text: '“树叶也算声音材料？那它更像自然里的乐器。”' },
+        { speaker: 'npc', text: '“对。树叶通过唇边气流与叶片振动发声，提醒我们地方音乐不只来自规整乐器，也来自身边的自然材料。”' },
+        { speaker: 'hero', text: '“五件信物齐了，谈经古乐的葫芦图鉴可以合上了。”' }
+      ] }
+    };
+
+    const quizData = [
+      { q: '竹笛在本关谈经古乐合奏中主要承担什么功能？', a: ['节奏型和音', '旋律声部', '低音支撑', '口腔共鸣效果'], correct: 1 },
+      { q: '三弦属于哪一类乐器？', a: ['弹拨乐器', '吹奏乐器', '打击乐器', '簧管乐器'], correct: 0 },
+      { q: '月琴在本关里更接近哪种音乐角色？', a: ['只负责最高旋律', '完全没有节奏作用', '中音层的节奏型与和音填充', '只模仿鸟叫'], correct: 2 },
+      { q: '响篾的发声关键是什么？', a: ['鼓面振动', '竹制簧片振动并借口腔共鸣', '琴弦摩擦', '金属管吹奏'], correct: 1 },
+      { q: '树叶为什么能作为声音材料？', a: ['叶片受气流作用振动发声', '必须插电', '只能敲击发声', '只能当装饰'], correct: 0 },
+      { q: '谈经古乐真实乐队与本关五件信物的关系应怎样理解？', a: ['本关五件就是完整乐队', '本关是关键乐器收集玩法，不等同于完整复原', '真实乐队没有其他乐器', '只需要认识服装'], correct: 1 },
+      { q: '竹笛、月琴、三弦形成的层次可大致理解为？', a: ['旋律、中音填充、低音支撑', '全部都是低音', '全部都是打击乐', '全部靠口腔共鸣'], correct: 0 },
+      { q: '响篾和树叶共同提醒玩家关注什么？', a: ['地方音乐里多样的声音材料和发声方式', '只有电子音效重要', '只有西洋乐器重要', '只看地图就够了'], correct: 0 },
+      { q: '如果要把谈经古乐介绍给伙伴，比较合适的说法是？', a: ['只是一件乐器独奏', '由器乐、经腔等共同构成的地方音乐形态', '没有旋律', '和族群文化没有关系'], correct: 1 },
+      { q: '完成本关满分小测后可以获得什么额外奖励？', a: ['角色专属服装', '删除图鉴', '关闭地图', '失去徽章'], correct: 0 }
+    ];
+
+    const lisuStoryLines = {
+      qiben: { unit: '第一幕 · 四弦走过山路', npc: '阿洛', portrait: '🎧', scenes: [
+        { speaker: 'npc', text: '“先听这件四弦弹拨乐器，起奔，也叫期奔。它常在歌舞和日常表达里托住旋律。”' },
+        { speaker: 'hero', text: '“四根弦，弹拨发声，是傈僳族常用乐器。”' },
+        { speaker: 'npc', text: '“记住它的声音身份，第一张图鉴卡就会亮起。”' }
+      ] },
+      dilitu: { unit: '第二幕 · 短竹管里的歌声', npc: '阿洛', portrait: '🎧', scenes: [
+        { speaker: 'npc', text: '“笛哩吐是一种短竹管吹奏乐器。它的名字也随着歌曲传播被更多人记住。”' },
+        { speaker: 'hero', text: '“短竹管、吹奏、歌声一样的气息，这就是第二件信物。”' },
+        { speaker: 'npc', text: '“对，听见它时，要想到竹管与气息。”' }
+      ] },
+      hulusheng: { unit: '第三幕 · 葫芦里的簧片', npc: '阿洛', portrait: '🎧', scenes: [
+        { speaker: 'npc', text: '“第三件是葫芦笙，傈僳语里可称阿咪直陆。葫芦笙斗连接竹管，竹管里的簧片在气息里振动。”' },
+        { speaker: 'hero', text: '“所以它不是口弦，而是葫芦与竹管组合起来的簧管乐器。”' },
+        { speaker: 'npc', text: '“很好。三件声音身份都分清，就能进入最后小测。”' }
+      ] }
+    };
+
+    const lisuQuizData = [
+      { q: '起奔（期奔）最突出的形制线索是什么？', a: ['四弦弹拨', '三孔短箫', '葫芦笙斗', '大型铜号'], correct: 0 },
+      { q: '笛哩吐属于哪类乐器？', a: ['短竹管吹奏乐器', '拉弦乐器', '单面鼓', '金属打击乐器'], correct: 0 },
+      { q: '葫芦笙（阿咪直陆）的发声关键是什么？', a: ['弦弓摩擦', '葫芦笙斗、竹管和簧片配合发声', '树叶振动', '敲击石头'], correct: 1 },
+      { q: '本关聚焦哪三件傈僳族乐器？', a: ['起奔、笛哩吐、葫芦笙（阿咪直陆）', '竹笛、月琴、响篾', '胡惹、马布、克西举尔', '扎念、毕旺、筒钦'], correct: 0 },
+      { q: '学习这三件乐器时，最重要的是分清什么？', a: ['颜色深浅', '声音身份与发声方式', '按钮大小', '地图边框'], correct: 1 }
+    ];
+
+    const liangshanStoryLines = {
+      hure: { unit: '第一幕 · 胡惹牵出山地弓弦', npc: '阿支', portrait: '🔥', scenes: [
+        { speaker: 'npc', text: '“火把广场旁，第一件信物是胡惹。它是凉山彝族传统拉弦乐器，音色明亮。”' },
+        { speaker: 'hero', text: '“拉弦乐器，靠弓弦摩擦发声，对吗？”' },
+        { speaker: 'npc', text: '“对。它把山地故事拉成长长的旋律线。”' }
+      ] },
+      mabu: { unit: '第二幕 · 马布吹响竹与牛角', npc: '阿支', portrait: '🔥', scenes: [
+        { speaker: 'npc', text: '“马布是凉山彝族独有的单簧气鸣乐器，常由簧片、竹管和牛角喇叭口组成。”' },
+        { speaker: 'hero', text: '“它是吹奏的，声音清脆，曲调可以很丰富。”' },
+        { speaker: 'npc', text: '“没错。它常在节庆、礼俗和生活曲调中出现。”' }
+      ] },
+      kexijuer: { unit: '第三幕 · 克西举尔咬着吹', npc: '阿支', portrait: '🔥', scenes: [
+        { speaker: 'npc', text: '“克西举尔的特别之处，是演奏时要咬着管端、用舌尖形成吹口。”' },
+        { speaker: 'hero', text: '“所以它不是普通笛箫，它的演奏方式很独特。”' },
+        { speaker: 'npc', text: '“对。它像从古老山路上传来的细长回声。”' }
+      ] }
+    };
+
+    const liangshanVideoStoryLines = {
+      duoluhe: { unit: '第四幕 · 《朵洛荷》的队形火光', npc: '阿支', portrait: '🔥', scenes: [
+        { speaker: 'npc', text: '“现在看《朵洛荷》。不要只看热闹，要看队形、步伐、呼喊式衬词和集体歌舞氛围。”' },
+        { speaker: 'hero', text: '“它让我感觉音乐和节庆、身体动作、群体交流连在一起。”' }
+      ], question: '观看《朵洛荷》时，最应该关注什么？', choices: ['队形、步伐、衬词和集体歌舞氛围', '只看视频封面', '只数字幕', '只看鞋子颜色'], correct: 0 },
+      amoniuniu: { unit: '第五幕 · 《阿嫫妞妞》的亲情回声', npc: '阿支', portrait: '🔥', scenes: [
+        { speaker: 'npc', text: '“《阿嫫妞妞》适合感受彝族歌曲中亲切、抒情的一面。”' },
+        { speaker: 'hero', text: '“我会关注旋律走向、彝语演唱音色和歌曲里的亲情表达。”' }
+      ], question: '《阿嫫妞妞》更适合帮助玩家感受什么？', choices: ['亲切抒情的歌曲气质与地方情感', '电子鼓点制作', '地图缩放', '服装抽奖概率'], correct: 0 }
+    };
+
+    const liangshanQuizData = [
+      { q: '胡惹属于哪类乐器？', a: ['拉弦乐器', '单簧气鸣乐器', '咬着吹的笛', '打击乐器'], correct: 0 },
+      { q: '马布常由哪些部分组成？', a: ['簧片、竹制管身和牛角喇叭口', '鼓面和鼓槌', '琴弦和琴弓', '键盘和音箱'], correct: 0 },
+      { q: '克西举尔最特别的演奏方式是？', a: ['咬着管端吹奏', '用鼓槌敲击', '插电播放', '用弓拉钢弦'], correct: 0 },
+      { q: '《朵洛荷》视频中应该联系哪些元素？', a: ['歌舞队形、步伐与集体氛围', '只看热闹', '只看视频标题', '只看地图'], correct: 0 },
+      { q: '凉山彝族音乐关卡满分后可获得什么？', a: ['凉山彝族角色服装', '关闭关卡', '删除徽章', '清空图鉴'], correct: 0 }
+    ];
+
+    const tibetanStoryLines = {
+      dramyin: { unit: '第一幕 · 格萨尔古道上的扎念', npc: '雪央', portrait: '🏔️', scenes: [
+        { speaker: 'npc', text: '“旅行家，雪山风把你带到格萨尔古道。传说里的英雄故事常靠歌声传远，第一件信物是扎念，也叫扎木聂。”' },
+        { speaker: 'hero', text: '“它像一把能托起故事的琴，是弹出来的吗？”' },
+        { speaker: 'npc', text: '“对。扎念属于弹拨乐器，常为歌舞、说唱和叙事托住节奏，让故事有了行走的脚步。”' },
+        { speaker: 'hero', text: '“弹拨、伴唱、叙事。古道上的第一枚声音印记，我来点亮。”' }
+      ] },
+      piwang: { unit: '第二幕 · 毕旺牵起弦子步', npc: '雪央', portrait: '🏔️', scenes: [
+        { speaker: 'hero', text: '“古道转进村寨，脚步声和弓弦声一起靠近。”' },
+        { speaker: 'npc', text: '“这是毕旺，是藏族拉弦乐器。甘孜一带的弦子歌舞里，歌声、舞步和弓弦常常连在一起。”' },
+        { speaker: 'npc', text: '“听它时，不要只听音高，也要想象舞步怎样被弦声牵动。”' },
+        { speaker: 'hero', text: '“毕旺是把弦声和舞步连起来的线索。这一步我能跟上。”' }
+      ] },
+      dungchen: { unit: '第三幕 · 筒钦吹开雪山门', npc: '雪央', portrait: '🏔️', scenes: [
+        { speaker: 'npc', text: '“雪山门前，第三件信物很长，声音也很远。它叫筒钦，是长号类吹奏乐器。”' },
+        { speaker: 'hero', text: '“它的声音像从山谷深处传来，低低的、很悠长。”' },
+        { speaker: 'npc', text: '“正是。筒钦常见于藏传佛教礼仪音乐，低沉悠长，带着很强的空间感。”' },
+        { speaker: 'hero', text: '“长号、低沉、礼仪场景。雪山门的声音密码我记住了。”' }
+      ] }
+    };
+
+    const tibetanVideoStoryLines = {
+      gesangla: { unit: '第四幕 · 《格桑拉》的祝福酒杯', npc: '雪央', portrait: '🏔️', scenes: [
+        { speaker: 'npc', text: '“雪山门打开后，村寨里传来《格桑拉》。这一次，声音像从一只敬酒杯边唱起来。”' },
+        { speaker: 'hero', text: '“它和普通独唱不太一样吗？”' },
+        { speaker: 'npc', text: '“它可以帮助你认识藏族酒歌‘昌鲁’。酒歌常在喝酒、敬酒时唱起，也可以伴随简单舞蹈动作。”' },
+        { speaker: 'npc', text: '“在传统节日、婚礼等场合，歌声会和接杯、弹酒、饮酒、干杯等仪式动作连在一起。”' },
+        { speaker: 'hero', text: '“原来《格桑拉》要听祝福、祈祷、爱情和欢聚，也要看敬酒礼仪怎样跟歌声配合。”' }
+      ], question: '《格桑拉》视频单元最应该关注什么？', choices: ['只看画面颜色', '酒歌“昌鲁”的敬酒场景、祝福歌声与礼仪动作', '只数乐器数量', '只看字幕字体'], correct: 1 },
+      xianzi: { unit: '第五幕 · 巴塘弦子的圆舞结尾', npc: '雪央', portrait: '🏔️', scenes: [
+        { speaker: 'npc', text: '“最后的雪山回声藏在巴塘弦子里。它不是孤零零的一段旋律，而是一场会移动的歌舞。”' },
+        { speaker: 'hero', text: '“弦子是不是一边唱一边跳？”' },
+        { speaker: 'npc', text: '“对。巴塘弦子常把弦乐伴奏、歌声和舞步连在一起，舞者可以围圈或成队，动作舒展，节奏慢慢热烈起来。”' },
+        { speaker: 'npc', text: '“看视频时，留意队形、步伐、甩袖，以及音乐怎样牵着大家一起移动。”' },
+        { speaker: 'hero', text: '“五道雪山回声都收集到了。最后的小测，就是把它们重新唱回图鉴。”' }
+      ], question: '赏析巴塘弦子时，除了听旋律，还应该看什么？', choices: ['弦乐伴奏、边唱边舞、队形步伐和甩袖动作', '电脑键盘', '只看视频标题', '只看地图边框'], correct: 0 }
+    };
+
+    const quizAnswers = {};
+    const lisuQuizAnswers = {};
+    const liangshanQuizAnswers = {};
+    const tibetanQuizAnswers = {};
+    const tibetanQuizData = [
+      { question: '扎念（扎木聂）属于哪类乐器？', choices: ['弹拨乐器', '长号类吹奏乐器', '打击乐器', '电子乐器'], correct: 0 },
+      { question: '毕旺与甘孜藏族哪类歌舞线索关系最密切？', choices: ['只和寺院号声有关', '弦子歌舞中的弓弦伴奏', '只用于地图标记', '只用于独奏电子音色'], correct: 1 },
+      { question: '筒钦常见于哪类音乐场景？', choices: ['儿童课间', '街机游戏音效', '寺院仪式和礼仪音乐', '只用于服装展示'], correct: 2 },
+      { question: '《格桑拉》这个视频单元主要帮助玩家感受什么？', choices: ['打击乐器制作流程', '酒歌“昌鲁”的敬酒场景、祝福歌声与礼仪动作', '只看服装颜色', '只判断地图方向'], correct: 1 },
+      { question: '巴塘弦子赏析时，除了听旋律，还应该观察什么？', choices: ['弦乐伴奏、边唱边舞、队形步伐和甩袖动作', '电脑键盘的按键', '只看视频标题', '只看乐器摆放方向'], correct: 0 }
+    ];
+
+    const unknownBadgeSrc = 'assets/unknown-badge.png';
+    const unknownOutfitSrc = 'assets/unknown-outfit.png';
+    const lockedBadgeDescription = '尚未获得该勋章，还不清楚有什么具体内容哦。';
+    const lockedOutfitDescription = '尚未获得该服装，还不清楚有什么具体内容哦。';
+
+    function playRewardSound(kind = 'badge') {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.75);
+        gain.connect(ctx.destination);
+        const notes = kind === 'outfit' ? [523.25, 659.25, 783.99] : [659.25, 783.99, 987.77];
+        notes.forEach((freq, index) => {
+          const osc = ctx.createOscillator();
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+          osc.connect(gain);
+          const start = ctx.currentTime + index * 0.09;
+          osc.start(start);
+          osc.stop(start + 0.42);
+        });
+      } catch (error) {}
+    }
+    function showRewardPopup(options) {
+      const popup = document.querySelector('#rewardPopupOverlay');
+      if (!popup) return;
+      document.querySelector('#rewardPopupType').textContent = options.type || '奖励获得';
+      document.querySelector('#rewardPopupTitle').textContent = options.title || '获得奖励';
+      document.querySelector('#rewardPopupImage').src = options.image || 'assets/unknown-badge.png';
+      document.querySelector('#rewardPopupImage').alt = options.title || '奖励图片';
+      document.querySelector('#rewardPopupText').textContent = options.text || '新的奖励已经放入你的图鉴。';
+      popup.classList.add('show');
+      playRewardSound(options.kind || 'badge');
+    }
+    function rewardOutfitSrc(outfitKey) {
+      const isMale = (state.gender || 'male') === 'male';
+      const map = {
+        lipu: isMale ? 'assets/reward-male.png' : 'assets/reward-female.png',
+        lisu: isMale ? 'assets/lisu-reward-male.png' : 'assets/lisu-reward-female.png',
+        liangshan: isMale ? 'assets/liangshan-reward-male.png' : 'assets/liangshan-reward-female.png',
+        tibetan: isMale ? 'assets/tibetan-reward-male.png' : 'assets/tibetan-reward-female.png'
+      };
+      return map[outfitKey] || 'assets/unknown-outfit.png';
+    }
+    function showEarnedRewards(rewards, nextTaskId) {
+      const queue = rewards.filter(Boolean);
+      const close = document.querySelector('#closeRewardPopup');
+      const popup = document.querySelector('#rewardPopupOverlay');
+      let index = 0;
+      const next = () => {
+        if (index >= queue.length) {
+          popup?.classList.remove('show');
+          close?.removeEventListener('click', next);
+          showTask(nextTaskId);
+          return;
+        }
+        showRewardPopup(queue[index]);
+        index += 1;
+      };
+      close?.addEventListener('click', next);
+      if (queue.length) next(); else showTask(nextTaskId);
+    }
+
+    function renderState() {
+      upgradeStaticDialogues();
+      const gender = state.gender || 'male';
+      const isMale = gender === 'male';
+      const studentSrc = isMale ? 'assets/student-male.png' : 'assets/student-female.png';
+      const rewardSrc = isMale ? 'assets/reward-male.png' : 'assets/reward-female.png';
+      const lisuRewardSrc = isMale ? 'assets/lisu-reward-male.png' : 'assets/lisu-reward-female.png';
+      const liangshanRewardSrc = isMale ? 'assets/liangshan-reward-male.png' : 'assets/liangshan-reward-female.png';
+      const tibetanRewardSrc = isMale ? 'assets/tibetan-reward-male.png' : 'assets/tibetan-reward-female.png';
+      coins.textContent = state.coins;
+      badges.textContent = state.badges + ' / 6';
+      document.querySelector('#levelProgress').style.width = Math.max(18, state.badges * 16) + '%';
+      document.querySelectorAll('#instrumentGrid .instrument-card').forEach(card => card.classList.toggle('collected', state.collected.includes(card.dataset.key)));
+      updateStoryCardLocks('#instrumentGrid', lipuInstrumentKeys, state.collected);
+      document.querySelector('#collectionCount').textContent = '剧情进度 ' + state.collected.length + ' / 5';
+      document.querySelector('#assembleButton').disabled = state.collected.length !== 5;
+      renderLisuState();
+      renderLiangshanState();
+      renderTibetanState();
+      document.querySelector('#profileName').textContent = isMale ? '成都小乐 · 男生' : '成都小乐 · 女生';
+      document.querySelector('#studentAvatar').style.display = 'none';
+      const avatarImage = document.querySelector('#avatarOutfit');
+      avatarImage.style.display = 'block';
+      avatarImage.src = state.outfit === 'tibetanReward' && state.tibetan.outfitUnlocked ? tibetanRewardSrc : (state.outfit === 'liangshanReward' && state.liangshan.outfitUnlocked ? liangshanRewardSrc : (state.outfit === 'lisuReward' && state.lisu.outfitUnlocked ? lisuRewardSrc : (state.outfit === 'reward' && state.outfitUnlocked ? rewardSrc : studentSrc)));
+      document.querySelectorAll('.gal-character.hero img').forEach(img => { img.src = getHeroSprite(); });
+      document.querySelectorAll('.gal-character.npc[data-npc] img').forEach(img => { img.src = getNpcSprite(img.closest('.gal-character').dataset.npc); });
+      document.querySelector('#studentOutfitImage').src = studentSrc;
+      document.querySelector('#wardrobeRewardImage').src = state.outfitUnlocked ? rewardSrc : unknownOutfitSrc;
+      document.querySelector('#wardrobeLisuRewardImage').src = state.lisu.outfitUnlocked ? lisuRewardSrc : unknownOutfitSrc;
+      document.querySelector('#wardrobeLiangshanRewardImage').src = state.liangshan.outfitUnlocked ? liangshanRewardSrc : unknownOutfitSrc;
+      document.querySelector('#wardrobeTibetanRewardImage').src = state.tibetan.outfitUnlocked ? tibetanRewardSrc : unknownOutfitSrc;
+      document.querySelector('#liangshanRewardOutfitImage').src = state.liangshan.outfitUnlocked ? liangshanRewardSrc : unknownOutfitSrc;
+      document.querySelector('#rewardOutfitImage').src = state.outfitUnlocked ? rewardSrc : unknownOutfitSrc;
+      document.querySelector('#rewardOutfitTitle').textContent = state.outfitUnlocked ? (isMale ? '获得男生专属红色服装' : '获得女生专属蓝色服装') : '服装奖励待解锁';
+      document.querySelector('#rewardOutfitText').textContent = state.outfitUnlocked ? ('已放入' + (isMale ? '男生' : '女生') + '角色衣柜，可以随时选择穿戴。') : '乐器知识小测达到 100% 正确后，这套服装才会放入角色衣柜。';
+      document.querySelector('#wardrobeRewardTitle').textContent = isMale ? '攀西奖励 · 男款' : '攀西奖励 · 女款';
+      document.querySelector('#rewardLockText').textContent = state.outfitUnlocked ? '已解锁，可以选择穿戴。' : lockedOutfitDescription;
+      const rewardButton = document.querySelector('#wearRewardButton');
+      rewardButton.disabled = !state.outfitUnlocked;
+      rewardButton.textContent = state.outfitUnlocked ? '穿上奖励服装' : '尚未解锁';
+      document.querySelector('#studentOutfitCard').classList.toggle('wearing', state.outfit === 'student' || (state.outfit === 'reward' && !state.outfitUnlocked));
+      document.querySelector('#rewardOutfitCard').classList.toggle('wearing', state.outfit === 'reward' && state.outfitUnlocked);
+      document.querySelector('#rewardOutfitCard').classList.toggle('locked', !state.outfitUnlocked);
+      document.querySelector('#wardrobeLisuRewardTitle').textContent = isMale ? '傈僳族奖励 · 男款' : '傈僳族奖励 · 女款';
+      document.querySelector('#lisuRewardLockText').textContent = state.lisu.outfitUnlocked ? '已解锁，可以选择穿戴。' : lockedOutfitDescription;
+      const lisuRewardButton = document.querySelector('#wearLisuRewardButton');
+      lisuRewardButton.disabled = !state.lisu.outfitUnlocked;
+      lisuRewardButton.textContent = state.lisu.outfitUnlocked ? '穿上傈僳族服装' : '尚未解锁';
+      document.querySelector('#lisuRewardOutfitCard').classList.toggle('wearing', state.outfit === 'lisuReward' && state.lisu.outfitUnlocked);
+      document.querySelector('#lisuRewardOutfitCard').classList.toggle('locked', !state.lisu.outfitUnlocked);
+      document.querySelector('#wardrobeLiangshanRewardTitle').textContent = isMale ? '凉山彝族奖励 · 男款' : '凉山彝族奖励 · 女款';
+      document.querySelector('#liangshanRewardLockText').textContent = state.liangshan.outfitUnlocked ? '已解锁，可以选择穿戴。' : lockedOutfitDescription;
+      const liangshanRewardButton = document.querySelector('#wearLiangshanRewardButton');
+      liangshanRewardButton.disabled = !state.liangshan.outfitUnlocked;
+      liangshanRewardButton.textContent = state.liangshan.outfitUnlocked ? '穿上凉山彝族服装' : '尚未解锁';
+      document.querySelector('#liangshanRewardOutfitCard').classList.toggle('wearing', state.outfit === 'liangshanReward' && state.liangshan.outfitUnlocked);
+      document.querySelector('#liangshanRewardOutfitCard').classList.toggle('locked', !state.liangshan.outfitUnlocked);
+      document.querySelector('#wardrobeTibetanRewardTitle').textContent = isMale ? '藏族奖励 · 男款' : '藏族奖励 · 女款';
+      document.querySelector('#tibetanRewardLockText').textContent = state.tibetan.outfitUnlocked ? '已解锁，可以选择穿戴。' : lockedOutfitDescription;
+      const tibetanRewardButton = document.querySelector('#wearTibetanRewardButton');
+      tibetanRewardButton.disabled = !state.tibetan.outfitUnlocked;
+      tibetanRewardButton.textContent = state.tibetan.outfitUnlocked ? '穿上藏族服装' : '尚未解锁';
+      document.querySelector('#tibetanRewardOutfitCard').classList.toggle('wearing', state.outfit === 'tibetanReward' && state.tibetan.outfitUnlocked);
+      document.querySelector('#tibetanRewardOutfitCard').classList.toggle('locked', !state.tibetan.outfitUnlocked);
+      renderResult();
+    }
+    function saveState() { localStorage.setItem('sichuanMusicGameV2', JSON.stringify(state)); renderState(); }
+    function pauseLiangshanVideos(resetTime = false, exceptVideo = null) {
+      document.querySelectorAll('video[src*="liangshan-"]').forEach(video => {
+        if (video === exceptVideo) return;
+        if (!video.paused) video.pause();
+        if (resetTime) { try { video.currentTime = 0; } catch (error) {} }
+      });
+    }
+    function ensureDialogueFirst(id) {
+      const config = {
+        collectionTask: { panel: '#knowledgePanel', open: () => openCurrentLipuStory() },
+        lisuCollectionTask: { panel: '#lisuKnowledgePanel', open: () => openCurrentLisuStory() },
+        liangshanCollectionTask: { panel: '#liangshanKnowledgePanel', open: () => openCurrentLiangshanStory() },
+        tibetanCollectionTask: { panel: '#tibetanKnowledgePanel', open: () => openCurrentTibetanStory() }
+      }[id];
+      if (!config) return;
+      setTimeout(() => {
+        const activeTask = document.getElementById(id);
+        const panel = document.querySelector(config.panel);
+        if (!activeTask || !activeTask.classList.contains('active') || !panel) return;
+        if (!panel.querySelector('.gal-stage')) config.open();
+      }, 0);
+    }
+    function showTask(id) {
+      if (id !== 'liangshanCollectionTask') pauseLiangshanVideos();
+      tasks.forEach(t => t.classList.toggle('active', t.id === id));
+      ensureDialogueFirst(id);
+    }
+    function closeTransientOverlaysForReplay() {
+      document.querySelector('#rewardPopupOverlay')?.classList.remove('show');
+      document.querySelector('#imagePreviewOverlay')?.classList.remove('show');
+      document.querySelector('#infoOverlay')?.classList.remove('show');
+    }
+    function restartTaskAfterReplay(taskId, message) {
+      closeTransientOverlaysForReplay();
+      saveState();
+      showTask(taskId);
+      setTimeout(() => {
+        showTask(taskId);
+        document.getElementById(taskId)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }, 0);
+      toast(message);
+    }
+    function toast(text) {
+      const el = document.querySelector('#toast'); el.textContent = text; el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 1800);
+    }
+    function cleanCollectedKeys(collected, validKeys) {
+      const valid = new Set(validKeys || []);
+      const seen = new Set();
+      return (Array.isArray(collected) ? collected : []).filter(key => {
+        if (!valid.has(key) || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+    function currentStoryKey(keys, collected) {
+      return keys.find(key => !collected.includes(key)) || null;
+    }
+    function canOpenStoryUnit(key, keys, collected) {
+      const current = currentStoryKey(keys, collected);
+      return collected.includes(key) || key === current;
+    }
+    function closeImagePreview() {
+      imagePreviewOverlay.classList.remove('show');
+    }
+    function showImagePreview(title, src) {
+      if (!src) return;
+      imagePreviewTitle.textContent = title || '图片预览';
+      imagePreviewImage.src = src;
+      imagePreviewImage.alt = (title || '图片') + '放大图';
+      imagePreviewOverlay.classList.add('show');
+    }
+    function previewInstrumentCardImage(event) {
+      const card = event.target.closest('.instrument-card');
+      if (!card) return false;
+      let img = event.target.closest('.instrument-card img');
+      if (!img) {
+        const rect = card.getBoundingClientRect();
+        if (event.clientY - rect.top <= 112) img = card.querySelector('img');
+      }
+      if (!img) return false;
+      event.preventDefault();
+      event.stopPropagation();
+      const title = card.querySelector('span') ? card.querySelector('span').textContent.trim() : (img.alt || '乐器图片');
+      showImagePreview(title, img.currentSrc || img.src);
+      return true;
+    }
+    function updateStoryCardLocks(containerSelector, keys, collected) {
+      const current = currentStoryKey(keys, collected);
+      document.querySelectorAll(containerSelector + ' [data-key]').forEach(card => {
+        const key = card.dataset.key;
+        const collectedAlready = collected.includes(key);
+        const locked = !collectedAlready && key !== current;
+        card.classList.toggle('locked', locked);
+        card.classList.toggle('current', !collectedAlready && key === current);
+        card.setAttribute('aria-disabled', locked ? 'true' : 'false');
+      });
+    }
+    function heroDisplayName() { return '玩家'; }
+    function getHeroSprite() {
+      const isMale = (state.gender || 'male') === 'male';
+      if (state.outfit === 'tibetanReward' && state.tibetan.outfitUnlocked) return isMale ? 'assets/tibetan-reward-male-cutout.png' : 'assets/tibetan-reward-female-cutout.png';
+      if (state.outfit === 'liangshanReward' && state.liangshan.outfitUnlocked) return isMale ? 'assets/liangshan-reward-male-cutout.png' : 'assets/liangshan-reward-female-cutout.png';
+      if (state.outfit === 'lisuReward' && state.lisu.outfitUnlocked) return isMale ? 'assets/lisu-reward-male-cutout.png' : 'assets/lisu-reward-female-cutout.png';
+      if (state.outfit === 'reward' && state.outfitUnlocked) return isMale ? 'assets/reward-male-cutout.png' : 'assets/reward-female-cutout.png';
+      return isMale ? 'assets/student-male-cutout.png' : 'assets/student-female-cutout.png';
+    }
+    function getNpcSprite(npcName) {
+      const useFemalePartner = (state.gender || 'male') === 'male';
+      if ((npcName || '').includes('阿支')) return useFemalePartner ? 'assets/liangshan-npc-female-cutout.png' : 'assets/liangshan-npc-male-cutout.png';
+      if ((npcName || '').includes('小洛')) return useFemalePartner ? 'assets/lipu-npc-female-cutout.png' : 'assets/lipu-npc-male-cutout.png';
+      if ((npcName || '').includes('阿洛')) return useFemalePartner ? 'assets/lisu-npc-female-cutout.png' : 'assets/lisu-npc-male-cutout.png';
+      if ((npcName || '').includes('雪央') || (npcName || '').includes('藏族音乐伙伴')) return useFemalePartner ? 'assets/tibetan-npc-female-cutout.png' : 'assets/tibetan-npc-male-cutout.png';
+      return '';
+    }
+    function normalizeScene(story, sceneIndex) {
+      const scenes = story.scenes || [{ speaker: 'npc', text: story.line || '' }];
+      const raw = scenes[Math.min(sceneIndex, scenes.length - 1)];
+      if (typeof raw === 'string') return { speakerType: 'npc', speaker: story.npc, text: raw };
+      const speakerType = raw.speaker === 'hero' ? 'hero' : 'npc';
+      return { speakerType, speaker: speakerType === 'hero' ? heroDisplayName() : story.npc, text: raw.text || raw.line || '' };
+    }
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+    }
+    function getInstrumentVisual(mode, key, item) {
+      const visuals = {
+        lipu: {
+          dizi: 'assets/dizi.jpg',
+          sanxian: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Sanxian%2C_Tengwangge_%28Prince_of_Teng_Pavilion%29_%2831167793750%29.jpg/960px-Sanxian%2C_Tengwangge_%28Prince_of_Teng_Pavilion%29_%2831167793750%29.jpg',
+          yueqin: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Yi_musical_instrument_%28yueqin%29_-_Yunnan_Provincial_Museum-_DSC02056.JPG/960px-Yi_musical_instrument_%28yueqin%29_-_Yunnan_Provincial_Museum-_DSC02056.JPG',
+          xiangmie: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/5_Leaf_Kouxian.jpg/960px-5_Leaf_Kouxian.jpg',
+          leaf: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Aaron_Burden_2015-07-28_%28Unsplash%29.jpg/960px-Aaron_Burden_2015-07-28_%28Unsplash%29.jpg'
+        },
+        lisu: {
+          qiben: 'assets/lisu-qiben.jpg',
+          dilitu: 'assets/lisu-dilitu.png',
+          hulusheng: 'assets/lisu-hulusheng.jpg'
+        },
+        liangshan: {
+          hure: 'assets/liangshan-hure-photo.png',
+          mabu: 'assets/liangshan-mabu-photo.png',
+          kexijuer: 'assets/liangshan-kexijuer-photo.png'
+        },
+        tibetan: {
+          dramyin: 'assets/tibetan-dramyin.jpg',
+          piwang: 'assets/tibetan-piwang.jpg',
+          dungchen: 'assets/tibetan-dungchen.png'
+        }
+      };
+      const src = visuals[mode] && visuals[mode][key];
+      return src ? { src, name: item ? item.name : key } : null;
+    }
+    function withInstrumentVisual(story, visual) {
+      const copy = Object.assign({}, story);
+      if (visual) copy.instrumentVisual = visual;
+      return copy;
+    }
+    function choicePanelHtml(question, choices, answerClass, key) {
+      return '<div class="dialogue-choice-panel"><div class="question">' + escapeHtml(question) + '</div><div class="choices">' +
+        choices.map((choice, index) => '<button class="choice ' + answerClass + '" data-key="' + escapeHtml(key) + '" data-index="' + index + '">' + String.fromCharCode(65 + index) + '. ' + escapeHtml(choice) + '</button>').join('') +
+        '</div></div>';
+    }
+    function stageForMode(mode) {
+      if (mode === 'lipu' || mode === 'lisu') return 'stage-panxi';
+      if (mode === 'liangshan' || mode === 'liangshanVideo') return 'stage-liangshan';
+      if (mode === 'tibetan' || mode === 'tibetanVideo') return 'stage-tibetan';
+      if (mode === 'qiang') return 'stage-qiang';
+      if (mode === 'miao') return 'stage-miao';
+      return '';
+    }
+    function modeFromTaskId(taskId) {
+      if (!taskId) return '';
+      if (taskId.indexOf('lisu') === 0) return 'lisu';
+      if (taskId.indexOf('liangshan') === 0) return 'liangshan';
+      if (taskId.indexOf('tibetan') === 0) return 'tibetan';
+      if (['intro', 'collectionTask', 'assembleTask', 'result'].includes(taskId)) return 'lipu';
+      return '';
+    }
+    function galStoryStage(story, sceneIndex, actionHtml) {
+      const scene = normalizeScene(story, sceneIndex);
+      const heroActive = scene.speakerType === 'hero';
+      const npcActive = scene.speakerType !== 'hero';
+      const action = actionHtml ? '<div class="gal-actions">' + actionHtml + '</div>' : '';
+      const npcSprite = getNpcSprite(story.npc);
+      const npcVisual = npcSprite ? '<img src="' + escapeHtml(npcSprite) + '" alt="' + escapeHtml(story.npc) + '站绘">' : '<div class="emoji-sprite">' + escapeHtml(story.portrait) + '</div>';
+      const stageClass = story.stage ? ' ' + story.stage : '';
+      return '<div class="gal-stage' + stageClass + '">' +
+        '<div class="gal-sprites">' +
+          '<div class="gal-character hero ' + (heroActive ? 'speaking' : '') + '"><img src="' + escapeHtml(getHeroSprite()) + '" alt="玩家角色站绘"><div class="gal-character-name">玩家</div></div>' +
+          '<div class="gal-character npc ' + (npcActive ? 'speaking' : '') + '" data-npc="' + escapeHtml(story.npc) + '">' + npcVisual + '<div class="gal-character-name">' + escapeHtml(story.npc) + '</div></div>' +
+        '</div>' +
+        '<div class="gal-dialogue-box"><span class="gal-name">' + escapeHtml(scene.speaker) + '</span><p>' + escapeHtml(scene.text) + '</p>' + action + '</div>' +
+      '</div>';
+    }
+    function storyDialogue(line) {
+      const story = { npc: line.npc, portrait: line.portrait, stage: line.stage || stageForMode(line.mode || ''), scenes: [{ speaker: 'npc', text: line.line }] };
+      return galStoryStage(story, 0, '');
+    }
+    function storyUnitHtml(item, key, storyLines, keys, answerClass, mode, sceneIndex = 0) {
+      const visualStory = withInstrumentVisual(storyLines[key], getInstrumentVisual(mode, key, item));
+      visualStory.stage = stageForMode(mode);
+      const scenes = visualStory.scenes || [visualStory.line || ''];
+      const safeSceneIndex = Math.min(sceneIndex, scenes.length - 1);
+      const unitIndex = keys.indexOf(key) + 1;
+      const labelSuffix = safeSceneIndex === scenes.length - 1 ? '知识选择' : '对话 ' + (safeSceneIndex + 1) + ' / ' + scenes.length;
+      const label = '<span class="story-unit-label">' + escapeHtml(visualStory.unit) + ' · ' + labelSuffix + '</span>';
+      if (safeSceneIndex < scenes.length - 1) {
+        const button = '<button class="primary story-next" data-mode="' + escapeHtml(mode) + '" data-key="' + escapeHtml(key) + '" data-scene="' + (safeSceneIndex + 1) + '" onclick="event.stopPropagation(); continueStory(this.dataset.mode, this.dataset.key, Number(this.dataset.scene));">继续剧情</button>';
+        return label + galStoryStage(visualStory, safeSceneIndex, button);
+      }
+      const question = '剧情选择 ' + unitIndex + '：' + item.question;
+      return label + galStoryStage(visualStory, safeSceneIndex, choicePanelHtml(question, item.choices, answerClass, key));
+    }
+    function tibetanVideoStoryUnitHtml(story, key, sceneIndex = 0) {
+      const stagedStory = Object.assign({}, story, { stage: story.stage || stageForMode('tibetan') });
+      const scenes = stagedStory.scenes || [stagedStory.line || ''];
+      const safeSceneIndex = Math.min(sceneIndex, scenes.length - 1);
+      const labelSuffix = safeSceneIndex === scenes.length - 1 ? '知识选择' : '对话 ' + (safeSceneIndex + 1) + ' / ' + scenes.length;
+      const label = '<span class="story-unit-label">' + escapeHtml(stagedStory.unit) + ' · ' + labelSuffix + '</span>';
+      if (safeSceneIndex < scenes.length - 1) {
+        const button = '<button class="primary story-next" data-mode="tibetanVideo" data-key="' + escapeHtml(key) + '" data-scene="' + (safeSceneIndex + 1) + '" onclick="event.stopPropagation(); continueStory(this.dataset.mode, this.dataset.key, Number(this.dataset.scene));">继续剧情</button>';
+        return label + galStoryStage(stagedStory, safeSceneIndex, button);
+      }
+      return label + galStoryStage(stagedStory, safeSceneIndex, choicePanelHtml(stagedStory.question, stagedStory.choices, 'tibetan-video-answer', key));
+    }
+    function storyVideoUnitHtml(story, key, sceneIndex = 0) {
+      const stagedStory = Object.assign({}, story, { stage: story.stage || stageForMode('liangshanVideo') });
+      const scenes = stagedStory.scenes || [stagedStory.line || ''];
+      const safeSceneIndex = Math.min(sceneIndex, scenes.length - 1);
+      const labelSuffix = safeSceneIndex === scenes.length - 1 ? '知识选择' : '对话 ' + (safeSceneIndex + 1) + ' / ' + scenes.length;
+      const label = '<span class="story-unit-label">' + escapeHtml(stagedStory.unit) + ' · ' + labelSuffix + '</span>';
+      if (safeSceneIndex < scenes.length - 1) {
+        const button = '<button class="primary story-next" data-mode="liangshanVideo" data-key="' + escapeHtml(key) + '" data-scene="' + (safeSceneIndex + 1) + '" onclick="event.stopPropagation(); continueStory(this.dataset.mode, this.dataset.key, Number(this.dataset.scene));">继续剧情</button>';
+        return label + galStoryStage(stagedStory, safeSceneIndex, button);
+      }
+      return label + galStoryStage(stagedStory, safeSceneIndex, choicePanelHtml(stagedStory.question, stagedStory.choices, 'liangshan-video-answer', key));
+    }
+    function storyCompleteHtml(line, title, text, actionHtml = '') {
+      const action = actionHtml ? '<div class="completion-actions">' + actionHtml + '</div>' : '';
+      return storyDialogue(line) + '<div class="story-complete-card"><h3>' + title + '</h3><p class="story-fact">' + text + '</p>' + action + '</div>';
+    }
+    function quizEntryButton(taskId, label) {
+      return '<button class="primary completion-quiz-button" data-quiz-task="' + taskId + '">' + label + '</button>';
+    }
+    function upgradeStaticDialogues() {
+      document.querySelectorAll('.dialogue:not([data-gal-upgraded])').forEach(dialogue => {
+        if (dialogue.querySelector('.knowledge-panel')) {
+          dialogue.setAttribute('data-gal-upgraded', 'true');
+          return;
+        }
+        const portrait = dialogue.querySelector('.portrait') ? dialogue.querySelector('.portrait').textContent.trim() : '🎵';
+        const name = dialogue.querySelector('b') ? dialogue.querySelector('b').textContent.trim() : '音乐伙伴';
+        const line = dialogue.querySelector('p') ? dialogue.querySelector('p').textContent.trim() : '';
+        const task = dialogue.closest('.task');
+        const mode = modeFromTaskId(task ? task.id : '');
+        dialogue.setAttribute('data-gal-upgraded', 'true');
+        dialogue.outerHTML = galStoryStage({ npc: name, portrait, stage: stageForMode(mode), scenes: [{ speaker: 'npc', text: line }] }, 0, '');
+      });
+    }
+    function focusStoryPanel(selector) {
+      const panel = document.querySelector(selector);
+      if (!panel) return;
+      panel.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+    function openInstrument(key) {
+      closeImagePreview();
+      const panel = document.querySelector('#knowledgePanel');
+      if (!canOpenStoryUnit(key, lipuInstrumentKeys, state.collected)) {
+        toast('先完成当前剧情单元。');
+        const current = currentStoryKey(lipuInstrumentKeys, state.collected);
+        if (current) openInstrument(current);
+        return;
+      }
+      const item = instrumentData[key];
+      panel.innerHTML = storyUnitHtml(item, key, lipuStoryLines, lipuInstrumentKeys, 'instrument-answer', 'lipu');
+    }
+    function openCurrentLipuStory() {
+      const current = currentStoryKey(lipuInstrumentKeys, state.collected);
+      if (current) { openInstrument(current); return; }
+      document.querySelector('#knowledgePanel').innerHTML = storyCompleteHtml({ npc: '小洛', portrait: '🧒', mode: 'lipu', line: '“五件声音信物已经归位。接下来，只剩最后的知识机关了。”' }, '声音收藏室完成', '点击按钮进入乐器知识小测，完成整段谈经古乐图鉴剧情。', quizEntryButton('assembleTask', '进入乐器知识小测'));
+    }
+    function openCurrentLisuStory() {
+      const current = currentStoryKey(lisuInstrumentKeys, state.lisu.collected);
+      if (current) { openLisuInstrument(current); return; }
+      document.querySelector('#lisuKnowledgePanel').innerHTML = storyCompleteHtml({ npc: '阿洛', portrait: '🎧', mode: 'lisu', line: '“三件傈僳族声音信物已经收齐。最后，让我们确认你是否真的分清了它们的声音身份。”' }, '傈僳乐器收藏室完成', '点击按钮进入傈僳族乐器知识小测。', quizEntryButton('lisuQuizTask', '进入傈僳族乐器知识小测'));
+    }
+    function openCurrentLiangshanStory() {
+      const currentInstrument = currentStoryKey(liangshanInstrumentKeys, state.liangshan.collected);
+      if (currentInstrument) { openLiangshanInstrument(currentInstrument); return; }
+      const currentVideo = currentStoryKey(liangshanVideoKeys, state.liangshan.videoWatched);
+      if (currentVideo) {
+        const story = liangshanVideoStoryLines[currentVideo];
+        document.querySelector('#liangshanKnowledgePanel').innerHTML = storyVideoUnitHtml(story, currentVideo);
+        return;
+      }
+      document.querySelector('#liangshanKnowledgePanel').innerHTML = storyCompleteHtml({ npc: '阿支', portrait: '🔥', mode: 'liangshan', line: '“乐器与视频线索都已经收入旅程。最后的小测，会把这些声音记忆串起来。”' }, '凉山音乐探索完成', '点击按钮进入凉山彝族音乐知识小测。', quizEntryButton('liangshanQuizTask', '进入凉山彝族音乐知识小测'));
+    }
+    function renderQuiz() {
+      Object.keys(quizAnswers).forEach(key => delete quizAnswers[key]);
+      document.querySelector('#quizScoreBox').classList.remove('show');
+      document.querySelector('#quizPanel').innerHTML = quizData.map((item, qIndex) => { const question = item.question || item.q || ''; const choices = item.choices || item.a || []; return '<div class="quiz-question"><h3>' + (qIndex + 1) + '. ' + question + '</h3><div class="choices">' + choices.map((choice, cIndex) => '<button class="choice quiz-choice" data-question="' + qIndex + '" data-index="' + cIndex + '">' + String.fromCharCode(65 + cIndex) + '. ' + choice + '</button>').join('') + '</div></div>'; }).join('');
+    }
+    function renderResult() {
+      const score = state.lastQuizScore || 0;
+      const accuracy = Math.round(score / quizData.length * 100);
+      const resultSummary = document.querySelector('#resultSummary');
+      const rewardSummary = document.querySelector('#rewardSummary');
+      if (!resultSummary || !rewardSummary) return;
+      document.querySelector('#resultTitle').textContent = state.outfitUnlocked ? '满分通关，服装已发放！' : '小测达标，徽章已点亮！';
+      resultSummary.textContent = '本次乐器知识小测答对 ' + score + ' / ' + quizData.length + ' 题，正确率 ' + accuracy + '%。竹笛、三弦、月琴、响篾和树叶的类别、声部与发声知识已经完成检测。';
+      rewardSummary.innerHTML = state.outfitUnlocked ? '<b>获得奖励：</b>300 音符币 · “古乐守护者”徽章 · 角色专属服装 · 俚濮谈经古乐图鉴' : '<b>获得奖励：</b>300 音符币 · “古乐守护者”徽章 · 俚濮谈经古乐图鉴<br><small>服装奖励需要小测 100% 正确。可以重新挑战，满分后自动发放。</small>'; 
+      const badgeAwardBlock = document.querySelector('#badgeAwardBlock');
+      if (badgeAwardBlock) badgeAwardBlock.style.display = state.badgeUnlocked ? 'flex' : 'none';
+      const retryButton = document.querySelector('#retryFromResultButton');
+      if (retryButton) retryButton.style.display = state.outfitUnlocked ? 'none' : 'inline-block';
+    }
+
+    function renderLisuState() {
+      state.lisu.collected = cleanCollectedKeys(state.lisu.collected, lisuInstrumentKeys);
+      const collectedCount = state.lisu.collected.length;
+      document.querySelectorAll('#lisuInstrumentGrid .instrument-card').forEach(card => card.classList.toggle('collected', state.lisu.collected.includes(card.dataset.key)));
+      updateStoryCardLocks('#lisuInstrumentGrid', lisuInstrumentKeys, state.lisu.collected);
+      document.querySelector('#lisuCollectionCount').textContent = '剧情进度 ' + collectedCount + ' / ' + lisuInstrumentKeys.length;
+      document.querySelector('#lisuQuizButton').disabled = collectedCount < lisuInstrumentKeys.length;
+      renderLisuResult();
+    }
+    function openLisuInstrument(key) {
+      closeImagePreview();
+      const panel = document.querySelector('#lisuKnowledgePanel');
+      if (!canOpenStoryUnit(key, lisuInstrumentKeys, state.lisu.collected)) {
+        toast('先完成当前剧情单元。');
+        const current = currentStoryKey(lisuInstrumentKeys, state.lisu.collected);
+        if (current) openLisuInstrument(current);
+        return;
+      }
+      const item = lisuInstrumentData[key];
+      panel.innerHTML = storyUnitHtml(item, key, lisuStoryLines, lisuInstrumentKeys, 'lisu-answer', 'lisu');
+    }
+    function renderLisuQuiz() {
+      Object.keys(lisuQuizAnswers).forEach(key => delete lisuQuizAnswers[key]);
+      document.querySelector('#lisuQuizScoreBox').classList.remove('show');
+      document.querySelector('#lisuQuizPanel').innerHTML = lisuQuizData.map((item, qIndex) => { const question = item.question || item.q || ''; const choices = item.choices || item.a || []; return '<div class="quiz-question"><h3>' + (qIndex + 1) + '. ' + question + '</h3><div class="choices">' + choices.map((choice, cIndex) => '<button class="choice lisu-quiz-choice" data-question="' + qIndex + '" data-index="' + cIndex + '">' + String.fromCharCode(65 + cIndex) + '. ' + choice + '</button>').join('') + '</div></div>'; }).join('');
+    }
+    function renderLisuResult() {
+      const score = state.lisu.lastQuizScore || 0;
+      const accuracy = Math.round(score / lisuQuizData.length * 100);
+      const summary = document.querySelector('#lisuResultSummary');
+      const reward = document.querySelector('#lisuRewardSummary');
+      if (!summary || !reward) return;
+      document.querySelector('#lisuResultTitle').textContent = score === lisuQuizData.length ? '满分完成傈僳族乐器关！' : '傈僳族乐器探索达标！';
+      summary.textContent = '本次傈僳族乐器小测答对 ' + score + ' / ' + lisuQuizData.length + ' 题，正确率 ' + accuracy + '%。你已经认识起奔（期奔）、笛哩吐和葫芦笙（阿咪直陆）的基本类别与发声特点。';
+      reward.innerHTML = state.lisu.outfitUnlocked ? '<b>获得奖励：</b>150 音符币 · 傈僳族乐器徽章 · 傈僳族角色服装 · 傈僳族乐器图鉴' : '<b>获得奖励：</b>150 音符币 · 傈僳族乐器徽章 · 傈僳族乐器图鉴<br><small>服装奖励需要小测 100% 正确。可以重新挑战，满分后自动发放。</small>'; 
+      const lisuBadgeAwardBlock = document.querySelector('#lisuBadgeAwardBlock');
+      if (lisuBadgeAwardBlock) lisuBadgeAwardBlock.style.display = state.lisu.badgeUnlocked ? 'flex' : 'none';
+      const lisuRewardOutfitBlock = document.querySelector('#lisuRewardOutfitBlock');
+      if (lisuRewardOutfitBlock) lisuRewardOutfitBlock.style.display = state.lisu.badgeUnlocked ? 'flex' : 'none';
+      const gender = state.gender || 'male';
+      const isMale = gender === 'male';
+      const lisuRewardSrc = isMale ? 'assets/lisu-reward-male.png' : 'assets/lisu-reward-female.png';
+      const liangshanRewardSrc = isMale ? 'assets/liangshan-reward-male.png' : 'assets/liangshan-reward-female.png';
+      document.querySelector('#lisuRewardOutfitImage').src = state.lisu.outfitUnlocked ? lisuRewardSrc : unknownOutfitSrc;
+      document.querySelector('#lisuRewardOutfitTitle').textContent = state.lisu.outfitUnlocked ? (isMale ? '获得男生傈僳族服装' : '获得女生傈僳族服装') : '傈僳族服装奖励待解锁';
+      document.querySelector('#lisuRewardOutfitText').textContent = state.lisu.outfitUnlocked ? '已放入角色衣柜，可以随时选择穿戴。' : '傈僳族乐器小测 100% 正确后，这套服装才会放入角色衣柜。';
+      const retryLisuButton = document.querySelector('#retryLisuFromResultButton');
+      if (retryLisuButton) retryLisuButton.style.display = state.lisu.outfitUnlocked ? 'none' : 'inline-block';
+    }
+    function resetLisuChapterForReplay() {
+      state.lisu.collected = [];
+      state.lisu.finished = false;
+      state.lisu.lastQuizScore = 0;
+      Object.keys(lisuQuizAnswers).forEach(key => delete lisuQuizAnswers[key]);
+      document.querySelector('#lisuKnowledgePanel').innerHTML = '<h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段。</p>'; 
+      document.querySelector('#lisuQuizScoreBox').classList.remove('show');
+      restartTaskAfterReplay('lisuIntro', '已重新开始傈僳族关卡，可以反复探索。');
+    }
+
+
+    function liangshanVideoCompleted(key) {
+      return state.liangshan.videoViewed.includes(key) && state.liangshan.videoAnswered.includes(key);
+    }
+    function syncLiangshanVideoProgress() {
+      state.liangshan.videoViewed = cleanCollectedKeys(state.liangshan.videoViewed, liangshanVideoKeys);
+      state.liangshan.videoAnswered = cleanCollectedKeys(state.liangshan.videoAnswered, liangshanVideoKeys);
+      state.liangshan.videoWatched = cleanCollectedKeys(liangshanVideoKeys.filter(key => liangshanVideoCompleted(key)), liangshanVideoKeys);
+    }
+    function renderLiangshanState() {
+      state.liangshan.collected = cleanCollectedKeys(state.liangshan.collected, liangshanInstrumentKeys);
+      syncLiangshanVideoProgress();
+      const collectedCount = state.liangshan.collected.length;
+      const videoCount = state.liangshan.videoWatched.length;
+      document.querySelectorAll('#liangshanInstrumentGrid .instrument-card').forEach(card => card.classList.toggle('collected', state.liangshan.collected.includes(card.dataset.key)));
+      updateStoryCardLocks('#liangshanInstrumentGrid', liangshanInstrumentKeys, state.liangshan.collected);
+      const instrumentsDone = collectedCount === liangshanInstrumentKeys.length;
+      const currentVideo = instrumentsDone ? currentStoryKey(liangshanVideoKeys, state.liangshan.videoWatched) : null;
+      document.querySelector('#liangshanVideoIntro').classList.toggle('video-section-hidden', !instrumentsDone);
+      document.querySelector('#liangshanVideoGrid').classList.toggle('video-section-hidden', !instrumentsDone);
+      document.querySelector('#liangshanQuizButton').classList.toggle('video-section-hidden', !instrumentsDone);
+      document.querySelectorAll('#liangshanVideoGrid .video-card').forEach(card => {
+        const key = card.dataset.key;
+        const viewed = state.liangshan.videoViewed.includes(key);
+        const answered = state.liangshan.videoAnswered.includes(key);
+        const completed = state.liangshan.videoWatched.includes(key);
+        const locked = !instrumentsDone || (!completed && key !== currentVideo);
+        card.classList.toggle('viewed', viewed);
+        card.classList.toggle('answered', answered);
+        card.classList.toggle('collected', completed);
+        card.classList.toggle('locked', locked);
+        card.classList.toggle('current', instrumentsDone && !completed && key === currentVideo);
+        card.setAttribute('aria-disabled', locked ? 'true' : 'false');
+        let status = card.querySelector('.video-status');
+        if (!status) {
+          status = document.createElement('p');
+          status.className = 'video-status';
+          card.appendChild(status);
+        }
+        if (!instrumentsDone) status.textContent = '完成三件乐器探索后开放视频任务。';
+        else if (completed) status.textContent = '已看完视频，并答对对应选择题。';
+        else status.textContent = '当前进度：' + (viewed ? '已看完视频' : '还需要看完整段视频') + '；' + (answered ? '已答对选择题' : '还需要答对对应选择题') + '。';
+      });
+      const progressText = instrumentsDone
+        ? '乐器剧情 ' + collectedCount + ' / ' + liangshanInstrumentKeys.length + ' · 视频任务完成 ' + videoCount + ' / ' + liangshanVideoKeys.length
+        : '乐器剧情 ' + collectedCount + ' / ' + liangshanInstrumentKeys.length + ' · 视频任务将在乐器完成后开启';
+      document.querySelector('#liangshanCollectionCount').textContent = progressText;
+      document.querySelector('#liangshanQuizButton').disabled = collectedCount < liangshanInstrumentKeys.length || videoCount < liangshanVideoKeys.length;
+      renderLiangshanResult();
+    }
+    function openLiangshanInstrument(key) {
+      closeImagePreview();
+      pauseLiangshanVideos();
+      const panel = document.querySelector('#liangshanKnowledgePanel');
+      if (!canOpenStoryUnit(key, liangshanInstrumentKeys, state.liangshan.collected)) {
+        toast('先完成当前剧情单元。');
+        const current = currentStoryKey(liangshanInstrumentKeys, state.liangshan.collected);
+        if (current) openLiangshanInstrument(current);
+        return;
+      }
+      const item = liangshanInstrumentData[key];
+      panel.innerHTML = storyUnitHtml(item, key, liangshanStoryLines, liangshanInstrumentKeys, 'liangshan-answer', 'liangshan');
+    }
+    function renderLiangshanQuiz() {
+      pauseLiangshanVideos();
+      Object.keys(liangshanQuizAnswers).forEach(key => delete liangshanQuizAnswers[key]);
+      document.querySelector('#liangshanQuizScoreBox').classList.remove('show');
+      document.querySelector('#liangshanQuizPanel').innerHTML = liangshanQuizData.map((item, qIndex) => { const question = item.question || item.q || ''; const choices = item.choices || item.a || []; return '<div class="quiz-question"><h3>' + (qIndex + 1) + '. ' + question + '</h3><div class="choices">' + choices.map((choice, cIndex) => '<button class="choice liangshan-quiz-choice" data-question="' + qIndex + '" data-index="' + cIndex + '">' + String.fromCharCode(65 + cIndex) + '. ' + choice + '</button>').join('') + '</div></div>'; }).join('');
+    }
+    function renderLiangshanResult() {
+      const score = state.liangshan.lastQuizScore || 0;
+      const accuracy = Math.round(score / liangshanQuizData.length * 100);
+      const summary = document.querySelector('#liangshanResultSummary');
+      const reward = document.querySelector('#liangshanRewardSummary');
+      if (!summary || !reward) return;
+      document.querySelector('#liangshanResultTitle').textContent = score === liangshanQuizData.length ? '满分完成凉山彝族音乐关！' : '凉山彝族音乐探索达标！';
+      summary.textContent = '本次凉山彝族音乐小测答对 ' + score + ' / ' + liangshanQuizData.length + ' 题，正确率 ' + accuracy + '%。你已经认识胡惹、马布、克西举尔，也完成了两段视频探索。';
+      reward.innerHTML = state.liangshan.outfitUnlocked ? '<b>获得奖励：</b>180 音符币 · 凉山彝族音乐徽章 · 凉山彝族角色服装 · 凉山彝族音乐图鉴' : '<b>获得奖励：</b>180 音符币 · 凉山彝族音乐徽章 · 凉山彝族音乐图鉴<br><small>服装奖励需要小测 100% 正确。可以重新挑战，满分后自动发放。</small>'; 
+      const badgeBlock = document.querySelector('#liangshanBadgeAwardBlock');
+      if (badgeBlock) badgeBlock.style.display = state.liangshan.badgeUnlocked ? 'flex' : 'none';
+      const outfitBlock = document.querySelector('#liangshanRewardOutfitBlock');
+      if (outfitBlock) outfitBlock.style.display = state.liangshan.badgeUnlocked ? 'flex' : 'none';
+      document.querySelector('#liangshanRewardOutfitTitle').textContent = state.liangshan.outfitUnlocked ? (state.gender === 'female' ? '获得女生凉山彝族服装' : '获得男生凉山彝族服装') : '凉山彝族服装奖励待解锁';
+      document.querySelector('#liangshanRewardOutfitText').textContent = state.liangshan.outfitUnlocked ? '已放入角色衣柜，可以随时选择穿戴。' : '凉山彝族音乐小测 100% 正确后，这套服装才会放入角色衣柜。';
+      const retryButton = document.querySelector('#retryLiangshanFromResultButton');
+      if (retryButton) retryButton.style.display = state.liangshan.outfitUnlocked ? 'none' : 'inline-block';
+    }
+    function resetLiangshanChapterForReplay() {
+      pauseLiangshanVideos(true);
+      state.liangshan.collected = [];
+      state.liangshan.videoViewed = [];
+      state.liangshan.videoAnswered = [];
+      state.liangshan.videoWatched = [];
+      state.liangshan.finished = false;
+      state.liangshan.lastQuizScore = 0;
+      Object.keys(liangshanQuizAnswers).forEach(key => delete liangshanQuizAnswers[key]);
+      document.querySelector('#liangshanKnowledgePanel').innerHTML = '<h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段。</p>'; 
+      document.querySelector('#liangshanQuizScoreBox').classList.remove('show');
+      restartTaskAfterReplay('liangshanIntro', '已重新开始凉山彝族关卡，可以反复探索');
+    }
+
+
+    function tibetanVideoCompleted(key) {
+      return state.tibetan.videoViewed.includes(key) && state.tibetan.videoAnswered.includes(key);
+    }
+    function syncTibetanVideoProgress() {
+      state.tibetan.videoViewed = cleanCollectedKeys(state.tibetan.videoViewed, tibetanVideoKeys);
+      state.tibetan.videoAnswered = cleanCollectedKeys(state.tibetan.videoAnswered, tibetanVideoKeys);
+      state.tibetan.videoWatched = cleanCollectedKeys(tibetanVideoKeys.filter(key => tibetanVideoCompleted(key)), tibetanVideoKeys);
+    }
+    function renderTibetanState() {
+      state.tibetan.collected = cleanCollectedKeys(state.tibetan.collected, tibetanInstrumentKeys);
+      syncTibetanVideoProgress();
+      const collectedCount = state.tibetan.collected.length;
+      const videoCount = state.tibetan.videoWatched.length;
+      document.querySelectorAll('#tibetanInstrumentGrid .instrument-card').forEach(card => card.classList.toggle('collected', state.tibetan.collected.includes(card.dataset.key)));
+      updateStoryCardLocks('#tibetanInstrumentGrid', tibetanInstrumentKeys, state.tibetan.collected);
+      const instrumentsDone = collectedCount === tibetanInstrumentKeys.length;
+      const currentVideo = instrumentsDone ? currentStoryKey(tibetanVideoKeys, state.tibetan.videoWatched) : null;
+      document.querySelector('#tibetanVideoIntro').classList.toggle('video-section-hidden', !instrumentsDone);
+      document.querySelector('#tibetanVideoGrid').classList.toggle('video-section-hidden', !instrumentsDone);
+      document.querySelector('#tibetanQuizButton').classList.toggle('video-section-hidden', !instrumentsDone);
+      document.querySelectorAll('#tibetanVideoGrid .video-card').forEach(card => {
+        const key = card.dataset.key;
+        const viewed = state.tibetan.videoViewed.includes(key);
+        const answered = state.tibetan.videoAnswered.includes(key);
+        const completed = state.tibetan.videoWatched.includes(key);
+        const locked = !instrumentsDone || (!completed && key !== currentVideo);
+        card.classList.toggle('viewed', viewed);
+        card.classList.toggle('answered', answered);
+        card.classList.toggle('collected', completed);
+        card.classList.toggle('locked', locked);
+        card.classList.toggle('current', instrumentsDone && !completed && key === currentVideo);
+        card.setAttribute('aria-disabled', locked ? 'true' : 'false');
+        const viewedButton = card.querySelector('.tibetan-video-viewed');
+        if (viewedButton) viewedButton.textContent = viewed ? '已确认看完' : '我已看完视频';
+        let status = card.querySelector('.video-status');
+        if (!status) { status = document.createElement('p'); status.className = 'video-status'; card.appendChild(status); }
+        if (!instrumentsDone) status.textContent = '完成三件乐器探索后开放视频任务。';
+        else if (completed) status.textContent = '已确认观看，并答对对应选择题。';
+        else status.textContent = '当前进度：' + (viewed ? '已确认观看' : '还需确认看完') + '；' + (answered ? '已答对选择题' : '还需答对对应选择题') + '。';
+      });
+      const progressText = instrumentsDone ? '乐器剧情 ' + collectedCount + ' / ' + tibetanInstrumentKeys.length + ' · 视频任务完成 ' + videoCount + ' / ' + tibetanVideoKeys.length : '乐器剧情 ' + collectedCount + ' / ' + tibetanInstrumentKeys.length + ' · 视频任务将在乐器完成后开启';
+      document.querySelector('#tibetanCollectionCount').textContent = progressText;
+      document.querySelector('#tibetanQuizButton').disabled = collectedCount < tibetanInstrumentKeys.length || videoCount < tibetanVideoKeys.length;
+      renderTibetanResult();
+    }
+    function openTibetanInstrument(key) {
+      closeImagePreview();
+      const panel = document.querySelector('#tibetanKnowledgePanel');
+      if (!canOpenStoryUnit(key, tibetanInstrumentKeys, state.tibetan.collected)) {
+        toast('先完成当前剧情单元。');
+        const current = currentStoryKey(tibetanInstrumentKeys, state.tibetan.collected);
+        if (current) openTibetanInstrument(current);
+        return;
+      }
+      const item = tibetanInstrumentData[key];
+      panel.innerHTML = storyUnitHtml(item, key, tibetanStoryLines, tibetanInstrumentKeys, 'tibetan-answer', 'tibetan');
+    }
+    function openCurrentTibetanStory() {
+      const currentInstrument = currentStoryKey(tibetanInstrumentKeys, state.tibetan.collected);
+      if (currentInstrument) { openTibetanInstrument(currentInstrument); return; }
+      const currentVideo = currentStoryKey(tibetanVideoKeys, state.tibetan.videoWatched);
+      if (currentVideo) {
+        document.querySelector('#tibetanKnowledgePanel').innerHTML = tibetanVideoStoryUnitHtml(tibetanVideoStoryLines[currentVideo], currentVideo);
+        return;
+      }
+      document.querySelector('#tibetanKnowledgePanel').innerHTML = storyCompleteHtml({ npc: '雪央', portrait: '🏔️', mode: 'tibetan', line: '“乐器与视频线索都已经归位。最后的小测，会把这些雪域回声串起来。”' }, '甘孜藏族音乐探索完成', '点击按钮进入甘孜藏族音乐知识小测。', quizEntryButton('tibetanQuizTask', '进入甘孜藏族音乐知识小测'));
+    }
+    function renderTibetanQuiz() {
+      Object.keys(tibetanQuizAnswers).forEach(key => delete tibetanQuizAnswers[key]);
+      document.querySelector('#tibetanQuizScoreBox').classList.remove('show');
+      document.querySelector('#tibetanQuizPanel').innerHTML = tibetanQuizData.map((item, qIndex) => { const question = item.question || item.q || ''; const choices = item.choices || item.a || []; return '<div class="quiz-question"><h3>' + (qIndex + 1) + '. ' + question + '</h3><div class="choices">' + choices.map((choice, cIndex) => '<button class="choice tibetan-quiz-choice" data-question="' + qIndex + '" data-index="' + cIndex + '">' + String.fromCharCode(65 + cIndex) + '. ' + choice + '</button>').join('') + '</div></div>'; }).join('');
+    }
+    function renderTibetanResult() {
+      const score = state.tibetan.lastQuizScore || 0;
+      const accuracy = Math.round(score / tibetanQuizData.length * 100);
+      const summary = document.querySelector('#tibetanResultSummary');
+      const reward = document.querySelector('#tibetanRewardSummary');
+      const isMale = (state.gender || 'male') === 'male';
+      const tibetanRewardSrc = isMale ? 'assets/tibetan-reward-male.png' : 'assets/tibetan-reward-female.png';
+      if (!summary || !reward) return;
+      document.querySelector('#tibetanResultTitle').textContent = score === tibetanQuizData.length ? '满分完成甘孜藏族音乐关！' : '甘孜藏族音乐探索达标！';
+      summary.textContent = '本次甘孜藏族音乐小测答对 ' + score + ' / ' + tibetanQuizData.length + ' 题，正确率 ' + accuracy + '%。你已经认识扎念（扎木聂）、毕旺、筒钦，也完成了《格桑拉》和巴塘弦子视频资料赏析。';
+      reward.innerHTML = state.tibetan.outfitUnlocked ? '<b>获得奖励：</b>180 音符币 · 甘孜藏族音乐徽章 · 藏族角色服装 · 甘孜藏族音乐图鉴' : '<b>获得奖励：</b>180 音符币 · 甘孜藏族音乐徽章 · 甘孜藏族音乐图鉴<br><small>服装奖励需要小测 100% 正确。可以重新挑战，满分后自动发放。</small>'; 
+      const badgeBlock = document.querySelector('#tibetanBadgeAwardBlock');
+      if (badgeBlock) badgeBlock.style.display = state.tibetan.badgeUnlocked ? 'flex' : 'none';
+      const outfitBlock = document.querySelector('#tibetanRewardOutfitBlock');
+      if (outfitBlock) outfitBlock.style.display = state.tibetan.badgeUnlocked ? 'flex' : 'none';
+      document.querySelector('#tibetanRewardOutfitImage').src = state.tibetan.outfitUnlocked ? tibetanRewardSrc : unknownOutfitSrc;
+      document.querySelector('#tibetanRewardOutfitTitle').textContent = state.tibetan.outfitUnlocked ? (isMale ? '获得男生藏族服装' : '获得女生藏族服装') : '甘孜藏族服装奖励待解锁';
+      document.querySelector('#tibetanRewardOutfitText').textContent = state.tibetan.outfitUnlocked ? '已放入角色衣柜，可以随时选择穿戴。' : '甘孜藏族音乐小测 100% 正确后，这套服装才会放入角色衣柜。';
+      const retryButton = document.querySelector('#retryTibetanFromResultButton');
+      if (retryButton) retryButton.style.display = state.tibetan.outfitUnlocked ? 'none' : 'inline-block';
+    }
+    function resetTibetanChapterForReplay() {
+      state.tibetan.collected = [];
+      state.tibetan.videoViewed = [];
+      state.tibetan.videoAnswered = [];
+      state.tibetan.videoWatched = [];
+      state.tibetan.finished = false;
+      state.tibetan.lastQuizScore = 0;
+      Object.keys(tibetanQuizAnswers).forEach(key => delete tibetanQuizAnswers[key]);
+      document.querySelector('#tibetanKnowledgePanel').innerHTML = '<h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段。</p>'; 
+      document.querySelector('#tibetanQuizScoreBox').classList.remove('show');
+      restartTaskAfterReplay('tibetanIntro', '已重新开始甘孜藏族关卡，可以反复探索');
+    }
+
+    function resetChapterForReplay() {
+      state.collected = [];
+      state.finished = false;
+      state.lastQuizScore = 0;
+      Object.keys(quizAnswers).forEach(key => delete quizAnswers[key]);
+      const panel = document.querySelector('#knowledgePanel');
+      panel.innerHTML = '<h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段。</p>'; 
+      document.querySelector('#quizScoreBox').classList.remove('show');
+      restartTaskAfterReplay('intro', '已重新开始本关，奖励会保留，可以反复探索');
+    }
+
+    document.querySelector('#panxiNode').addEventListener('click', () => { showTask(state.finished ? 'result' : 'intro'); overlay.classList.add('show'); });
+    document.querySelector('#lisuNode').addEventListener('click', () => { showTask(state.lisu.finished ? 'lisuResult' : 'lisuIntro'); overlay.classList.add('show'); });
+    document.querySelector('#liangshanNode').addEventListener('click', () => { showTask(state.liangshan.finished ? 'liangshanResult' : 'liangshanIntro'); overlay.classList.add('show'); });
+    document.querySelector('#tibetanNode').addEventListener('click', () => { showTask(state.tibetan.finished ? 'tibetanResult' : 'tibetanIntro'); overlay.classList.add('show'); });
+    document.querySelectorAll('.close').forEach(btn => btn.addEventListener('click', () => { pauseLiangshanVideos(); overlay.classList.remove('show'); }));
+    document.querySelector('#startTask').addEventListener('click', () => { showTask('collectionTask'); renderState(); openCurrentLipuStory(); setTimeout(() => focusStoryPanel('#knowledgePanel'), 30); });
+    document.querySelector('#startLisuTask').addEventListener('click', () => { showTask('lisuCollectionTask'); renderState(); openCurrentLisuStory(); setTimeout(() => focusStoryPanel('#lisuKnowledgePanel'), 30); });
+    document.querySelector('#startLiangshanTask').addEventListener('click', () => { showTask('liangshanCollectionTask'); renderState(); openCurrentLiangshanStory(); setTimeout(() => focusStoryPanel('#liangshanKnowledgePanel'), 30); });
+    document.querySelector('#startTibetanTask').addEventListener('click', () => { showTask('tibetanCollectionTask'); renderState(); openCurrentTibetanStory(); setTimeout(() => focusStoryPanel('#tibetanKnowledgePanel'), 30); });
+    function continueStory(mode, key, sceneIndex) {
+      closeImagePreview();
+      if (mode !== 'liangshanVideo') pauseLiangshanVideos();
+      if (mode === 'lipu') {
+        document.querySelector('#knowledgePanel').innerHTML = storyUnitHtml(instrumentData[key], key, lipuStoryLines, lipuInstrumentKeys, 'instrument-answer', 'lipu', sceneIndex);
+      } else if (mode === 'lisu') {
+        document.querySelector('#lisuKnowledgePanel').innerHTML = storyUnitHtml(lisuInstrumentData[key], key, lisuStoryLines, lisuInstrumentKeys, 'lisu-answer', 'lisu', sceneIndex);
+      } else if (mode === 'liangshan') {
+        document.querySelector('#liangshanKnowledgePanel').innerHTML = storyUnitHtml(liangshanInstrumentData[key], key, liangshanStoryLines, liangshanInstrumentKeys, 'liangshan-answer', 'liangshan', sceneIndex);
+      } else if (mode === 'liangshanVideo') {
+        document.querySelector('#liangshanKnowledgePanel').innerHTML = storyVideoUnitHtml(liangshanVideoStoryLines[key], key, sceneIndex);
+      } else if (mode === 'tibetan') {
+        document.querySelector('#tibetanKnowledgePanel').innerHTML = storyUnitHtml(tibetanInstrumentData[key], key, tibetanStoryLines, tibetanInstrumentKeys, 'tibetan-answer', 'tibetan', sceneIndex);
+      } else if (mode === 'tibetanVideo') {
+        document.querySelector('#tibetanKnowledgePanel').innerHTML = tibetanVideoStoryUnitHtml(tibetanVideoStoryLines[key], key, sceneIndex);
+      }
+    }
+    document.addEventListener('click', event => {
+      const quizButton = event.target.closest('.completion-quiz-button');
+      if (!quizButton) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const taskId = quizButton.dataset.quizTask;
+      if (taskId === 'assembleTask') renderQuiz();
+      else if (taskId === 'lisuQuizTask') renderLisuQuiz();
+      else if (taskId === 'liangshanQuizTask') renderLiangshanQuiz();
+      else if (taskId === 'tibetanQuizTask') renderTibetanQuiz();
+      showTask(taskId);
+      setTimeout(() => document.getElementById(taskId)?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 30);
+    }, true);
+
+    document.addEventListener('click', event => {
+      if (!event.target.closest('#chapterOverlay')) return;
+      if (event.target.closest('.choice')) return;
+      const box = event.target.closest('.gal-dialogue-box');
+      const next = event.target.closest('.story-next') || (box ? box.querySelector('.story-next') : null);
+      if (!next) return;
+      event.preventDefault();
+      event.stopPropagation();
+      continueStory(next.dataset.mode, next.dataset.key, Number(next.dataset.scene));
+    }, true);
+    document.querySelector('#instrumentGrid').addEventListener('click', event => {
+      if (previewInstrumentCardImage(event)) return;
+      const card = event.target.closest('.instrument-card');
+      if (card) openInstrument(card.dataset.key);
+    });
+    document.querySelector('#knowledgePanel').addEventListener('click', event => {
+      const button = event.target.closest('.instrument-answer');
+      if (!button) return;
+      const item = instrumentData[button.dataset.key];
+      const correct = Number(button.dataset.index) === item.correct;
+      button.classList.add(correct ? 'correct' : 'wrong');
+      if (!correct) { toast('回答正确后才能推进剧情。'); return; }
+      button.closest('.choices').querySelectorAll('button').forEach(choice => choice.disabled = true);
+      if (!state.collected.includes(button.dataset.key)) state.collected.push(button.dataset.key);
+      saveState();
+      toast(item.name + '剧情单元完成');
+      setTimeout(openCurrentLipuStory, 450);
+    });
+
+    document.querySelector('#lisuInstrumentGrid').addEventListener('click', event => {
+      if (previewInstrumentCardImage(event)) return;
+      const card = event.target.closest('.instrument-card');
+      if (card) openLisuInstrument(card.dataset.key);
+    });
+    document.querySelector('#lisuKnowledgePanel').addEventListener('click', event => {
+      const button = event.target.closest('.lisu-answer');
+      if (!button) return;
+      const item = lisuInstrumentData[button.dataset.key];
+      const correct = Number(button.dataset.index) === item.correct;
+      button.classList.add(correct ? 'correct' : 'wrong');
+      if (!correct) { toast('回答正确后才能推进剧情。'); return; }
+      button.closest('.choices').querySelectorAll('button').forEach(choice => choice.disabled = true);
+      if (!state.lisu.collected.includes(button.dataset.key)) state.lisu.collected.push(button.dataset.key);
+      saveState();
+      toast(item.name + '剧情单元完成');
+      setTimeout(openCurrentLisuStory, 450);
+    });
+
+    document.querySelector('#liangshanInstrumentGrid').addEventListener('click', event => {
+      if (previewInstrumentCardImage(event)) return;
+      const card = event.target.closest('.instrument-card');
+      if (card) openLiangshanInstrument(card.dataset.key);
+    });
+    document.querySelector('#liangshanKnowledgePanel').addEventListener('click', event => {
+      const button = event.target.closest('.liangshan-answer');
+      if (!button) return;
+      const item = liangshanInstrumentData[button.dataset.key];
+      const correct = Number(button.dataset.index) === item.correct;
+      button.classList.add(correct ? 'correct' : 'wrong');
+      if (!correct) { toast('回答正确后才能推进剧情。'); return; }
+      button.closest('.choices').querySelectorAll('button').forEach(choice => choice.disabled = true);
+      if (!state.liangshan.collected.includes(button.dataset.key)) state.liangshan.collected.push(button.dataset.key);
+      saveState();
+      toast(item.name + '剧情单元完成');
+      setTimeout(openCurrentLiangshanStory, 450);
+    });
+    document.addEventListener('play', event => {
+      if (event.target.matches && event.target.matches('video[src*="liangshan-"]')) pauseLiangshanVideos(false, event.target);
+    }, true);
+    document.querySelector('#liangshanVideoGrid').addEventListener('ended', event => {
+      const video = event.target.closest('video[src*="liangshan-"]');
+      if (!video) return;
+      const card = video.closest('.video-card');
+      if (!card) return;
+      const key = card.dataset.key;
+      if (!state.liangshan.videoViewed.includes(key)) state.liangshan.videoViewed.push(key);
+      syncLiangshanVideoProgress();
+      saveState();
+      if (state.liangshan.videoWatched.includes(key)) {
+        toast('视频看完并答对，视频任务完成');
+        setTimeout(openCurrentLiangshanStory, 450);
+      } else {
+        toast('视频已看完，再答对对应选择题即可完成。');
+      }
+    }, true);
+    document.querySelector('#liangshanVideoGrid').addEventListener('click', event => {
+      const card = event.target.closest('.video-card');
+      if (!card) return;
+      const instrumentsDone = state.liangshan.collected.length === liangshanInstrumentKeys.length;
+      const currentVideo = currentStoryKey(liangshanVideoKeys, state.liangshan.videoWatched);
+      if (!instrumentsDone || (!state.liangshan.videoWatched.includes(card.dataset.key) && card.dataset.key !== currentVideo)) {
+        toast('先完成当前剧情单元。');
+        openCurrentLiangshanStory();
+        return;
+      }
+      document.querySelector('#liangshanKnowledgePanel').innerHTML = storyVideoUnitHtml(liangshanVideoStoryLines[card.dataset.key], card.dataset.key);
+    });
+    document.querySelector('#liangshanKnowledgePanel').addEventListener('click', event => {
+      const button = event.target.closest('.liangshan-video-answer');
+      if (!button) return;
+      const story = liangshanVideoStoryLines[button.dataset.key];
+      const correct = Number(button.dataset.index) === story.correct;
+      button.classList.add(correct ? 'correct' : 'wrong');
+      if (!correct) { toast('回答正确后才能推进剧情。'); return; }
+      button.closest('.choices').querySelectorAll('button').forEach(choice => choice.disabled = true);
+      pauseLiangshanVideos();
+      if (!state.liangshan.videoAnswered.includes(button.dataset.key)) state.liangshan.videoAnswered.push(button.dataset.key);
+      syncLiangshanVideoProgress();
+      saveState();
+      if (state.liangshan.videoWatched.includes(button.dataset.key)) {
+        toast('视频看完并答对，视频任务完成');
+        setTimeout(openCurrentLiangshanStory, 450);
+      } else {
+        toast('选择题答对了，还需要看完整段视频。');
+      }
+    });
+
+    document.querySelector('#tibetanInstrumentGrid').addEventListener('click', event => {
+      if (previewInstrumentCardImage(event)) return;
+      const card = event.target.closest('.instrument-card');
+      if (card) openTibetanInstrument(card.dataset.key);
+    });
+    document.querySelector('#tibetanKnowledgePanel').addEventListener('click', event => {
+      const button = event.target.closest('.tibetan-answer');
+      if (!button) return;
+      const item = tibetanInstrumentData[button.dataset.key];
+      const correct = Number(button.dataset.index) === item.correct;
+      button.classList.add(correct ? 'correct' : 'wrong');
+      if (!correct) { toast('回答正确后才能推进剧情。'); return; }
+      button.closest('.choices').querySelectorAll('button').forEach(choice => choice.disabled = true);
+      if (!state.tibetan.collected.includes(button.dataset.key)) state.tibetan.collected.push(button.dataset.key);
+      saveState();
+      toast(item.name + '剧情单元完成');
+      setTimeout(openCurrentTibetanStory, 450);
+    });
+    document.querySelector('#tibetanVideoGrid').addEventListener('click', event => {
+      const viewedButton = event.target.closest('.tibetan-video-viewed');
+      if (viewedButton) {
+        const key = viewedButton.dataset.key;
+        if (!state.tibetan.videoViewed.includes(key)) state.tibetan.videoViewed.push(key);
+        syncTibetanVideoProgress();
+        saveState();
+        toast('已记录视频观看确认。');
+        if (state.tibetan.videoWatched.includes(key)) setTimeout(openCurrentTibetanStory, 450);
+        return;
+      }
+      const card = event.target.closest('.video-card');
+      if (!card) return;
+      const instrumentsDone = state.tibetan.collected.length === tibetanInstrumentKeys.length;
+      const currentVideo = currentStoryKey(tibetanVideoKeys, state.tibetan.videoWatched);
+      if (!instrumentsDone || (!state.tibetan.videoWatched.includes(card.dataset.key) && card.dataset.key !== currentVideo)) {
+        toast('先完成当前剧情单元。');
+        openCurrentTibetanStory();
+        return;
+      }
+      document.querySelector('#tibetanKnowledgePanel').innerHTML = tibetanVideoStoryUnitHtml(tibetanVideoStoryLines[card.dataset.key], card.dataset.key);
+    });
+    document.querySelector('#tibetanKnowledgePanel').addEventListener('click', event => {
+      const button = event.target.closest('.tibetan-video-answer');
+      if (!button) return;
+      const story = tibetanVideoStoryLines[button.dataset.key];
+      const correct = Number(button.dataset.index) === story.correct;
+      button.classList.add(correct ? 'correct' : 'wrong');
+      if (!correct) { toast('回答正确后才能推进剧情。'); return; }
+      button.closest('.choices').querySelectorAll('button').forEach(choice => choice.disabled = true);
+      if (!state.tibetan.videoAnswered.includes(button.dataset.key)) state.tibetan.videoAnswered.push(button.dataset.key);
+      syncTibetanVideoProgress();
+      saveState();
+      if (state.tibetan.videoWatched.includes(button.dataset.key)) {
+        toast('视频确认并答对，视频任务完成');
+        setTimeout(openCurrentTibetanStory, 450);
+      } else {
+        toast('选择题答对了，还需要点“我已看完视频”确认观看。');
+      }
+    });
+    document.querySelector('#tibetanQuizButton').addEventListener('click', () => { renderTibetanQuiz(); showTask('tibetanQuizTask'); });
+    document.querySelector('#tibetanQuizPanel').addEventListener('click', event => {
+      const button = event.target.closest('.tibetan-quiz-choice');
+      if (!button) return;
+      const qIndex = button.dataset.question;
+      tibetanQuizAnswers[qIndex] = Number(button.dataset.index);
+      button.closest('.quiz-question').querySelectorAll('.tibetan-quiz-choice').forEach(choice => choice.classList.remove('selected'));
+      button.classList.add('selected');
+    });
+    document.querySelector('#retryTibetanQuizButton').addEventListener('click', renderTibetanQuiz);
+    document.querySelector('#submitTibetanQuizButton').addEventListener('click', () => {
+      const answeredCount = Object.keys(tibetanQuizAnswers).length;
+      if (answeredCount < tibetanQuizData.length) { toast('还有题目没有作答'); return; }
+      let score = 0;
+      tibetanQuizData.forEach((item, index) => {
+        const selected = tibetanQuizAnswers[index];
+        if (selected === item.correct) score += 1;
+        document.querySelectorAll('.tibetan-quiz-choice[data-question="' + index + '"]').forEach(choice => {
+          const choiceIndex = Number(choice.dataset.index);
+          choice.classList.toggle('correct', choiceIndex === item.correct);
+          choice.classList.toggle('wrong', choiceIndex === selected && selected !== item.correct);
+          choice.disabled = true;
+        });
+      });
+      state.tibetan.lastQuizScore = score;
+      const accuracy = Math.round(score / tibetanQuizData.length * 100);
+      document.querySelector('#tibetanQuizScoreText').textContent = '本次答对 ' + score + ' / ' + tibetanQuizData.length + ' 题，正确率 ' + accuracy + '%';
+      if (score >= 4) {
+        if (!state.tibetan.coinsAwarded) { state.coins += 180; state.tibetan.coinsAwarded = true; }
+        state.tibetan.badgeUnlocked = true;
+        state.tibetan.finished = true;
+        if (score === tibetanQuizData.length) state.tibetan.outfitUnlocked = true;
+        document.querySelector('#tibetanQuizScoreHint').textContent = score === tibetanQuizData.length ? '满分！甘孜藏族音乐徽章和角色服装都已发放。' : '达到 80%，获得甘孜藏族音乐徽章；服装奖励需要 100% 正确。';
+        document.querySelector('#tibetanQuizScoreBox').classList.add('show');
+        saveState();
+        setTimeout(() => showEarnedRewards([
+          { kind: 'badge', type: '徽章获得', title: '甘孜藏族音乐徽章', image: 'assets/tibetan-badge.png', text: '雪山、白牦牛、经幡与吉祥结已经收入你的音乐图鉴。' },
+          score === tibetanQuizData.length ? { kind: 'outfit', type: '服装获得', title: '藏族角色服装', image: rewardOutfitSrc('tibetan'), text: '满分通关！藏族奖励服装已经放入衣柜。' } : null
+        ], 'tibetanResult'), 900);
+      } else {
+        document.querySelector('#tibetanQuizScoreHint').textContent = '还差一点，答对 4 题及以上才能完成本关。';
+        document.querySelector('#tibetanQuizScoreBox').classList.add('show');
+        saveState();
+      }
+    });
+    document.querySelector('#liangshanQuizButton').addEventListener('click', () => { renderLiangshanQuiz(); showTask('liangshanQuizTask'); });
+    document.querySelector('#liangshanQuizPanel').addEventListener('click', event => {
+      const button = event.target.closest('.liangshan-quiz-choice');
+      if (!button) return;
+      const qIndex = button.dataset.question;
+      liangshanQuizAnswers[qIndex] = Number(button.dataset.index);
+      button.closest('.quiz-question').querySelectorAll('.liangshan-quiz-choice').forEach(choice => choice.classList.remove('selected'));
+      button.classList.add('selected');
+    });
+    document.querySelector('#retryLiangshanQuizButton').addEventListener('click', renderLiangshanQuiz);
+    document.querySelector('#submitLiangshanQuizButton').addEventListener('click', () => {
+      const answeredCount = Object.keys(liangshanQuizAnswers).length;
+      if (answeredCount < liangshanQuizData.length) { toast('还有题目没有作答'); return; }
+      let score = 0;
+      liangshanQuizData.forEach((item, index) => {
+        const selected = liangshanQuizAnswers[index];
+        if (selected === item.correct) score += 1;
+        document.querySelectorAll('.liangshan-quiz-choice[data-question="' + index + '"]').forEach(choice => {
+          const choiceIndex = Number(choice.dataset.index);
+          choice.classList.toggle('correct', choiceIndex === item.correct);
+          choice.classList.toggle('wrong', choiceIndex === selected && selected !== item.correct);
+          choice.disabled = true;
+        });
+      });
+      state.liangshan.lastQuizScore = score;
+      const accuracy = Math.round(score / liangshanQuizData.length * 100);
+      document.querySelector('#liangshanQuizScoreText').textContent = '本次答对 ' + score + ' / ' + liangshanQuizData.length + ' 题，正确率 ' + accuracy + '%';
+      if (score >= 4) {
+        if (!state.liangshan.coinsAwarded) { state.coins += 180; state.liangshan.coinsAwarded = true; }
+        state.liangshan.badgeUnlocked = true;
+        state.liangshan.finished = true;
+        if (score === liangshanQuizData.length) state.liangshan.outfitUnlocked = true;
+        document.querySelector('#liangshanQuizScoreHint').textContent = score === liangshanQuizData.length ? '满分！凉山彝族音乐徽章和角色服装都已发放。' : '达到 80%，获得凉山彝族音乐徽章；服装奖励需要 100% 正确。';
+        document.querySelector('#liangshanQuizScoreBox').classList.add('show');
+        saveState();
+        setTimeout(() => showEarnedRewards([
+          { kind: 'badge', type: '徽章获得', title: '凉山彝族音乐徽章', image: 'assets/liangshan-badge.png', text: '火焰、鹰翼和山地回声已经收入你的音乐图鉴。' },
+          score === liangshanQuizData.length ? { kind: 'outfit', type: '服装获得', title: '凉山彝族角色服装', image: rewardOutfitSrc('liangshan'), text: '满分通关！凉山彝族奖励服装已经放入衣柜。' } : null
+        ], 'liangshanResult'), 900);
+      } else {
+        document.querySelector('#liangshanQuizScoreHint').textContent = '还差一点，答对 4 题及以上才能完成本关。';
+        document.querySelector('#liangshanQuizScoreBox').classList.add('show');
+        saveState();
+      }
+    });
+    document.querySelector('#lisuQuizButton').addEventListener('click', () => { renderLisuQuiz(); showTask('lisuQuizTask'); });
+    document.querySelector('#lisuQuizPanel').addEventListener('click', event => {
+      const button = event.target.closest('.lisu-quiz-choice');
+      if (!button) return;
+      const qIndex = button.dataset.question;
+      lisuQuizAnswers[qIndex] = Number(button.dataset.index);
+      button.closest('.quiz-question').querySelectorAll('.lisu-quiz-choice').forEach(choice => choice.classList.remove('selected'));
+      button.classList.add('selected');
+    });
+    document.querySelector('#retryLisuQuizButton').addEventListener('click', renderLisuQuiz);
+    document.querySelector('#submitLisuQuizButton').addEventListener('click', () => {
+      const answeredCount = Object.keys(lisuQuizAnswers).length;
+      if (answeredCount < lisuQuizData.length) { toast('还有题目没有作答'); return; }
+      let score = 0;
+      lisuQuizData.forEach((item, index) => {
+        const selected = lisuQuizAnswers[index];
+        if (selected === item.correct) score += 1;
+        document.querySelectorAll('.lisu-quiz-choice[data-question="' + index + '"]').forEach(choice => {
+          const choiceIndex = Number(choice.dataset.index);
+          choice.classList.toggle('correct', choiceIndex === item.correct);
+          choice.classList.toggle('wrong', choiceIndex === selected && selected !== item.correct);
+          choice.disabled = true;
+        });
+      });
+      state.lisu.lastQuizScore = score;
+      const accuracy = Math.round(score / lisuQuizData.length * 100);
+      document.querySelector('#lisuQuizScoreText').textContent = '本次答对 ' + score + ' / ' + lisuQuizData.length + ' 题，正确率 ' + accuracy + '%';
+      if (score >= 4) {
+        if (!state.lisu.coinsAwarded) { state.coins += 150; state.lisu.coinsAwarded = true; }
+        if (!state.lisu.badgeUnlocked) state.badges += 1;
+        state.lisu.badgeUnlocked = true;
+        state.lisu.finished = true;
+        if (score === lisuQuizData.length) state.lisu.outfitUnlocked = true;
+        if (!state.lisu.outfitUnlocked && state.outfit === 'lisuReward') state.outfit = 'student';
+    if (!state.liangshan.outfitUnlocked && state.outfit === 'liangshanReward') state.outfit = 'student';
+        document.querySelector('#lisuQuizScoreHint').textContent = score === lisuQuizData.length ? '满分！傈僳族乐器徽章和角色服装都已发放。' : '达到 80%，获得傈僳族乐器徽章；服装奖励需要 100% 正确。';
+        document.querySelector('#lisuQuizScoreBox').classList.add('show');
+        saveState();
+        setTimeout(() => showEarnedRewards([
+          { kind: 'badge', type: '徽章获得', title: '傈僳族乐器徽章', image: 'assets/lisu-badge.png', text: '起奔、笛哩吐与葫芦笙的声音身份已经收入图鉴。' },
+          score === lisuQuizData.length ? { kind: 'outfit', type: '服装获得', title: '傈僳族角色服装', image: rewardOutfitSrc('lisu'), text: '满分通关！傈僳族奖励服装已经放入衣柜。' } : null
+        ], 'lisuResult'), 900);
+      } else {
+        document.querySelector('#lisuQuizScoreHint').textContent = '还差一点，答对 4 题及以上才能完成本关。';
+        document.querySelector('#lisuQuizScoreBox').classList.add('show');
+        saveState();
+      }
+    });
+
+    document.querySelector('#assembleButton').addEventListener('click', () => { renderQuiz(); showTask('assembleTask'); });
+    document.querySelector('#quizPanel').addEventListener('click', event => {
+      const button = event.target.closest('.quiz-choice');
+      if (!button) return;
+      const qIndex = button.dataset.question;
+      quizAnswers[qIndex] = Number(button.dataset.index);
+      button.closest('.quiz-question').querySelectorAll('.quiz-choice').forEach(choice => choice.classList.remove('selected'));
+      button.classList.add('selected');
+    });
+    document.querySelector('#retryQuizButton').addEventListener('click', renderQuiz);
+    document.querySelector('#submitQuizButton').addEventListener('click', () => {
+      const answeredCount = Object.keys(quizAnswers).length;
+      if (answeredCount < quizData.length) { toast('还有题目没有作答'); return; }
+      let score = 0;
+      quizData.forEach((item, index) => {
+        const selected = quizAnswers[index];
+        if (selected === item.correct) score += 1;
+        document.querySelectorAll('.quiz-choice[data-question="' + index + '"]').forEach(choice => {
+          const choiceIndex = Number(choice.dataset.index);
+          choice.classList.toggle('correct', choiceIndex === item.correct);
+          choice.classList.toggle('wrong', choiceIndex === selected && selected !== item.correct);
+          choice.disabled = true;
+        });
+      });
+      state.lastQuizScore = score;
+      const accuracy = Math.round(score / quizData.length * 100);
+      const scoreBox = document.querySelector('#quizScoreBox');
+      document.querySelector('#quizScoreText').textContent = '本次答对 ' + score + ' / ' + quizData.length + ' 题，正确率 ' + accuracy + '%';
+      if (score >= 8) {
+        if (!state.badgeUnlocked) { state.coins += 300; state.badges += 1; }
+        state.badgeUnlocked = true;
+        state.finished = true;
+        if (score === quizData.length) state.outfitUnlocked = true;
+        if (!state.outfitUnlocked && state.outfit === 'reward') state.outfit = 'student';
+        document.querySelector('#quizScoreHint').textContent = score === quizData.length ? '太好了，满分！徽章和角色专属服装都已发放。' : '已经达到 80%，获得徽章；服装奖励需要 100% 正确，可以重新挑战满分。';
+        scoreBox.classList.add('show');
+        saveState();
+        setTimeout(() => showEarnedRewards([
+          { kind: 'badge', type: '徽章获得', title: '古乐守护者徽章', image: 'assets/gule-badge.png', text: '谈经古乐的五件声音信物已经被你重新点亮。' },
+          score === quizData.length ? { kind: 'outfit', type: '服装获得', title: '俚濮彝族角色服装', image: rewardOutfitSrc('lipu'), text: '满分通关！俚濮彝族奖励服装已经放入衣柜。' } : null
+        ], 'result'), 900);
+      } else {
+        document.querySelector('#quizScoreHint').textContent = '还差一点，达到 8 题正确才能获得徽章。可以点“重新作答”再试一次。';
+        scoreBox.classList.add('show');
+        saveState();
+      }
+    });
+    document.querySelectorAll('.instrument-card img').forEach(img => img.addEventListener('error', () => { img.style.display = 'none'; img.closest('.instrument-card').classList.add('image-unavailable'); }));
+
+    const infoOverlay = document.querySelector('#infoOverlay');
+    const characterOverlay = document.querySelector('#characterOverlay');
+    const wardrobeOverlay = document.querySelector('#wardrobeOverlay');
+    function updateBadgeCard(selector, unlocked) {
+      const card = document.querySelector(selector);
+      if (!card) return;
+      const img = card.querySelector('img');
+      const title = card.querySelector('h3');
+      const desc = card.querySelector('p:not(.badge-source)');
+      const source = card.querySelector('.badge-source');
+      if (!card.dataset.trueTitle && title) card.dataset.trueTitle = title.textContent;
+      if (!card.dataset.trueDesc && desc) card.dataset.trueDesc = desc.textContent;
+      if (!card.dataset.trueSource && source) card.dataset.trueSource = source.textContent;
+      if (img && !card.dataset.trueImg) {
+        card.dataset.trueImg = img.getAttribute('src') || '';
+        card.dataset.trueAlt = img.getAttribute('alt') || '';
+      }
+      card.classList.toggle('unlocked', !!unlocked);
+      card.classList.toggle('locked', !unlocked);
+      if (unlocked) {
+        if (img) { img.src = card.dataset.trueImg || unknownBadgeSrc; img.alt = card.dataset.trueAlt || '已获得徽章'; }
+        if (title) title.textContent = card.dataset.trueTitle || title.textContent;
+        if (desc) desc.textContent = card.dataset.trueDesc || '';
+        if (source) source.textContent = card.dataset.trueSource || '';
+      } else {
+        const prefix = (card.dataset.trueTitle || title?.textContent || '未知民族').split(' · ')[0];
+        if (img) { img.src = unknownBadgeSrc; img.alt = prefix + '徽章未获得'; }
+        if (title) title.textContent = prefix + ' · 未知徽章';
+        if (desc) desc.textContent = lockedBadgeDescription;
+        if (source) source.textContent = '获得条件：完成对应关卡小测后揭晓。';
+      }
+    }
+    function showBadgeCabinet() {
+      updateBadgeCard('#lipuBadgeCard', state.badgeUnlocked);
+      updateBadgeCard('#lisuBadgeCard', state.lisu.badgeUnlocked);
+      updateBadgeCard('#liangshanBadgeCard', state.liangshan.badgeUnlocked);
+      updateBadgeCard('#tibetanBadgeCard', state.tibetan.badgeUnlocked);
+      updateBadgeCard('#qiangBadgeCard', false);
+      updateBadgeCard('#miaoBadgeCard', false);
+      infoOverlay.classList.add('show');
+    }
+    document.querySelector('#closeImagePreview').addEventListener('click', closeImagePreview);
+    document.querySelector('#rewardPopupOverlay')?.addEventListener('click', event => { if (event.target.id === 'rewardPopupOverlay') document.querySelector('#closeRewardPopup').click(); });
+    imagePreviewOverlay.addEventListener('click', event => {
+      if (event.target === imagePreviewOverlay) closeImagePreview();
+    });    document.querySelector('#bookButton').addEventListener('click', () => { pauseLiangshanVideos(); showBadgeCabinet(); });
+    document.querySelector('#closetButton').addEventListener('click', () => { pauseLiangshanVideos(); renderState(); wardrobeOverlay.classList.add('show'); });
+    document.querySelectorAll('.gender-card').forEach(card => card.addEventListener('click', () => {
+      state.gender = card.dataset.gender;
+      state.outfit = 'student';
+      saveState();
+      characterOverlay.classList.remove('show');
+      toast(state.gender === 'male' ? '男生角色创建成功' : '女生角色创建成功');
+    }));
+    document.querySelectorAll('.wear-button').forEach(button => button.addEventListener('click', () => {
+      if (button.dataset.outfit === 'reward' && !state.outfitUnlocked) return;
+      if (button.dataset.outfit === 'lisuReward' && !state.lisu.outfitUnlocked) return;
+      if (button.dataset.outfit === 'liangshanReward' && !state.liangshan.outfitUnlocked) return;
+      if (button.dataset.outfit === 'tibetanReward' && !state.tibetan.outfitUnlocked) return;
+      state.outfit = button.dataset.outfit;
+      saveState();
+      toast(state.outfit === 'student' ? '已穿上初始旅行装' : (state.outfit === 'tibetanReward' ? '已穿上藏族奖励服装' : (state.outfit === 'liangshanReward' ? '已穿上凉山彝族奖励服装' : (state.outfit === 'lisuReward' ? '已穿上傈僳族奖励服装' : '已穿上攀西奖励服装'))));
+    }));
+    document.querySelector('#changeGenderButton').addEventListener('click', () => { wardrobeOverlay.classList.remove('show'); characterOverlay.classList.add('show'); });
+    document.querySelector('#closeWardrobe').addEventListener('click', () => wardrobeOverlay.classList.remove('show'));
+    document.querySelector('#openRewardWardrobe').addEventListener('click', () => { overlay.classList.remove('show'); renderState(); wardrobeOverlay.classList.add('show'); });
+    document.querySelector('#openLisuRewardWardrobe').addEventListener('click', () => { overlay.classList.remove('show'); renderState(); wardrobeOverlay.classList.add('show'); });
+    document.querySelector('#openLiangshanRewardWardrobe').addEventListener('click', () => { pauseLiangshanVideos(); overlay.classList.remove('show'); renderState(); wardrobeOverlay.classList.add('show'); });
+    document.querySelector('#openTibetanRewardWardrobe').addEventListener('click', () => { overlay.classList.remove('show'); renderState(); wardrobeOverlay.classList.add('show'); });
+    document.addEventListener('click', event => {
+      const replayButton = event.target.closest('#replayChapterButton,#replayLisuChapterButton,#replayLiangshanChapterButton,#replayTibetanChapterButton');
+      if (!replayButton) return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      if (replayButton.id === 'replayChapterButton') resetChapterForReplay();
+      if (replayButton.id === 'replayLisuChapterButton') resetLisuChapterForReplay();
+      if (replayButton.id === 'replayLiangshanChapterButton') resetLiangshanChapterForReplay();
+      if (replayButton.id === 'replayTibetanChapterButton') resetTibetanChapterForReplay();
+    }, true);
+    document.querySelector('#replayChapterButton').addEventListener('click', resetChapterForReplay);
+    document.querySelector('#retryFromResultButton').addEventListener('click', () => { renderQuiz(); showTask('assembleTask'); });
+    document.querySelector('#replayLisuChapterButton').addEventListener('click', resetLisuChapterForReplay);
+    document.querySelector('#replayLiangshanChapterButton').addEventListener('click', resetLiangshanChapterForReplay);
+    document.querySelector('#replayTibetanChapterButton').addEventListener('click', resetTibetanChapterForReplay);
+    document.querySelector('#retryLiangshanFromResultButton').addEventListener('click', () => { renderLiangshanQuiz(); showTask('liangshanQuizTask'); });
+    document.querySelector('#retryLisuFromResultButton').addEventListener('click', () => { renderLisuQuiz(); showTask('lisuQuizTask'); });
+    document.querySelector('#retryTibetanFromResultButton').addEventListener('click', () => { renderTibetanQuiz(); showTask('tibetanQuizTask'); });
+    document.querySelector('.info-close').addEventListener('click', () => infoOverlay.classList.remove('show'));
+    renderState();
+    if (!state.gender) characterOverlay.classList.add('show');
+  </script>
+</body>
+</html>
+

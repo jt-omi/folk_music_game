@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="640" viewBox="0 0 900 640">
+  <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#b64032"/><stop offset="1" stop-color="#e1a83b"/></linearGradient></defs>
+  <rect width="900" height="640" rx="42" fill="#fff8ea"/>
+  <circle cx="735" cy="115" r="110" fill="#47785e" opacity=".22"/>
+  <circle cx="135" cy="520" r="130" fill="#e1a83b" opacity=".16"/>
+  <circle cx="450" cy="310" r="178" fill="url(#g)" stroke="#f3d177" stroke-width="26"/><circle cx="450" cy="310" r="116" fill="#fff8ea" opacity=".92"/><path d="M450 165 L490 275 L607 275 L512 342 L548 452 L450 385 L352 452 L388 342 L293 275 L410 275 Z" fill="#b64032"/><path d="M330 505 H570" stroke="#2b2018" stroke-width="18" stroke-linecap="round"/>
+  <text x="450" y="580" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="42" font-weight="700" fill="#5b3428">凉山彝族徽章</text>
+</svg>

@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 850" role="img" aria-label="四川省3D立体地势科技地图">
+  <defs>
+    <pattern id="fineGrid" width="42" height="42" patternUnits="userSpaceOnUse">
+      <path d="M42 0H0V42" fill="none" stroke="#78e6ff" stroke-width="1" opacity=".18"/>
+      <path d="M21 0V42M0 21H42" fill="none" stroke="#78e6ff" stroke-width=".6" opacity=".09"/>
+    </pattern>
+    <radialGradient id="bgGlow" cx="51%" cy="45%" r="67%">
+      <stop offset="0" stop-color="#244d5a"/>
+      <stop offset=".58" stop-color="#132836"/>
+      <stop offset="1" stop-color="#07111d"/>
+    </radialGradient>
+    <linearGradient id="terrain3d" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f1ead0"/>
+      <stop offset=".17" stop-color="#b9c07b"/>
+      <stop offset=".36" stop-color="#697d54"/>
+      <stop offset=".53" stop-color="#8b6a48"/>
+      <stop offset=".7" stop-color="#c58f48"/>
+      <stop offset=".86" stop-color="#7fc06d"/>
+      <stop offset="1" stop-color="#d8e7a5"/>
+    </linearGradient>
+    <radialGradient id="basinLight" cx="72%" cy="43%" r="31%">
+      <stop offset="0" stop-color="#cbf08b" stop-opacity=".95"/>
+      <stop offset=".42" stop-color="#8bcf70" stop-opacity=".78"/>
+      <stop offset="1" stop-color="#2f6f58" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="westernHighland" cx="23%" cy="47%" r="56%">
+      <stop offset="0" stop-color="#4c4850" stop-opacity=".92"/>
+      <stop offset=".36" stop-color="#89664b" stop-opacity=".75"/>
+      <stop offset=".72" stop-color="#b98444" stop-opacity=".48"/>
+      <stop offset="1" stop-color="#b98444" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="panxiRidge" cx="43%" cy="78%" r="30%">
+      <stop offset="0" stop-color="#d38c42" stop-opacity=".85"/>
+      <stop offset=".55" stop-color="#955a3b" stop-opacity=".62"/>
+      <stop offset="1" stop-color="#955a3b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sideWall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#385d4d"/>
+      <stop offset=".48" stop-color="#2b4039"/>
+      <stop offset="1" stop-color="#16242b"/>
+    </linearGradient>
+    <filter id="terrainTexture" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.011 0.018" numOctaves="6" seed="26" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values=".9 0 0 0 0  0 .85 0 0 0  0 0 .7 0 0  0 0 0 .38 0" result="coloredNoise"/>
+      <feBlend in="SourceGraphic" in2="coloredNoise" mode="overlay"/>
+    </filter>
+    <filter id="mapShadow" x="-20%" y="-18%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="30" stdDeviation="22" flood-color="#000" flood-opacity=".45"/>
+    </filter>
+    <filter id="innerRelief" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" seed="9" result="noise"/>
+      <feDiffuseLighting in="noise" surfaceScale="10" lighting-color="#fff0c5" result="light">
+        <feDistantLight azimuth="315" elevation="50"/>
+      </feDiffuseLighting>
+      <feComposite in="light" in2="SourceGraphic" operator="arithmetic" k1="0" k2=".55" k3=".48" k4="0"/>
+    </filter>
+    <path id="sichuanShape" d="M278 128 C365 78 468 94 528 136 C598 88 712 92 784 135 C874 123 966 166 999 230 C1090 244 1162 318 1176 400 C1241 477 1202 588 1117 624 C1077 708 981 740 884 707 C807 784 670 795 590 732 C493 787 367 753 327 667 C231 648 149 578 158 481 C84 405 105 285 189 245 C173 195 218 154 278 128 Z"/>
+    <clipPath id="clipSichuan"><use href="#sichuanShape"/></clipPath>
+  </defs>
+
+  <rect width="1400" height="850" rx="44" fill="url(#bgGlow)"/>
+  <rect width="1400" height="850" fill="url(#fineGrid)"/>
+  <g opacity=".26" stroke="#9ff4ff" stroke-width="1">
+    <path d="M-20 705 C230 596 431 563 680 601 C930 638 1110 575 1420 458" fill="none"/>
+    <path d="M-40 240 C250 336 444 362 690 325 C922 290 1114 331 1450 476" fill="none"/>
+    <path d="M214 34 L1182 802M446 30 L1320 692M72 520 L738 850" fill="none" opacity=".38"/>
+  </g>
+  <ellipse cx="700" cy="770" rx="505" ry="46" fill="#000" opacity=".32"/>
+
+  <g filter="url(#mapShadow)">
+    <g transform="translate(0 52)">
+      <use href="#sichuanShape" fill="url(#sideWall)" opacity=".98"/>
+      <use href="#sichuanShape" fill="none" stroke="#0f1b24" stroke-width="18" opacity=".5"/>
+    </g>
+    <use href="#sichuanShape" fill="#284a3e" opacity=".55" transform="translate(0 32)"/>
+    <g clip-path="url(#clipSichuan)">
+      <rect x="82" y="62" width="1130" height="720" fill="url(#terrain3d)"/>
+      <rect x="82" y="62" width="1130" height="720" fill="url(#westernHighland)"/>
+      <rect x="82" y="62" width="1130" height="720" fill="url(#basinLight)"/>
+      <rect x="82" y="62" width="1130" height="720" fill="url(#panxiRidge)"/>
+      <g filter="url(#innerRelief)" opacity=".52">
+        <rect x="82" y="62" width="1130" height="720" fill="#9d8f62"/>
+      </g>
+      <g opacity=".72">
+        <path d="M188 287 C292 214 391 228 489 300 C370 320 267 366 174 465 C136 386 141 330 188 287 Z" fill="#7b634e"/>
+        <path d="M252 178 C376 112 526 142 604 238 C482 248 359 275 248 356 C199 294 203 219 252 178 Z" fill="#5f584c"/>
+        <path d="M245 592 C355 516 478 541 570 653 C470 728 325 699 245 592 Z" fill="#a7633f"/>
+        <path d="M682 259 C805 197 958 243 1046 360 C895 356 772 390 655 477 C604 389 615 305 682 259 Z" fill="#8bc568" opacity=".72"/>
+        <path d="M774 430 C914 376 1070 420 1144 535 C1032 616 872 602 772 536 C728 506 729 458 774 430 Z" fill="#88c76d" opacity=".7"/>
+      </g>
+      <g opacity=".74">
+        <path d="M270 158 l50 124 l-120 42 Z M421 135 l75 145 l-153 15 Z M176 397 l126 21 l-124 119 Z M406 535 l88 158 l-166 -46 Z" fill="#f2e8c9" opacity=".62"/>
+        <path d="M225 255 l36 64 l-74 29 Z M525 194 l50 96 l-107 10 Z M312 490 l64 112 l-112 -24 Z" fill="#fff6dc" opacity=".45"/>
+      </g>
+      <g fill="none" stroke-linecap="round">
+        <path d="M660 287 C764 336 848 368 970 365 C1050 363 1110 401 1160 470" stroke="#79d8ff" stroke-width="13" opacity=".45"/>
+        <path d="M348 490 C502 462 620 488 736 558 C870 636 1005 610 1136 573" stroke="#8de6ff" stroke-width="8" opacity=".36"/>
+        <path d="M210 250 C360 220 430 120 630 176 M190 360 C350 305 492 274 646 292 M180 484 C342 424 515 390 686 438 M225 614 C398 545 582 528 764 592" stroke="#171f26" stroke-width="4" opacity=".13"/>
+        <path d="M690 312 C826 282 982 328 1088 426 M708 402 C858 386 1014 434 1122 536 M640 512 C792 560 938 586 1090 550" stroke="#10271e" stroke-width="4" opacity=".13"/>
+      </g>
+      <g opacity=".26" stroke="#f8ffe8" stroke-width="2" fill="none">
+        <path d="M122 205 H1190 M112 315 H1208 M120 425 H1215 M154 535 H1192 M222 645 H1110"/>
+        <path d="M235 100 V710 M380 92 V760 M525 112 V784 M670 92 V795 M815 105 V760 M960 132 V708 M1105 240 V615"/>
+      </g>
+    </g>
+    <use href="#sichuanShape" fill="none" stroke="#eaffff" stroke-width="20" opacity=".72"/>
+    <use href="#sichuanShape" fill="none" stroke="#25d8ff" stroke-width="4" opacity=".65"/>
+    <use href="#sichuanShape" fill="none" stroke="#f5d286" stroke-width="2" opacity=".8"/>
+  </g>
+
+  <g font-family="Microsoft YaHei, PingFang SC, sans-serif">
+    <text x="88" y="88" fill="#dffbff" font-size="30" font-weight="800">四川省 3D 民族音乐地势地图</text>
+    <text x="90" y="122" fill="#98dce8" font-size="17">西部高原山地 · 东部四川盆地 · 南部攀西山地河谷</text>
+    <g fill="#e9fbff" opacity=".86" font-size="18" font-weight="700">
+      <text x="225" y="198">西部高原山地</text>
+      <text x="865" y="308">四川盆地</text>
+      <text x="398" y="705">攀西山地河谷</text>
+    </g>
+    <g transform="translate(1030 74)">
+      <rect width="280" height="96" rx="18" fill="#071620" opacity=".62" stroke="#59dff8" stroke-width="1"/>
+      <circle cx="25" cy="28" r="7" fill="#d7f2a3"/><text x="44" y="34" fill="#dffbff" font-size="15">平原/盆地层</text>
+      <circle cx="25" cy="56" r="7" fill="#c78b49"/><text x="44" y="62" fill="#dffbff" font-size="15">山地河谷层</text>
+      <circle cx="25" cy="82" r="7" fill="#706255"/><text x="44" y="88" fill="#dffbff" font-size="15">高原山地层</text>
+    </g>
+  </g>
+</svg>

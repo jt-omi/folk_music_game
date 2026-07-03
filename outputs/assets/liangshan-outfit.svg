@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="640" viewBox="0 0 900 640">
+  <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#b64032"/><stop offset="1" stop-color="#1f2933"/></linearGradient></defs>
+  <rect width="900" height="640" rx="42" fill="#fff8ea"/>
+  <circle cx="735" cy="115" r="110" fill="#e1a83b" opacity=".22"/>
+  <circle cx="135" cy="520" r="130" fill="#1f2933" opacity=".16"/>
+  <path d="M330 170 C390 120 510 120 570 170 L620 490 H280 Z" fill="url(#g)" stroke="#5b3428" stroke-width="10"/><path d="M330 180 L210 290 L265 360 L365 270" fill="#1f2933" stroke="#5b3428" stroke-width="8"/><path d="M570 180 L690 290 L635 360 L535 270" fill="#1f2933" stroke="#5b3428" stroke-width="8"/><path d="M335 245 H565 M320 325 H580 M305 405 H595" stroke="#f4d35e" stroke-width="16" stroke-linecap="round"/><circle cx="450" cy="150" r="70" fill="#1f2933"/>
+  <text x="450" y="580" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="42" font-weight="700" fill="#5b3428">凉山彝族服装奖励位</text>
+</svg>

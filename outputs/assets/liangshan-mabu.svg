@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="640" viewBox="0 0 900 640">
+  <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#8f4b2e"/><stop offset="1" stop-color="#d9a441"/></linearGradient></defs>
+  <rect width="900" height="640" rx="42" fill="#fff8ea"/>
+  <circle cx="735" cy="115" r="110" fill="#47785e" opacity=".22"/>
+  <circle cx="135" cy="520" r="130" fill="#d9a441" opacity=".16"/>
+  <path d="M200 360 C360 295 535 295 700 360" fill="none" stroke="url(#g)" stroke-width="58" stroke-linecap="round"/><path d="M700 360 L805 300 L805 420 Z" fill="#5b3428"/><path d="M186 360 L115 330 L115 390 Z" fill="#d9a441"/><circle cx="326" cy="348" r="11" fill="#fff8ea"/><circle cx="396" cy="335" r="11" fill="#fff8ea"/><circle cx="466" cy="335" r="11" fill="#fff8ea"/><circle cx="536" cy="348" r="11" fill="#fff8ea"/><path d="M126 360 C148 334 165 334 190 360 C165 386 148 386 126 360Z" fill="#f2d28b"/>
+  <text x="450" y="580" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="42" font-weight="700" fill="#5b3428">马布</text>
+</svg>
