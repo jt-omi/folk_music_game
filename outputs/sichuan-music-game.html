@@ -232,6 +232,14 @@
       pointer-events: none;
     }
     .gal-sprites { position: absolute; left: 0; right: 0; top: 16px; bottom: 168px; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 52px; z-index: 1; pointer-events: none; }
+    .gal-stage > img,
+    .gal-stage > picture,
+    .gal-stage > .gal-character,
+    .gal-stage > .instrument-float,
+    .gal-stage > .instrument-visual,
+    .gal-stage > .extra-character {
+      display: none !important;
+    }
     .gal-character { position: relative; width: 42%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; opacity: .48; transform: scale(.94); transition: transform .22s ease, opacity .22s ease, filter .22s ease; filter: grayscale(.42) brightness(.82); pointer-events: none; }
     .gal-character.speaking { opacity: 1; transform: scale(1.01); filter: drop-shadow(0 16px 22px rgba(0,0,0,.26)); z-index: 2; }
     .gal-character img { max-width: min(88%, 210px); max-height: 245px; object-fit: contain; object-position: bottom center; }
@@ -1241,9 +1249,43 @@
       if (visual) copy.instrumentVisual = visual;
       return copy;
     }
-    function choicePanelHtml(question, choices, answerClass, key) {
+    function stableHashSeed(value) {
+      const text = String(value || '');
+      let hash = 2166136261;
+      for (let i = 0; i < text.length; i += 1) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return hash >>> 0;
+    }
+    function shuffledChoiceEntries(choices, correctIndex, seed) {
+      const entries = (choices || []).map((text, index) => ({ text, index }));
+      const normalizedCorrect = Number(correctIndex);
+      if (entries.length <= 1 || Number.isNaN(normalizedCorrect)) return entries;
+      const correctEntry = entries.find(entry => entry.index === normalizedCorrect);
+      if (!correctEntry) return entries;
+      const desiredPosition = stableHashSeed(seed) % entries.length;
+      const wrongEntries = entries
+        .filter(entry => entry.index !== normalizedCorrect)
+        .sort((a, b) => stableHashSeed(seed + '|wrong|' + a.index) - stableHashSeed(seed + '|wrong|' + b.index));
+      const mixed = [];
+      for (let i = 0; i < entries.length; i += 1) {
+        mixed.push(i === desiredPosition ? correctEntry : wrongEntries.shift());
+      }
+      return mixed;
+    }
+    function choicePanelHtml(question, choices, answerClass, key, correctIndex, seed) {
+      const entries = shuffledChoiceEntries(choices, correctIndex, seed || key || question);
       return '<div class="dialogue-choice-panel"><div class="question">' + escapeHtml(question) + '</div><div class="choices">' +
-        choices.map((choice, index) => '<button class="choice ' + answerClass + '" data-key="' + escapeHtml(key) + '" data-index="' + index + '">' + String.fromCharCode(65 + index) + '. ' + escapeHtml(choice) + '</button>').join('') +
+        entries.map((entry, displayIndex) => '<button class="choice ' + answerClass + '" data-key="' + escapeHtml(key) + '" data-index="' + entry.index + '">' + String.fromCharCode(65 + displayIndex) + '. ' + escapeHtml(entry.text) + '</button>').join('') +
+        '</div></div>';
+    }
+    function quizQuestionHtml(item, qIndex, answerClass, seedPrefix) {
+      const question = item.question || item.q || '';
+      const choices = item.choices || item.a || [];
+      const entries = shuffledChoiceEntries(choices, item.correct, seedPrefix + '|' + qIndex + '|' + question);
+      return '<div class="quiz-question"><h3>' + (qIndex + 1) + '. ' + escapeHtml(question) + '</h3><div class="choices">' +
+        entries.map((entry, displayIndex) => '<button class="choice ' + answerClass + '" data-question="' + qIndex + '" data-index="' + entry.index + '">' + String.fromCharCode(65 + displayIndex) + '. ' + escapeHtml(entry.text) + '</button>').join('') +
         '</div></div>';
     }
     function stageForMode(mode) {
@@ -1295,7 +1337,7 @@
         return label + galStoryStage(visualStory, safeSceneIndex, button);
       }
       const question = '剧情选择 ' + unitIndex + '：' + item.question;
-      return label + galStoryStage(visualStory, safeSceneIndex, choicePanelHtml(question, item.choices, answerClass, key));
+      return label + galStoryStage(visualStory, safeSceneIndex, choicePanelHtml(question, item.choices, answerClass, key, item.correct, mode + '|' + key + '|' + question));
     }
     function tibetanVideoStoryUnitHtml(story, key, sceneIndex = 0) {
       const stagedStory = Object.assign({}, story, { stage: story.stage || stageForMode('tibetan') });
@@ -1307,7 +1349,7 @@
         const button = '<button class="primary story-next" data-mode="tibetanVideo" data-key="' + escapeHtml(key) + '" data-scene="' + (safeSceneIndex + 1) + '" onclick="event.stopPropagation(); continueStory(this.dataset.mode, this.dataset.key, Number(this.dataset.scene));">继续剧情</button>';
         return label + galStoryStage(stagedStory, safeSceneIndex, button);
       }
-      return label + galStoryStage(stagedStory, safeSceneIndex, choicePanelHtml(stagedStory.question, stagedStory.choices, 'tibetan-video-answer', key));
+      return label + galStoryStage(stagedStory, safeSceneIndex, choicePanelHtml(stagedStory.question, stagedStory.choices, 'tibetan-video-answer', key, stagedStory.correct, 'tibetanVideo|' + key + '|' + stagedStory.question));
     }
     function storyVideoUnitHtml(story, key, sceneIndex = 0) {
       const stagedStory = Object.assign({}, story, { stage: story.stage || stageForMode('liangshanVideo') });
@@ -1319,7 +1361,7 @@
         const button = '<button class="primary story-next" data-mode="liangshanVideo" data-key="' + escapeHtml(key) + '" data-scene="' + (safeSceneIndex + 1) + '" onclick="event.stopPropagation(); continueStory(this.dataset.mode, this.dataset.key, Number(this.dataset.scene));">继续剧情</button>';
         return label + galStoryStage(stagedStory, safeSceneIndex, button);
       }
-      return label + galStoryStage(stagedStory, safeSceneIndex, choicePanelHtml(stagedStory.question, stagedStory.choices, 'liangshan-video-answer', key));
+      return label + galStoryStage(stagedStory, safeSceneIndex, choicePanelHtml(stagedStory.question, stagedStory.choices, 'liangshan-video-answer', key, stagedStory.correct, 'liangshanVideo|' + key + '|' + stagedStory.question));
     }
     function storyCompleteHtml(line, title, text, actionHtml = '') {
       const action = actionHtml ? '<div class="completion-actions">' + actionHtml + '</div>' : '';
@@ -1384,7 +1426,7 @@
     function renderQuiz() {
       Object.keys(quizAnswers).forEach(key => delete quizAnswers[key]);
       document.querySelector('#quizScoreBox').classList.remove('show');
-      document.querySelector('#quizPanel').innerHTML = quizData.map((item, qIndex) => { const question = item.question || item.q || ''; const choices = item.choices || item.a || []; return '<div class="quiz-question"><h3>' + (qIndex + 1) + '. ' + question + '</h3><div class="choices">' + choices.map((choice, cIndex) => '<button class="choice quiz-choice" data-question="' + qIndex + '" data-index="' + cIndex + '">' + String.fromCharCode(65 + cIndex) + '. ' + choice + '</button>').join('') + '</div></div>'; }).join('');
+      document.querySelector('#quizPanel').innerHTML = quizData.map((item, qIndex) => quizQuestionHtml(item, qIndex, 'quiz-choice', 'lipuQuiz')).join('');
     }
     function renderResult() {
       const score = state.lastQuizScore || 0;
@@ -1425,7 +1467,7 @@
     function renderLisuQuiz() {
       Object.keys(lisuQuizAnswers).forEach(key => delete lisuQuizAnswers[key]);
       document.querySelector('#lisuQuizScoreBox').classList.remove('show');
-      document.querySelector('#lisuQuizPanel').innerHTML = lisuQuizData.map((item, qIndex) => { const question = item.question || item.q || ''; const choices = item.choices || item.a || []; return '<div class="quiz-question"><h3>' + (qIndex + 1) + '. ' + question + '</h3><div class="choices">' + choices.map((choice, cIndex) => '<button class="choice lisu-quiz-choice" data-question="' + qIndex + '" data-index="' + cIndex + '">' + String.fromCharCode(65 + cIndex) + '. ' + choice + '</button>').join('') + '</div></div>'; }).join('');
+      document.querySelector('#lisuQuizPanel').innerHTML = lisuQuizData.map((item, qIndex) => quizQuestionHtml(item, qIndex, 'lisu-quiz-choice', 'lisuQuiz')).join('');
     }
     function renderLisuResult() {
       const score = state.lisu.lastQuizScore || 0;
@@ -1527,7 +1569,7 @@
       pauseLiangshanVideos();
       Object.keys(liangshanQuizAnswers).forEach(key => delete liangshanQuizAnswers[key]);
       document.querySelector('#liangshanQuizScoreBox').classList.remove('show');
-      document.querySelector('#liangshanQuizPanel').innerHTML = liangshanQuizData.map((item, qIndex) => { const question = item.question || item.q || ''; const choices = item.choices || item.a || []; return '<div class="quiz-question"><h3>' + (qIndex + 1) + '. ' + question + '</h3><div class="choices">' + choices.map((choice, cIndex) => '<button class="choice liangshan-quiz-choice" data-question="' + qIndex + '" data-index="' + cIndex + '">' + String.fromCharCode(65 + cIndex) + '. ' + choice + '</button>').join('') + '</div></div>'; }).join('');
+      document.querySelector('#liangshanQuizPanel').innerHTML = liangshanQuizData.map((item, qIndex) => quizQuestionHtml(item, qIndex, 'liangshan-quiz-choice', 'liangshanQuiz')).join('');
     }
     function renderLiangshanResult() {
       const score = state.liangshan.lastQuizScore || 0;
@@ -1632,7 +1674,7 @@
     function renderTibetanQuiz() {
       Object.keys(tibetanQuizAnswers).forEach(key => delete tibetanQuizAnswers[key]);
       document.querySelector('#tibetanQuizScoreBox').classList.remove('show');
-      document.querySelector('#tibetanQuizPanel').innerHTML = tibetanQuizData.map((item, qIndex) => { const question = item.question || item.q || ''; const choices = item.choices || item.a || []; return '<div class="quiz-question"><h3>' + (qIndex + 1) + '. ' + question + '</h3><div class="choices">' + choices.map((choice, cIndex) => '<button class="choice tibetan-quiz-choice" data-question="' + qIndex + '" data-index="' + cIndex + '">' + String.fromCharCode(65 + cIndex) + '. ' + choice + '</button>').join('') + '</div></div>'; }).join('');
+      document.querySelector('#tibetanQuizPanel').innerHTML = tibetanQuizData.map((item, qIndex) => quizQuestionHtml(item, qIndex, 'tibetan-quiz-choice', 'tibetanQuiz')).join('');
     }
     function renderTibetanResult() {
       const score = state.tibetan.lastQuizScore || 0;
