@@ -213,6 +213,69 @@
     .story-fact { padding: 13px; border-radius: 14px; background: #fff8ea; }
     .knowledge-panel { min-height: 210px; margin: 14px 0; padding: 14px; border-radius: 22px; background: #efe0c8; }
     .knowledge-panel h3 { margin: 0 0 8px; color: var(--red-dark); }
+    .gal-showcase {
+      position: absolute; left: 22px; right: 22px; top: 16px; z-index: 9;
+      display: flex; justify-content: center; pointer-events: auto;
+    }
+    .gal-showcase-card {
+      display: flex; align-items: center; gap: 14px; width: min(760px, 100%);
+      padding: 12px 14px; border-radius: 22px; border: 2px solid rgba(255,248,234,.9);
+      background: rgba(255,250,240,.94); box-shadow: 0 14px 32px rgba(53,38,30,.18);
+    }
+    .gal-showcase-figure {
+      flex: 0 0 132px; width: 132px; height: 96px; overflow: hidden; border-radius: 16px;
+      background: #fff; border: 2px solid #eadcc0; cursor: zoom-in;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .gal-showcase-figure img {
+      width: 100%; height: 100%; object-fit: contain; background: #fffaf0;
+    }
+    .gal-showcase-copy { min-width: 0; }
+    .gal-showcase-copy b {
+      display: inline-block; margin-bottom: 6px; color: var(--red-dark); font-size: 18px;
+    }
+    .gal-showcase-copy p {
+      margin: 0; color: #5f4a27; font-size: 14px; line-height: 1.6;
+    }
+
+    #collectionTask > .dialogue,
+    #lisuCollectionTask > .dialogue,
+    #liangshanCollectionTask > .dialogue,
+    #tibetanCollectionTask > .dialogue {
+      display: block;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    #collectionTask > .dialogue::before,
+    #lisuCollectionTask > .dialogue::before,
+    #liangshanCollectionTask > .dialogue::before,
+    #tibetanCollectionTask > .dialogue::before,
+    #collectionTask > .dialogue > .portrait,
+    #lisuCollectionTask > .dialogue > .portrait,
+    #liangshanCollectionTask > .dialogue > .portrait,
+    #tibetanCollectionTask > .dialogue > .portrait,
+    #collectionTask > .dialogue > div > b,
+    #lisuCollectionTask > .dialogue > div > b,
+    #liangshanCollectionTask > .dialogue > div > b,
+    #tibetanCollectionTask > .dialogue > div > b,
+    #collectionTask > .dialogue > div > p,
+    #lisuCollectionTask > .dialogue > div > p,
+    #liangshanCollectionTask > .dialogue > div > p,
+    #tibetanCollectionTask > .dialogue > div > p {
+      display: none !important;
+    }
+    #collectionTask .knowledge-panel,
+    #lisuCollectionTask .knowledge-panel,
+    #liangshanCollectionTask .knowledge-panel,
+    #tibetanCollectionTask .knowledge-panel {
+      min-height: 0;
+      margin: 0 0 14px;
+      padding: 0;
+      background: transparent;
+    }
     .gal-stage {
       position: relative; min-height: 470px; margin: 8px 0 14px; overflow: hidden; border-radius: 28px;
       border: 6px solid rgba(255,248,234,.9);
@@ -388,7 +451,7 @@
     <section class="layout">
       <aside class="panel profile">
         <div class="avatar"><span class="student-avatar" id="studentAvatar">🧑</span><img id="avatarOutfit" alt="当前穿戴服装"></div>
-        <h2 id="profileName">成都小乐</h2>>
+        <h2 id="profileName">成都小乐</h2>
         <p class="level">见习音乐旅行者 · Lv.1</p>
         <div class="progress"><span id="levelProgress"></span></div>
         <nav class="menu">
@@ -432,8 +495,7 @@
       <div id="collectionTask" class="task">
         <span class="tag">主任务</span>
         <h2>收集五件声音信物</h2>
-        <div class="dialogue"><div class="portrait">🧒</div><div><b>小洛</b><p>“旅行家，声音信物就藏在这些图鉴卡里。你点开一件，我就把它的线索告诉你；答对观察题，它就会回到古乐图鉴。”</p>
-        <div class="knowledge-panel" id="knowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div></div></div>
+        <div class="knowledge-panel" id="knowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div>
         <div class="collection-progress"><p>跟随小洛依次完成五个声音单元。当前单元回答正确后，下一段剧情才会解锁</p><b id="collectionCount">已收集 0 / 5</b></div>
         <div class="instrument-grid" id="instrumentGrid">
           <button class="instrument-card" data-key="dizi"><img src="assets/dizi.jpg" alt="馆藏笛子实物参考"><span>竹笛</span><small>吹奏 · 旋律</small></button>
@@ -458,7 +520,7 @@
       </div>
 
       <div id="result" class="task result">
-        <div class="reward">🎼</div><h2 id="resultTitle">谈经古乐图鉴点亮</h2>>
+        <div class="reward">🎼</div><h2 id="resultTitle">谈经古乐图鉴点亮</h2>
         <div class="dialogue"><div class="portrait">🧒</div><div><b>小洛</b><p>“听，五件声音信物已经重新合在一起了。你不只是答完了题，也把谈经古乐的一段记忆带回了图鉴。</p></div></div>
         <p id="resultSummary">五件声音信物已经归位。竹笛承担旋律，月琴填充中音，三弦支持低音；响篾与树叶展示了地方音乐里多样的声音材料</p>
         <div class="theory-card"><b>重要说明：</b>真实谈经古乐乐队远不止这五件乐器，完整乐队还会出现唢呐、锣鼓、二胡、京胡、琵琶、扬琴等。本关采用“关键乐器收集”玩法，不等同于完整乐队复原</div>
@@ -488,13 +550,12 @@
 
       <div id="lisuCollectionTask" class="task">
         <span class="tag">主任务</span>
-        <h2>收集三件傈僳族声音信</h2>>
-        <div class="dialogue"><div class="portrait">🎧</div><div><b>阿洛</b><p>“这里的三件乐器性格很不一样：起奔会弹，笛哩吐会吹，葫芦笙会让簧片在气息里歌唱。你来点开它们，我陪你判断它们的声音身份。”</p>
-        <div class="knowledge-panel" id="lisuKnowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div></div></div>
+        <h2>收集三件傈僳族声音信物</h2>
+        <div class="knowledge-panel" id="lisuKnowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div>
         <div class="collection-progress"><p>跟随阿洛依次完成三个乐器单元。当前单元回答正确后，下一段剧情才会解锁</p><b id="lisuCollectionCount">已收集 0 / 3</b></div>
         <div class="instrument-grid three" id="lisuInstrumentGrid">
           <button class="instrument-card" data-key="qiben"><img src="assets/lisu-qiben.jpg" alt="傈僳族起奔实物参考"><span>起奔（期奔）</span><small>四弦弹拨 · 常用乐器</small></button>
-          <button class="instrument-card" data-key="dilitu"><img src="assets/lisu-dilitu.png" alt="傈僳族笛哩吐实物参考"><span>笛哩吐</span><small>短竹管吹?· 常用乐器</small></button>
+          <button class="instrument-card" data-key="dilitu"><img src="assets/lisu-dilitu.png" alt="傈僳族笛哩吐实物参考"><span>笛哩吐</span><small>短竹管吹奏 · 常用乐器</small></button>
           <button class="instrument-card" data-key="hulusheng"><img src="assets/lisu-hulusheng.jpg" alt="傈僳族葫芦笙实物参考"><span>葫芦笙（阿咪直陆）</span><small>葫芦笙类 · 簧管乐器</small></button>
         </div>
         <button class="primary" id="lisuQuizButton" disabled">三件齐备，进入乐器知识小测</button>
@@ -503,7 +564,7 @@
 
       <div id="lisuQuizTask" class="task">
         <span class="tag">掌握检测</span>
-        <h2>傈僳族乐器知识小</h2>>
+        <h2>傈僳族乐器知识小测</h2>
         <div class="dialogue"><div class="portrait">🎧</div><div><b>阿洛</b><p>“现在轮到你独自辨认了。看清楚题目里的关键词：四弦、短竹管、葫芦笙斗、簧片，它们会带你找到答案。</p></div></div>
         <div class="theory-card"><b>检测目标：</b>从起奔、笛哩吐、葫芦笙（阿咪直陆）的乐器类别、形制特征和文化功能三个方面检验探索成果</div>
         <div class="quiz-meta"><span class="quiz-pill">5 题</span><span class="quiz-pill">4 题及以上：徽章</span><span class="quiz-pill">5 题全对：服装</span></div>
@@ -530,7 +591,7 @@
 
       <div id="liangshanIntro" class="task">
         <span class="tag">特色关卡 03</span>
-        <h2>凉山：听见彝族山地音</h2>>
+        <h2>凉山：听见彝族山地音乐</h2>
         <p>旅行手册来到大凉山。这里的彝族音乐与火把节、婚丧礼俗、放牧生产和日常情感紧紧相连。本关先认识三件代表性乐器：胡惹、马布、克西举尔，再通过两段视频探索，感受凉山彝族传统音乐的声音气质</p>
         <div class="dialogue">
           <div class="portrait">🔥</div>
@@ -544,8 +605,7 @@
       <div id="liangshanCollectionTask" class="task">
         <span class="tag">主任务</span>
         <h2>收集三件凉山彝族声音信物</h2>
-        <div class="dialogue"><div class="portrait">🔥</div><div><b>阿支</b><p>“大凉山的声音线索已经摆在眼前。胡惹、马布、克西举尔各有自己的发声秘密；视频里还有歌舞场景，别只看热闹，要听出它们和生活的连接。”</p>
-        <div class="knowledge-panel" id="liangshanKnowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div></div></div>
+        <div class="knowledge-panel" id="liangshanKnowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div>
         <div class="collection-progress"><p>跟随阿支依次完成三段乐器剧情，再解锁两段视频剧情。当前单元完成后，下一段剧情才会亮起</p><b id="liangshanCollectionCount">已收集 0 / 3</b></div>
         <div class="instrument-grid three" id="liangshanInstrumentGrid">
           <button class="instrument-card" data-key="hure"><img src="assets/liangshan-hure-photo.png" alt="胡惹乐器展示图"><span>胡惹</span><small>拉弦乐器 · 音色明亮</small></button>
@@ -573,7 +633,7 @@
       </div>
 
       <div id="liangshanResult" class="task result">
-        <div class="reward">🔥</div><h2 id="liangshanResultTitle">凉山彝族音乐图鉴点亮</h2>>
+        <div class="reward">🔥</div><h2 id="liangshanResultTitle">凉山彝族音乐图鉴点亮</h2>
         <div class="dialogue"><div class="portrait">🔥</div><div><b>阿支</b><p>“你已经把三件乐器和两段传统音乐收入旅程。大凉山的声音不会停在这里，它会继续在你的图鉴里回响。</p></div></div>
         <p id="liangshanResultSummary">你已经认识胡惹、马布、克西举尔，也完成了两段凉山彝族传统音乐试听</p>
         <div class="theory-card"><b>重要说明：</b>凉山彝族传统音乐远不止本关内容。本关先选择三件有代表性的乐器和两段可探索的音乐作为入门材料</div>
@@ -593,7 +653,7 @@
 
       <div id="tibetanIntro" class="task">
         <span class="tag">特色关卡 04</span>
-        <h2>甘孜：雪域康巴回</h2>>
+        <h2>甘孜：雪域康巴回声</h2>
         <p>旅行手册来到甘孜藏族自治州。雪山、草地、寺院和歌舞场在同一片风里回响：你要跟随新的音乐伙伴，先辨认三件藏族声音信物，再从视频里听见曲调与舞步的关系</p>
         <div class="dialogue"><div class="portrait">🏔</div><div><b>雪央（虚构藏族音乐伙伴）</b><p>“甘孜的声音，有的从弦上弹出，有的随弓弦歌唱，有的像雪山长风一样吹向远处。准备好把这些声音放进你的图鉴了吗？”</p></div></div>
         <div class="theory-card"><b>声音背景：</b>本关聚焦甘孜藏族音乐中适合游戏学习的三条线索：扎念（扎木聂）的弹拨伴唱、毕旺与弦子歌舞的拉弦伴奏、筒钦在藏传礼仪音乐中的长号声响；视频部分用《格桑拉》的酒歌“昌鲁”和巴塘弦子资料引导玩家联系“曲目、仪式、弦乐、舞蹈、生活场景”</div>
@@ -604,11 +664,10 @@
       <div id="tibetanCollectionTask" class="task">
         <span class="tag">主任务</span>
         <h2>收集三件甘孜藏族声音信物</h2>
-        <div class="dialogue"><div class="portrait">🏔</div><div><b>雪央</b><p>“先从三件声音信物开始。点开图鉴卡，听我讲完故事后，在对话框里回答问题；答对以后，下一段旅程才会亮起。”</p>
-        <div class="knowledge-panel" id="tibetanKnowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div></div></div>
+        <div class="knowledge-panel" id="tibetanKnowledgePanel"><h3>当前剧情单元</h3><p>跟随人物对话推进故事，答对当前问题后解锁下一段</p></div>
         <div class="collection-progress"><p>依次完成三段乐器剧情，再进入视频赏析。每个视频都需要点选“我已看完”并答对对应问题，才算完成</p><b id="tibetanCollectionCount">剧情进度 0 / 3</b></div>
         <div class="instrument-grid three" id="tibetanInstrumentGrid">
-          <button class="instrument-card" data-key="dramyin"><img src="assets/tibetan-dramyin.jpg" alt="扎念（扎木聂）乐器参考图"><span>扎念（扎木聂</span><small>六弦弹拨 · 歌舞伴奏</small></button>
+          <button class="instrument-card" data-key="dramyin"><img src="assets/tibetan-dramyin.jpg" alt="扎念（扎木聂）乐器参考图"><span>扎念（扎木聂）</span><small>六弦弹拨 · 歌舞伴奏</small></button>
           <button class="instrument-card" data-key="piwang"><img src="assets/tibetan-piwang.jpg" alt="毕旺拉弦乐器参考图"><span>毕旺</span><small>拉弦乐器 · 弦子歌舞</small></button>
           <button class="instrument-card" data-key="dungchen"><img src="assets/tibetan-dungchen.png" alt="筒钦藏族长号参考图"><span>筒钦</span><small>长号吹奏 · 礼仪声响</small></button>
         </div>
@@ -633,7 +692,7 @@
       </div>
 
       <div id="tibetanResult" class="task result">
-        <div class="reward">🏔</div><h2 id="tibetanResultTitle">甘孜藏族音乐图鉴点亮</h2>>
+        <div class="reward">🏔</div><h2 id="tibetanResultTitle">甘孜藏族音乐图鉴点亮</h2>
         <div class="dialogue"><div class="portrait">🏔</div><div><b>雪央</b><p>“你已经把弦声、长号声和歌舞场景收进旅程。若能满分回应雪山回声，藏族服装也会进入你的衣柜。</p></div></div>
         <p id="tibetanResultSummary">你已经认识扎念（扎木聂）、毕旺、筒钦，也完成了两段视频赏析</p>
         <div class="theory-card"><b>重要说明：</b>甘孜藏族音乐内容非常丰富，本关先选取适合入门的乐器、舞蹈与曲目线索。后续可以继续扩展藏戏、热巴、山歌、寺院音乐等内容</div>
@@ -652,7 +711,7 @@
 
   <div class="overlay" id="characterOverlay">
     <section class="modal">
-      <span class="tag">创建角色</span><h2>选择你的音乐旅行</h2>>
+      <span class="tag">创建角色</span><h2>选择你的音乐旅行</h2>
       <p>选择后将获得对应的初始旅行装；通关奖励服装也会根据角色分别发放</p>
       <div class="gender-grid">
         <button class="gender-card" data-gender="male"><img src="assets/student-male.png" alt="男生初始旅行装" style="width:100%;height:290px;object-fit:contain"><h3>男生角色</h3><p>蓝白运动旅行装、长裤与运动</p></button>
@@ -681,7 +740,7 @@
   <div class="overlay" id="infoOverlay">
     <section class="modal badge-cabinet-modal">
       <span class="tag">音乐文化图鉴</span>
-      <h2>徽章展示</h2>>
+      <h2>徽章展示</h2>
       <p class="badge-cabinet-intro">完成各关卡的小测后，徽章会在这里被点亮。每一枚徽章都记录一段民族音乐背后的文化记忆</p>
       <div class="badge-cabinet" id="badgeCabinet">
         <article class="badge-card locked" id="lipuBadgeCard">
@@ -722,7 +781,7 @@
       <div class="reward-sparkles"></div>
       <div class="reward-popup-content">
         <span class="tag" id="rewardPopupType">奖励获得</span>
-        <h2 class="reward-popup-title" id="rewardPopupTitle">获得奖励</h2>>
+        <h2 class="reward-popup-title" id="rewardPopupTitle">获得奖励</h2>
         <img class="reward-popup-image" id="rewardPopupImage" src="assets/unknown-badge.png" alt="奖励图片">
         <p class="reward-popup-text" id="rewardPopupText">新的奖励已经放入你的图鉴。</p>
         <button class="primary" id="closeRewardPopup">收下奖励</button>
@@ -1219,30 +1278,35 @@
     function getInstrumentVisual(mode, key, item) {
       const visuals = {
         lipu: {
-          dizi: 'assets/dizi.jpg',
-          sanxian: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Sanxian%2C_Tengwangge_%28Prince_of_Teng_Pavilion%29_%2831167793750%29.jpg/960px-Sanxian%2C_Tengwangge_%28Prince_of_Teng_Pavilion%29_%2831167793750%29.jpg',
-          yueqin: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Yi_musical_instrument_%28yueqin%29_-_Yunnan_Provincial_Museum-_DSC02056.JPG/960px-Yi_musical_instrument_%28yueqin%29_-_Yunnan_Provincial_Museum-_DSC02056.JPG',
-          xiangmie: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/5_Leaf_Kouxian.jpg/960px-5_Leaf_Kouxian.jpg',
-          leaf: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Aaron_Burden_2015-07-28_%28Unsplash%29.jpg/960px-Aaron_Burden_2015-07-28_%28Unsplash%29.jpg'
+          dizi: { src: 'assets/dizi.jpg', summary: '吹奏乐器，常承担旋律线。' },
+          sanxian: { src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Sanxian%2C_Tengwangge_%28Prince_of_Teng_Pavilion%29_%2831167793750%29.jpg/960px-Sanxian%2C_Tengwangge_%28Prince_of_Teng_Pavilion%29_%2831167793750%29.jpg', summary: '弹拨乐器，在本关里偏向低音支撑。' },
+          yueqin: { src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Yi_musical_instrument_%28yueqin%29_-_Yunnan_Provincial_Museum-_DSC02056.JPG/960px-Yi_musical_instrument_%28yueqin%29_-_Yunnan_Provincial_Museum-_DSC02056.JPG', summary: '弹拨乐器，帮助补足中音层次。' },
+          xiangmie: { src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/5_Leaf_Kouxian.jpg/960px-5_Leaf_Kouxian.jpg', summary: '以篾片振动、借口腔共鸣发声。' },
+          leaf: { src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Aaron_Burden_2015-07-28_%28Unsplash%29.jpg/960px-Aaron_Burden_2015-07-28_%28Unsplash%29.jpg', summary: '自然材料也能进入地方音乐表达。' }
         },
         lisu: {
-          qiben: 'assets/lisu-qiben.jpg',
-          dilitu: 'assets/lisu-dilitu.png',
-          hulusheng: 'assets/lisu-hulusheng.jpg'
+          qiben: { src: 'assets/lisu-qiben.jpg', summary: '四弦弹拨乐器，是傈僳族常用乐器。' },
+          dilitu: { src: 'assets/lisu-dilitu.png', summary: '短竹管吹奏，声音清亮灵活。' },
+          hulusheng: { src: 'assets/lisu-hulusheng.jpg', summary: '由葫芦与竹管组合，靠簧片振动发声。' }
         },
         liangshan: {
-          hure: 'assets/liangshan-hure-photo.png',
-          mabu: 'assets/liangshan-mabu-photo.png',
-          kexijuer: 'assets/liangshan-kexijuer-photo.png'
+          hure: { src: 'assets/liangshan-hure-photo.png', summary: '拉弦乐器，音色明亮，常见于彝族音乐生活。' },
+          mabu: { src: 'assets/liangshan-mabu-photo.png', summary: '单簧气鸣乐器，竹管与牛角喇叭口很有辨识度。' },
+          kexijuer: { src: 'assets/liangshan-kexijuer-photo.png', summary: '咬着吹的笛，演奏方式很独特。' }
         },
         tibetan: {
-          dramyin: 'assets/tibetan-dramyin.jpg',
-          piwang: 'assets/tibetan-piwang.jpg',
-          dungchen: 'assets/tibetan-dungchen.png'
+          dramyin: { src: 'assets/tibetan-dramyin.jpg', summary: '六弦弹拨乐器，常陪伴歌唱与讲述。' },
+          piwang: { src: 'assets/tibetan-piwang.jpg', summary: '拉弦乐器，常与弦子歌舞相连。' },
+          dungchen: { src: 'assets/tibetan-dungchen.png', summary: '长号类吹奏乐器，声音低沉悠长。' }
         }
       };
-      const src = visuals[mode] && visuals[mode][key];
-      return src ? { src, name: item ? item.name : key } : null;
+      const visual = visuals[mode] && visuals[mode][key];
+      if (!visual) return null;
+      return {
+        src: visual.src,
+        name: item ? item.name : key,
+        summary: visual.summary
+      };
     }
     function withInstrumentVisual(story, visual) {
       const copy = Object.assign({}, story);
@@ -1256,7 +1320,7 @@
         hash ^= text.charCodeAt(i);
         hash = Math.imul(hash, 16777619);
       }
-      return hash >>> 0;
+      return hash >> 0;
     }
     function shuffledChoiceEntries(choices, correctIndex, seed) {
       const entries = (choices || []).map((text, index) => ({ text, index }));
@@ -1312,11 +1376,17 @@
       const npcSprite = getNpcSprite(story.npc);
       const npcVisual = npcSprite ? '<img src="' + escapeHtml(npcSprite) + '" alt="' + escapeHtml(story.npc) + '站绘">' : '<div class="emoji-sprite">' + escapeHtml(story.portrait) + '</div>';
       const stageClass = story.stage ? ' ' + story.stage : '';
+      const showcase = story.instrumentVisual
+        ? '<div class="gal-showcase"><div class="gal-showcase-card"><button class="gal-showcase-figure" type="button" onclick="event.stopPropagation(); showImagePreview(\'' + escapeHtml(story.instrumentVisual.name) + '\', \''
+            + escapeHtml(story.instrumentVisual.src) + '\');"><img src="' + escapeHtml(story.instrumentVisual.src) + '" alt="' + escapeHtml(story.instrumentVisual.name) + '"></button><div class="gal-showcase-copy"><b>'
+            + escapeHtml(story.instrumentVisual.name) + '</b><p>' + escapeHtml(story.instrumentVisual.summary || '点击图片可放大查看乐器细节。') + '</p></div></div></div>'
+        : '';
       return '<div class="gal-stage' + stageClass + '">' +
         '<div class="gal-sprites">' +
           '<div class="gal-character hero ' + (heroActive ? 'speaking' : '') + '"><img src="' + escapeHtml(getHeroSprite()) + '" alt="玩家角色站绘"><div class="gal-character-name">玩家</div></div>' +
           '<div class="gal-character npc ' + (npcActive ? 'speaking' : '') + '" data-npc="' + escapeHtml(story.npc) + '">' + npcVisual + '<div class="gal-character-name">' + escapeHtml(story.npc) + '</div></div>' +
         '</div>' +
+        showcase +
         '<div class="gal-dialogue-box"><span class="gal-name">' + escapeHtml(scene.speaker) + '</span><p>' + escapeHtml(scene.text) + '</p>' + action + '</div>' +
       '</div>';
     }
