@@ -214,16 +214,15 @@
     .knowledge-panel { min-height: 210px; margin: 14px 0; padding: 14px; border-radius: 22px; background: #efe0c8; }
     .knowledge-panel h3 { margin: 0 0 8px; color: var(--red-dark); }
     .gal-showcase {
-      position: absolute; left: 22px; right: 22px; top: 16px; z-index: 9;
-      display: flex; justify-content: center; pointer-events: auto;
+      position: static; display: block; margin: 0 0 12px; pointer-events: auto;
     }
     .gal-showcase-card {
-      display: flex; align-items: center; gap: 14px; width: min(760px, 100%);
-      padding: 12px 14px; border-radius: 22px; border: 2px solid rgba(255,248,234,.9);
-      background: rgba(255,250,240,.94); box-shadow: 0 14px 32px rgba(53,38,30,.18);
+      display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; gap: 12px;
+      width: 100%; padding: 10px 12px; border-radius: 16px; border: 2px solid rgba(255,224,163,.78);
+      background: rgba(255,250,240,.96); box-shadow: 0 8px 18px rgba(0,0,0,.16);
     }
     .gal-showcase-figure {
-      flex: 0 0 132px; width: 132px; height: 96px; overflow: hidden; border-radius: 16px;
+      width: 112px; height: 78px; overflow: hidden; border-radius: 12px;
       background: #fff; border: 2px solid #eadcc0; cursor: zoom-in;
       display: flex; align-items: center; justify-content: center;
     }
@@ -232,22 +231,17 @@
     }
     .gal-showcase-copy { min-width: 0; }
     .gal-showcase-copy b {
-      display: inline-block; margin-bottom: 6px; color: var(--red-dark); font-size: 18px;
+      display: inline-block; margin-bottom: 4px; color: var(--red-dark); font-size: 17px;
     }
     .gal-showcase-copy p {
-      margin: 0; color: #5f4a27; font-size: 14px; line-height: 1.6;
+      margin: 0; color: #5f4a27; font-size: 13px; line-height: 1.55;
     }
 
     #collectionTask > .dialogue,
     #lisuCollectionTask > .dialogue,
     #liangshanCollectionTask > .dialogue,
     #tibetanCollectionTask > .dialogue {
-      display: block;
-      margin: 0;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      box-shadow: none;
+      display: none !important;
     }
     #collectionTask > .dialogue::before,
     #lisuCollectionTask > .dialogue::before,
@@ -1328,7 +1322,8 @@
       if (entries.length <= 1 || Number.isNaN(normalizedCorrect)) return entries;
       const correctEntry = entries.find(entry => entry.index === normalizedCorrect);
       if (!correctEntry) return entries;
-      const desiredPosition = stableHashSeed(seed) % entries.length;
+      const hash = stableHashSeed(seed);
+      const desiredPosition = ((hash % entries.length) + entries.length) % entries.length;
       const wrongEntries = entries
         .filter(entry => entry.index !== normalizedCorrect)
         .sort((a, b) => stableHashSeed(seed + '|wrong|' + a.index) - stableHashSeed(seed + '|wrong|' + b.index));
@@ -1386,8 +1381,7 @@
           '<div class="gal-character hero ' + (heroActive ? 'speaking' : '') + '"><img src="' + escapeHtml(getHeroSprite()) + '" alt="玩家角色站绘"><div class="gal-character-name">玩家</div></div>' +
           '<div class="gal-character npc ' + (npcActive ? 'speaking' : '') + '" data-npc="' + escapeHtml(story.npc) + '">' + npcVisual + '<div class="gal-character-name">' + escapeHtml(story.npc) + '</div></div>' +
         '</div>' +
-        showcase +
-        '<div class="gal-dialogue-box"><span class="gal-name">' + escapeHtml(scene.speaker) + '</span><p>' + escapeHtml(scene.text) + '</p>' + action + '</div>' +
+        '<div class="gal-dialogue-box"><span class="gal-name">' + escapeHtml(scene.speaker) + '</span>' + showcase + '<p>' + escapeHtml(scene.text) + '</p>' + action + '</div>' +
       '</div>';
     }
     function storyDialogue(line) {
@@ -1833,7 +1827,7 @@
 
     document.addEventListener('click', event => {
       if (!event.target.closest('#chapterOverlay')) return;
-      if (event.target.closest('.choice')) return;
+      if (event.target.closest('.choice, .gal-showcase-figure')) return;
       const box = event.target.closest('.gal-dialogue-box');
       const next = event.target.closest('.story-next') || (box ? box.querySelector('.story-next') : null);
       if (!next) return;
