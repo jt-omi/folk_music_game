@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 260" role="img" aria-label="响篾示意图">
+  <defs>
+    <linearGradient id="copper" x1="0" x2="1">
+      <stop offset="0" stop-color="#a9582d"/>
+      <stop offset=".5" stop-color="#f3b66f"/>
+      <stop offset="1" stop-color="#8f3f20"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="260" rx="36" fill="#fff7e8"/>
+  <path d="M70 130 C105 84 254 84 290 130 C254 176 105 176 70 130Z" fill="url(#copper)" stroke="#6b351e" stroke-width="10"/>
+  <path d="M101 130 C130 112 232 112 259 130 C232 148 130 148 101 130Z" fill="#fff0bd" opacity=".75"/>
+  <path d="M132 130 L230 130" stroke="#6b351e" stroke-width="9" stroke-linecap="round"/>
+  <path d="M176 108 C190 120 190 140 176 152" fill="none" stroke="#6b351e" stroke-width="6" stroke-linecap="round"/>
+  <g fill="none" stroke="#d3523f" stroke-width="6" opacity=".8">
+    <path d="M64 94 C40 116 40 144 64 166"/>
+    <path d="M296 94 C320 116 320 144 296 166"/>
+  </g>
+  <text x="180" y="230" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="28" fill="#74431f">响篾</text>
+</svg>

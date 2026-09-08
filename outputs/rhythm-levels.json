@@ -1,0 +1,24 @@
+[
+  {
+    "id": "demo-miao-placeholder",
+    "ethnicGroup": "演示民族关卡",
+    "pieceTitle": "占位节奏片段",
+    "instrument": "占位民族乐器",
+    "description": "这是节奏挑战系统的演示关卡，只用于测试流程、点击判定和教师标注，不代表任何真实民族曲目。",
+    "audio": "assets/bgm-miao.mp3",
+    "instrumentImage": "assets/miao-lusheng-photo.png",
+    "hitSounds": ["assets/bgm-miao.mp3"],
+    "startTime": 0,
+    "endTime": 8,
+    "bpm": 90,
+    "timeSignature": "4/4",
+    "taskType": "demo",
+    "targetTimes": [0, 667, 1333, 2000, 2667, 3333, 4000, 4667, 5333, 6000, 6667, 7333],
+    "perfectTolerance": 70,
+    "goodTolerance": 130,
+    "acceptableTolerance": 210,
+    "difficulty": "easy",
+    "showCue": true,
+    "cultureFeedback": "你已经像小小演奏者一样，听见了强弱拍的循环。以后换成真实授权曲目时，只需要改配置文件。"
+  }
+]

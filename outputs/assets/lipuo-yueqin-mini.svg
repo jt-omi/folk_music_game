@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 260" role="img" aria-label="月琴示意图">
+  <rect width="360" height="260" rx="36" fill="#fff7e8"/>
+  <circle cx="132" cy="152" r="70" fill="#d99a42" stroke="#6d3a1c" stroke-width="10"/>
+  <circle cx="132" cy="152" r="36" fill="#ffe1a3" stroke="#a85f24" stroke-width="5"/>
+  <path d="M181 109 L314 36" stroke="#8d4a20" stroke-width="26" stroke-linecap="round"/>
+  <path d="M191 126 L321 59" stroke="#d19346" stroke-width="14" stroke-linecap="round"/>
+  <g stroke="#fff1bd" stroke-width="3">
+    <path d="M80 118 L316 31"/>
+    <path d="M81 141 L322 53"/>
+    <path d="M83 165 L327 73"/>
+    <path d="M88 188 L331 91"/>
+  </g>
+  <path d="M105 151 C120 132 148 132 161 151 C147 172 120 172 105 151Z" fill="#c84234" opacity=".8"/>
+  <text x="180" y="230" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="28" fill="#74431f">月琴</text>
+</svg>

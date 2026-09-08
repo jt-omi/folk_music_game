@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 260" role="img" aria-label="树叶示意图">
+  <defs>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7ccf59"/>
+      <stop offset=".55" stop-color="#2f9d57"/>
+      <stop offset="1" stop-color="#15693d"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="260" rx="36" fill="#fff7e8"/>
+  <path d="M74 172 C138 66 238 44 296 92 C240 192 148 215 74 172Z" fill="url(#leaf)" stroke="#17633d" stroke-width="8"/>
+  <path d="M88 166 C150 139 207 108 285 88" stroke="#f5ffd7" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <g stroke="#d7ffd0" stroke-width="3" fill="none" opacity=".85">
+    <path d="M141 143 C133 119 128 102 120 82"/>
+    <path d="M177 125 C170 105 167 88 162 67"/>
+    <path d="M214 110 C212 92 212 78 212 58"/>
+    <path d="M154 138 C138 153 125 165 109 181"/>
+    <path d="M196 119 C181 141 169 158 154 180"/>
+    <path d="M235 103 C222 128 210 148 195 174"/>
+  </g>
+  <text x="180" y="230" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="28" fill="#74431f">树叶</text>
+</svg>

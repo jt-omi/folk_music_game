@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>作者用：古乐共拍节拍标注器</title>
+  <style>
+    :root{--paper:#fff7df;--ink:#4b2b1c;--red:#b64032;--gold:#e1a83b;--green:#47785e;--blue:#3f86bd;--line:#dfbd79}
+    *{box-sizing:border-box}
+    body{margin:0;padding:20px;background:linear-gradient(135deg,#efe0be,#fff9e8);color:var(--ink);font-family:"Microsoft YaHei",system-ui,sans-serif}
+    .wrap{max-width:1180px;margin:auto}
+    h1{margin:0 0 8px;color:#7f2f2a}
+    .hint{margin:0 0 16px;color:#6e5232;line-height:1.7}
+    .card{margin:14px 0;padding:16px;border:2px solid var(--line);border-radius:22px;background:rgba(255,248,228,.96);box-shadow:0 12px 28px rgba(76,48,25,.1)}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    label{display:grid;gap:6px;font-weight:900;color:#684323}
+    input,textarea{width:100%;min-height:42px;border:2px solid #ead6ad;border-radius:14px;padding:8px 10px;background:white;font:inherit}
+    textarea{min-height:180px;font-family:Consolas,"Microsoft YaHei",monospace}
+    button{min-height:46px;border:0;border-radius:15px;padding:10px 16px;font:inherit;font-weight:900;cursor:pointer}
+    button:focus-visible{outline:4px solid rgba(225,168,59,.45);outline-offset:3px}
+    .primary{background:var(--red);color:white}.green{background:var(--green);color:white}.blue{background:var(--blue);color:white}.soft{background:#ead6ad;color:#654018}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .stage{position:relative;min-height:320px;display:grid;place-items:center;border-radius:24px;background:linear-gradient(180deg,#8eb4d8,#e9b878 50%,#6e8755);overflow:hidden;border:5px solid #8a4a25}
+    .tap{width:210px;height:210px;border-radius:50%;border:9px solid #8a4a25;background:radial-gradient(circle at 38% 30%,#fff1bd,#f4a15d 48%,#b64032);color:#fff8d8;font-size:42px;text-shadow:0 4px 0 #6b2b1d;box-shadow:0 0 0 8px rgba(255,225,141,.7),0 0 34px rgba(255,214,87,.8)}
+    .tap.hit{animation:tap .16s ease}
+    @keyframes tap{50%{transform:scale(.94)}}
+    .counter{position:absolute;left:20px;top:20px;padding:10px 14px;border-radius:14px;background:rgba(255,247,218,.92);font-size:22px;font-weight:900}
+    .time{position:absolute;right:20px;top:20px;padding:10px 14px;border-radius:14px;background:rgba(255,247,218,.92);font-size:22px;font-weight:900}
+    .timeline{position:relative;height:104px;border-radius:18px;background:#fff0c2;border:3px solid #b97832;overflow:hidden}
+    .marker{position:absolute;top:18px;width:10px;height:46px;border-radius:999px;background:#7c3b21;transform:translateX(-50%)}
+    .marker:nth-child(4n+1){background:#ffc94f;box-shadow:0 0 12px rgba(255,201,79,.8)}
+    .marker-label{position:absolute;top:68px;transform:translateX(-50%);font-size:12px;font-weight:900;color:#6a3a20;white-space:nowrap}
+    .status{min-height:32px;margin-top:10px;color:#6e5232;font-weight:800}
+    .copy-ok{color:var(--green)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    code{background:#fff1cb;padding:2px 6px;border-radius:6px}
+    @media(max-width:820px){.grid,.two{grid-template-columns:1fr}.tap{width:170px;height:170px;font-size:34px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>作者用：古乐共拍节拍标注器</h1>
+    <p class="hint">这个页面不会出现在学生菜单里。你可以播放谈经古乐节拍片段，然后用空格键、鼠标或触屏把 4/4 节拍拍出来；导出的 JSON 可以交给我放入正式游戏。</p>
+
+    <section class="card">
+      <div class="grid">
+        <label>音频文件（推荐）
+          <input id="audioFile" type="file" accept="audio/*">
+        </label>
+        <label>或填写项目内音频路径
+          <input id="audioPath" value="assets/audio/lipuo/tanjing-rhythm.mp3">
+        </label>
+        <label>拍号
+          <input id="timeSignature" value="4/4">
+        </label>
+        <label>BPM（可先估）
+          <input id="bpm" type="number" value="80" min="30" max="220">
+        </label>
+        <label>片段开始秒
+          <input id="startTime" type="number" value="0" min="0" step="0.01">
+        </label>
+        <label>片段结束秒
+          <input id="endTime" type="number" value="12" min="0" step="0.01">
+        </label>
+        <label>乐曲名称
+          <input id="pieceTitle" value="谈经古乐代表性曲目">
+        </label>
+        <label>备注
+          <input id="note" value="作者实拍 4/4 节拍">
+        </label>
+      </div>
+      <div class="controls">
+        <button class="primary" id="loadBtn" type="button">加载音频</button>
+        <button class="green" id="playBtn" type="button">开始播放并标注</button>
+        <button class="soft" id="stopBtn" type="button">停止</button>
+        <button class="soft" id="undoBtn" type="button">撤销上一拍</button>
+        <button class="soft" id="clearBtn" type="button">清空节拍</button>
+      </div>
+      <div class="status" id="status">先加载音频；如果音频还没准备好，也可以直接开始，用空计时器先拍一版。</div>
+    </section>
+
+    <section class="card">
+      <div class="stage" id="stage">
+        <div class="counter">已标记：<span id="count">0</span> 拍</div>
+        <div class="time">时间：<span id="clock">0.00</span>s</div>
+        <button class="tap" id="tapBtn" type="button">拍一下</button>
+      </div>
+      <p class="hint">操作：播放后按 <code>空格键</code> 或点击“拍一下”。每次点击会记录相对片段开始的毫秒时间。</p>
+    </section>
+
+    <section class="card">
+      <h2>节拍时间轴</h2>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+    <section class="card two">
+      <div>
+        <h2>导出给正式游戏</h2>
+        <textarea id="exportBox" readonly></textarea>
+        <div class="controls">
+          <button class="blue" id="exportBtn" type="button">生成 JSON</button>
+          <button class="soft" id="copyBtn" type="button">复制</button>
+        </div>
+      </div>
+      <div>
+        <h2>重新导入继续改</h2>
+        <textarea id="importBox" placeholder="把之前导出的 JSON 粘贴到这里，再点导入。"></textarea>
+        <div class="controls">
+          <button class="soft" id="importBtn" type="button">导入</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const markers = [];
+    const state = { ctx:null, buffer:null, source:null, gain:null, started:false, startPerf:0, raf:0, duration:12 };
+
+    function value(id){ return $(id).value.trim(); }
+    function num(id){ return Number($(id).value || 0); }
+    function setStatus(text, ok=false){ $('#status').textContent = text; $('#status').className = ok ? 'status copy-ok' : 'status'; }
+
+    async function ensureCtx(){
+      state.ctx = state.ctx || new (window.AudioContext || window.webkitAudioContext)();
+      if (state.ctx.state === 'suspended') await state.ctx.resume();
+      return state.ctx;
+    }
+
+    async function loadAudio(){
+      await ensureCtx();
+      stop(false);
+      try {
+        let arrayBuffer;
+        const file = $('#audioFile').files[0];
+        if (file) arrayBuffer = await file.arrayBuffer();
+        else {
+          const res = await fetch(value('#audioPath'));
+          if (!res.ok) throw new Error('音频路径无法读取');
+          arrayBuffer = await res.arrayBuffer();
+        }
+        state.buffer = await state.ctx.decodeAudioData(arrayBuffer);
+        state.duration = Math.min(num('#endTime') || state.buffer.duration, state.buffer.duration) - num('#startTime');
+        setStatus('音频已加载，可以开始标注。', true);
+      } catch (err) {
+        state.buffer = null;
+        state.duration = Math.max(1, num('#endTime') - num('#startTime')) || 12;
+        setStatus('音频暂时没加载成功：' + err.message + '。仍可用空计时器先拍节奏。');
+      }
+      render();
+    }
+
+    async function play(){
+      stop(false);
+      await ensureCtx();
+      const start = Math.max(0, num('#startTime'));
+      const end = Math.max(start + 1, num('#endTime'));
+      state.duration = end - start;
+      state.startPerf = performance.now();
+      state.started = true;
+      if (state.buffer) {
+        state.source = state.ctx.createBufferSource();
+        state.source.buffer = state.buffer;
+        state.gain = state.ctx.createGain();
+        state.gain.gain.value = .65;
+        state.source.connect(state.gain).connect(state.ctx.destination);
+        state.source.onended = () => stop(false);
+        state.source.start(0, start, state.duration);
+      }
+      tick();
+      setStatus('正在标注：按空格键或点击“拍一下”。', true);
+    }
+
+    function stop(show=true){
+      state.started = false;
+      cancelAnimationFrame(state.raf);
+      if (state.source) {
+        try { state.source.stop(); } catch {}
+        state.source.disconnect();
+      }
+      state.source = null;
+      if (show) setStatus('已停止。');
+    }
+
+    function tick(){
+      const sec = state.started ? (performance.now() - state.startPerf) / 1000 : 0;
+      $('#clock').textContent = sec.toFixed(2);
+      if (state.started && sec >= state.duration) return stop(false);
+      state.raf = requestAnimationFrame(tick);
+    }
+
+    function tap(event){
+      if (event) event.preventDefault();
+      if (!state.started) {
+        setStatus('请先点击“开始播放并标注”。');
+        return;
+      }
+      const ms = Math.max(0, Math.round(performance.now() - state.startPerf));
+      markers.push(ms);
+      $('#tapBtn').classList.add('hit');
+      setTimeout(() => $('#tapBtn').classList.remove('hit'), 120);
+      render();
+    }
+
+    function beatLabel(i){
+      const count = parseInt(value('#timeSignature').split('/')[0], 10) || 4;
+      const pos = i % count;
+      if (count === 4) return pos === 0 ? '强' : pos === 2 ? '次强' : '弱';
+      return pos === 0 ? '强' : '弱';
+    }
+
+    function render(){
+      $('#count').textContent = markers.length;
+      const line = $('#timeline');
+      const total = Math.max(1000, state.duration * 1000, Math.max(0, ...markers) + 500);
+      line.innerHTML = markers.map((ms, i) => {
+        const left = Math.min(100, Math.max(0, ms / total * 100));
+        return `<span class="marker" style="left:${left}%"></span><span class="marker-label" style="left:${left}%">${i + 1}.${beatLabel(i)} ${ms}ms</span>`;
+      }).join('');
+    }
+
+    function exportJson(){
+      const seconds = markers.map(ms => Number((ms / 1000).toFixed(3)));
+      const payload = {
+        rhythmClip: value('#audioPath'),
+        rhythm: {
+          bpm: num('#bpm'),
+          timeSignature: value('#timeSignature') || '4/4',
+          targetTimes: seconds,
+          startOffset: num('#startTime'),
+          endTime: num('#endTime'),
+          perfectTolerance: 180,
+          goodTolerance: 320,
+          acceptableTolerance: 480,
+          note: value('#note') || '作者实拍节拍'
+        },
+        rawTargetTimesMs: markers.slice(),
+        pieceTitle: value('#pieceTitle')
+      };
+      $('#exportBox').value = JSON.stringify(payload, null, 2);
+      setStatus('已生成 JSON。你可以复制给我，我会放到正式游戏里。', true);
+    }
+
+    function importJson(){
+      try {
+        const data = JSON.parse($('#importBox').value);
+        const rhythm = data.rhythm || data;
+        markers.splice(0, markers.length, ...((rhythm.targetTimes || data.targetTimes || []).map(v => Math.round(Number(v) * (Number(v) < 100 ? 1000 : 1)))));
+        if (rhythm.timeSignature) $('#timeSignature').value = rhythm.timeSignature;
+        if (rhythm.bpm) $('#bpm').value = rhythm.bpm;
+        if (rhythm.startOffset != null) $('#startTime').value = rhythm.startOffset;
+        if (rhythm.endTime != null) $('#endTime').value = rhythm.endTime;
+        if (data.rhythmClip) $('#audioPath').value = data.rhythmClip;
+        render();
+        setStatus('已导入，可以继续修改。', true);
+      } catch (err) {
+        setStatus('导入失败：JSON 格式不正确。');
+      }
+    }
+
+    $('#loadBtn').addEventListener('click', loadAudio);
+    $('#playBtn').addEventListener('click', play);
+    $('#stopBtn').addEventListener('click', () => stop(true));
+    $('#tapBtn').addEventListener('pointerdown', tap);
+    $('#undoBtn').addEventListener('click', () => { markers.pop(); render(); });
+    $('#clearBtn').addEventListener('click', () => { markers.splice(0); render(); });
+    $('#exportBtn').addEventListener('click', exportJson);
+    $('#copyBtn').addEventListener('click', async () => { await navigator.clipboard.writeText($('#exportBox').value); setStatus('已复制。', true); });
+    $('#importBtn').addEventListener('click', importJson);
+    document.addEventListener('keydown', event => {
+      if (event.code === 'Space') tap(event);
+      if (event.key === 'Escape') stop(true);
+    });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stop(false); });
+    render();
+  </script>
+</body>
+</html>

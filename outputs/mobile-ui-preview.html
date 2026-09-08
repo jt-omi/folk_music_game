@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>四川民族音乐游戏｜手机竖屏预览</title>
+  <style>
+    :root {
+      --preview-bg: #10233f;
+      --phone-black: #15171c;
+      --phone-edge: #343944;
+      --phone-glow: rgba(44, 172, 255, .35);
+      --cream: #fff4d0;
+      --brown: #7b4124;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      color: var(--cream);
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(70, 191, 255, .32), transparent 28%),
+        radial-gradient(circle at 78% 74%, rgba(255, 197, 74, .2), transparent 30%),
+        linear-gradient(145deg, #071527, var(--preview-bg) 55%, #18243f);
+    }
+
+    .preview-wrap {
+      width: min(100%, 1120px);
+      display: grid;
+      gap: 16px;
+      justify-items: center;
+    }
+
+    .preview-head {
+      width: min(100%, 980px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 18px;
+      border: 3px solid rgba(255, 226, 153, .55);
+      border-radius: 20px;
+      background: rgba(93, 53, 31, .72);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, .25);
+    }
+
+    .preview-head h1 {
+      margin: 0;
+      font-size: clamp(20px, 3vw, 30px);
+      letter-spacing: .04em;
+      text-shadow: 0 3px 0 rgba(0,0,0,.25);
+    }
+
+    .preview-head p {
+      margin: 4px 0 0;
+      color: #ffe9ad;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .preview-link {
+      flex: 0 0 auto;
+      min-height: 44px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      color: #5a301c;
+      background: linear-gradient(180deg, #fff7d2, #f0bf65);
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #8a4a27;
+    }
+
+    .phone {
+      position: relative;
+      width: min(calc(100vw - 40px), 500px);
+      padding: 46px 16px;
+      border-radius: 46px;
+      border: 8px solid var(--phone-edge);
+      background: linear-gradient(145deg, #090b10, var(--phone-black));
+      box-shadow:
+        0 0 0 5px rgba(255,255,255,.05) inset,
+        0 0 0 2px rgba(255,255,255,.12),
+        0 26px 70px rgba(0,0,0,.45),
+        0 0 70px var(--phone-glow);
+    }
+
+    .phone::before,
+    .phone::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 999px;
+      background: #050609;
+      box-shadow: inset 0 1px 2px rgba(255,255,255,.14);
+    }
+
+    .phone::before {
+      left: 50%;
+      top: 17px;
+      transform: translateX(-50%);
+      width: 82px;
+      height: 10px;
+    }
+
+    .phone::after {
+      right: auto;
+      left: 50%;
+      top: auto;
+      bottom: 16px;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 14px;
+    }
+
+    .screen {
+      width: 100%;
+      aspect-ratio: 430 / 932;
+      height: auto;
+      overflow: hidden;
+      border-radius: 24px;
+      background: #000;
+      box-shadow: 0 0 0 2px rgba(255,255,255,.08) inset;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    .note {
+      width: min(100%, 980px);
+      padding: 12px 16px;
+      border-radius: 16px;
+      color: #ffeec3;
+      background: rgba(9, 20, 35, .62);
+      line-height: 1.7;
+      font-weight: 800;
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 10px; }
+      .preview-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .phone {
+        width: 100vw;
+        padding: 34px 10px;
+        border-width: 5px;
+        border-radius: 30px;
+      }
+      .screen { border-radius: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="preview-wrap">
+    <header class="preview-head">
+      <div>
+        <h1>手机竖屏效果预览</h1>
+        <p>普通界面按手机竖屏显示；俚濮彝族、傈僳族小游戏仍保留横屏体验。</p>
+      </div>
+      <a class="preview-link" href="sichuan-music-game.html?ui=mobile" target="_blank" rel="noopener">打开真实页面</a>
+    </header>
+
+    <section class="phone" aria-label="手机竖屏模拟器">
+      <div class="screen">
+        <iframe src="sichuan-music-game.html?ui=mobile" title="四川民族音乐游戏手机版竖屏预览"></iframe>
+      </div>
+    </section>
+
+    <p class="note">提示：这个页面只是预览壳，不会改变游戏本身。普通地图、剧情、图鉴和衣柜按竖屏排布；进入两个音乐小游戏时会切到横屏式游戏画布。</p>
+  </main>
+</body>
+</html>

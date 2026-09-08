@@ -1,0 +1,1230 @@
+.lisu-dance-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(26,22,18,.72);z-index:95}
+.lisu-dance-overlay.show{display:flex}
+.lisu-dance{width:min(1180px,96vw);max-height:94vh;overflow:auto;border-radius:28px;background:#fff8e7;color:#352719;border:4px solid #d39a43;box-shadow:0 26px 80px rgba(0,0,0,.35);font-family:inherit}
+.lisu-dance *{box-sizing:border-box}
+.lisu-dance-inner{padding:20px}
+.lisu-dance-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
+.lisu-dance-tag{display:inline-block;padding:6px 12px;border-radius:999px;background:#8d3e2b;color:#fff7dc;font-weight:900}
+.lisu-dance h2{margin:8px 0 4px;color:#733b22;font-size:32px}.lisu-dance p{line-height:1.65}
+.lisu-dance-close{width:44px;height:44px;border:0;border-radius:999px;background:#ead2a2;color:#5b321d;font-size:25px;font-weight:900;cursor:pointer}
+.lisu-dance button:focus-visible,.lisu-dance-close:focus-visible{outline:4px solid rgba(225,168,59,.55);outline-offset:3px}
+.lisu-card{padding:16px;border-radius:22px;background:#fff0ca;border:2px solid #ead2a2;box-shadow:0 12px 26px rgba(74,50,28,.12)}
+.lisu-intro-grid{display:grid;grid-template-columns:260px 1fr;gap:16px;align-items:stretch}
+.lisu-instrument-box,.lisu-leader-card{min-height:180px;display:grid;place-items:center;text-align:center;border-radius:20px;background:#fff8e6;border:2px dashed #d6a35c;color:#6b4325;font-weight:900}
+.lisu-goals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.lisu-goal{padding:12px;border-radius:16px;background:#fff9ec;border:2px solid #ead2a2;font-weight:900;color:#674125}
+.lisu-notice{padding:10px 12px;border-radius:14px;background:#fff9e9;border-left:5px solid #d39a43;color:#60442a}
+.lisu-controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.lisu-btn{min-height:46px;padding:11px 16px;border:0;border-radius:15px;font:inherit;font-weight:900;cursor:pointer;touch-action:manipulation}
+.lisu-btn.primary{background:#b64032;color:white}.lisu-btn.secondary{background:#ead2a2;color:#5b321d}.lisu-btn.green{background:#47785e;color:white}.lisu-btn.blue{background:#3f7daa;color:white}.lisu-btn:disabled{opacity:.55;cursor:not-allowed}
+.lisu-stage{position:relative;min-height:520px;margin-top:12px;overflow:hidden;border-radius:24px;border:4px solid #8a4a25;background:linear-gradient(180deg,#9ac0da 0%,#e8ba78 48%,#6f8955 78%,#5d4b2d 100%)}
+.lisu-stage::before{content:"正式傈僳族场景素材待补充";position:absolute;left:16px;top:14px;padding:7px 10px;border-radius:999px;background:rgba(255,250,229,.82);color:#684022;font-weight:900;font-size:13px;z-index:2}
+.lisu-stream{position:absolute;left:-5%;right:-5%;bottom:0;height:22%;background:linear-gradient(135deg,rgba(77,151,176,.75),rgba(186,225,218,.65));transform:skewY(-2deg)}
+.lisu-house{position:absolute;left:7%;bottom:18%;width:130px;height:80px;background:#8b5530;border-radius:10px 10px 0 0;box-shadow:inset 0 18px #d8a45b}.lisu-house::before{content:"";position:absolute;left:-14px;right:-14px;top:-34px;height:42px;background:#5b321d;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.lisu-hill{position:absolute;right:0;bottom:16%;width:42%;height:48%;background:radial-gradient(circle at 50% 100%,#4d793f 0 55%,transparent 56%)}
+.lisu-stage-top{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:3;padding:18px 20px 0}.lisu-stage-title h3{margin:0;color:#fff6d5;text-shadow:0 3px 0 #7b3b21;font-size:28px}.lisu-stage-title p{margin:4px 0 0;color:#fff8df;font-weight:900;text-shadow:0 2px 0 rgba(75,36,16,.7)}
+.lisu-status-pill{padding:9px 12px;border-radius:999px;background:#fff2c8;border:3px solid #b97832;color:#6a3b21;font-weight:900}
+.lisu-dancers{position:absolute;inset:86px 20px 110px;z-index:4}
+.lisu-person{position:absolute;width:78px;height:120px;left:var(--x);top:var(--y);transform:translate(-50%,-50%) scale(var(--scale,1));transition:left .7s ease,top .7s ease,transform .25s ease,filter .3s ease,opacity .3s ease;filter:saturate(.2) brightness(.78);opacity:.62;text-align:center}
+.lisu-person.joined,.lisu-person.leader{filter:none;opacity:1}
+.lisu-person .head{width:38px;height:38px;margin:0 auto -2px;border-radius:50%;background:#f2c49a;border:3px solid #5d321d}
+.lisu-person .body{position:relative;width:58px;height:70px;margin:auto;border-radius:18px 18px 10px 10px;background:linear-gradient(180deg,#416b55,#7a2f28);border:3px solid #5d321d}
+.lisu-person .body::before,.lisu-person .body::after{content:"";position:absolute;top:18px;width:28px;height:9px;border-radius:999px;background:#7a2f28;border:2px solid #5d321d}
+.lisu-person .body::before{left:-20px;transform:rotate(18deg)}.lisu-person .body::after{right:-20px;transform:rotate(-18deg)}
+.lisu-person .label{display:block;margin-top:3px;padding:2px 4px;border-radius:999px;background:rgba(255,247,218,.86);font-size:11px;font-weight:900;color:#5d321d}
+.lisu-person.leader{width:96px;height:132px;z-index:8}.lisu-person.leader .body{background:linear-gradient(180deg,#2f6d5a,#b64032)}.lisu-person.leader::after{content:"葫芦笙领舞者素材待补充";position:absolute;left:50%;bottom:-25px;transform:translateX(-50%);width:140px;font-size:11px;color:#fff8de;text-shadow:0 2px 0 #5d321d;font-weight:900}
+.lisu-person.playing .body::before{width:42px;left:-28px;transform:rotate(-18deg);background:#c78a35}.lisu-person.stepLeft{transform:translate(-58%,-50%) scale(var(--scale,1))}.lisu-person.stepRight{transform:translate(-42%,-50%) scale(var(--scale,1))}.lisu-person.drink{transform:translate(-50%,-43%) scale(var(--scale,1),.86)}.lisu-person.wing .body::before{transform:rotate(-30deg);left:-25px}.lisu-person.wing .body::after{transform:rotate(30deg);right:-25px}.lisu-person.turn{transform:translate(-50%,-50%) scaleX(-1)}.lisu-person.celebrate{animation:lisuCelebrate .6s ease infinite alternate}
+@keyframes lisuCelebrate{to{transform:translate(-50%,-58%) scale(1.04)}}
+.lisu-input-panel{position:absolute;left:18px;right:18px;bottom:14px;z-index:6;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}
+.lisu-beat-panel,.lisu-action-panel{padding:12px;border-radius:18px;background:rgba(255,242,202,.94);border:3px solid #a66a33;box-shadow:0 5px 0 #704021}
+.lisu-beats{display:flex;gap:8px;align-items:center;min-height:40px}.lisu-beat{width:28px;height:28px;border-radius:50%;background:#4b2c1d;border:3px solid #5d321d;position:relative}.lisu-beat.strong{width:36px;height:36px;background:#ffc94f;border-color:#bb7a2a}.lisu-beat.active{box-shadow:0 0 0 8px rgba(255,205,69,.28),0 0 18px rgba(255,205,69,.9);transform:scale(1.12)}
+.lisu-tap{width:132px;height:132px;border-radius:50%;border:7px solid #8a4a25;background:radial-gradient(circle at 38% 30%,#fff1bd,#f1a25c 48%,#b64032);color:white;font-size:26px;font-weight:900;text-shadow:0 3px 0 #6b2b1d;cursor:pointer}
+.lisu-tap.hit{animation:lisuTap .16s ease}@keyframes lisuTap{50%{transform:scale(.94)}}
+.lisu-progress{height:10px;border-radius:999px;background:#ead2a2;overflow:hidden;margin-top:10px}.lisu-progress>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#e1a83b,#b64032)}
+.lisu-action-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.lisu-action{min-height:62px;border:3px solid #d4a35b;border-radius:16px;background:#fff9e8;color:#683d21;font-weight:900;font-size:18px;cursor:pointer}.lisu-action.active{background:#ffe08c;box-shadow:0 0 0 5px rgba(255,205,69,.25)}.lisu-action.wrong{background:#ffd3c8}
+.lisu-sequence{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.lisu-step-chip{padding:7px 10px;border-radius:999px;background:#ead2a2;color:#5b321d;font-weight:900}.lisu-step-chip.done{background:#47785e;color:white}.lisu-step-chip.next{background:#ffc94f}
+.lisu-result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}.lisu-result-grid span{padding:10px;border-radius:14px;background:#fff9ec;text-align:center}.lisu-result-grid b{display:block;font-size:24px;color:#733b22}
+.lisu-badge{display:inline-grid;place-items:center;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#ffe6a3,#b64032);border:7px solid #d39a43;color:white;font-size:42px;box-shadow:0 0 28px rgba(225,168,59,.55)}
+.lisu-video-box{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.72);z-index:120}.lisu-video-box.show{display:flex}.lisu-video-card{width:min(900px,92vw);padding:18px;border-radius:18px;background:#fff8e7}.lisu-video-card video{width:100%;max-height:70vh;border-radius:14px;background:#000}
+@media(max-width:820px){.lisu-intro-grid{grid-template-columns:1fr}.lisu-goals,.lisu-result-grid{grid-template-columns:1fr}.lisu-stage{min-height:680px}.lisu-dancers{inset:90px 10px 180px}.lisu-input-panel{grid-template-columns:1fr}.lisu-tap{width:96px;height:96px}.lisu-action-buttons{grid-template-columns:repeat(2,1fr)}}
+
+/* 傈僳族补充素材接入与界面优化 */
+.lisu-dance{width:min(1280px,97vw);max-height:95vh}
+.lisu-dance-inner{padding:16px}
+.lisu-dance-head{margin-bottom:10px}
+.lisu-dance h2{font-size:clamp(24px,2.6vw,34px);line-height:1.15}
+.lisu-dance-head p{margin:.25rem 0 0;font-size:15px;line-height:1.45}
+.lisu-stage{
+  min-height:620px;
+  background-image:linear-gradient(180deg,rgba(255,255,255,.04),rgba(61,38,21,.18)),var(--lisu-bg)!important;
+  background-size:cover!important;
+  background-position:center!important;
+}
+.lisu-stage::before,.lisu-stream,.lisu-house,.lisu-hill{display:none!important}
+.lisu-stage-top{
+  align-items:flex-start;
+  gap:14px;
+  padding:18px 24px 0;
+}
+.lisu-stage-title{
+  max-width:min(620px,68%);
+  padding:12px 16px;
+  border-radius:18px;
+  background:rgba(255,245,216,.82);
+  border:3px solid rgba(166,106,51,.45);
+  box-shadow:0 5px 0 rgba(112,64,33,.35);
+  backdrop-filter:blur(2px);
+}
+.lisu-stage-title h3{
+  color:#6d371f;
+  text-shadow:0 2px 0 rgba(255,255,255,.8);
+  font-size:clamp(22px,2.2vw,30px);
+  line-height:1.12;
+  letter-spacing:.5px;
+}
+.lisu-stage-title p{
+  color:#6d4426;
+  text-shadow:none;
+  font-size:clamp(13px,1.3vw,16px);
+  line-height:1.35;
+  font-weight:800;
+}
+.lisu-status-pill{
+  flex:0 0 auto;
+  max-width:260px;
+  font-size:15px;
+  line-height:1.25;
+  text-align:center;
+  background:rgba(255,242,200,.92);
+}
+.lisu-dancers{inset:118px 44px 188px}
+.lisu-person{
+  width:118px;
+  height:150px;
+  filter:saturate(.35) brightness(.82);
+  opacity:.58;
+}
+.lisu-person.joined,.lisu-person.leader{filter:none;opacity:1}
+.lisu-person.leader{
+  width:150px;
+  height:184px;
+  z-index:9;
+}
+.lisu-person .head,.lisu-person .body{display:none!important}
+.lisu-sprite{
+  display:block;
+  width:100%;
+  height:100%;
+  background-image:var(--sprite);
+  background-repeat:no-repeat;
+  background-position:var(--sprite-x) var(--sprite-y);
+  background-size:300% 200%;
+  mix-blend-mode:multiply;
+  filter:drop-shadow(0 8px 8px rgba(45,28,16,.24));
+}
+.lisu-person.leader .lisu-sprite{background-size:400% 100%}
+.lisu-person.face-left .lisu-sprite{transform:scaleX(-1)}
+.lisu-person .label{
+  margin-top:-8px;
+  font-size:11px;
+  background:rgba(255,247,218,.92);
+  border:1px solid rgba(110,65,31,.22);
+}
+.lisu-person.dancer .label{display:none}
+.lisu-person.leader::after{content:none!important}
+.lisu-person.playing .body::before{display:none!important}
+.lisu-person.stepLeft{transform:translate(-57%,-50%) scale(var(--scale,1))}
+.lisu-person.stepRight{transform:translate(-43%,-50%) scale(var(--scale,1))}
+.lisu-person.drink{transform:translate(-50%,-43%) scale(var(--scale,1),.9)}
+.lisu-person.wing{transform:translate(-50%,-52%) scale(var(--scale,1.04))}
+.lisu-person.turn{transform:translate(-50%,-50%) scale(var(--scale,1))}
+.lisu-input-panel{
+  left:28px;
+  right:28px;
+  bottom:18px;
+  grid-template-columns:minmax(0,1fr) 128px;
+  gap:14px;
+  align-items:end;
+}
+.lisu-beat-panel,.lisu-action-panel{
+  padding:10px 14px;
+  background:rgba(255,242,202,.9);
+}
+.lisu-beat-panel>b{font-size:18px}
+.lisu-beat-panel p{
+  margin:8px 0 0;
+  font-size:15px;
+  line-height:1.35;
+  color:#5f3a20;
+  min-height:20px;
+}
+.lisu-beats{min-height:34px}
+.lisu-tap{
+  width:122px;
+  height:122px;
+  font-size:24px;
+}
+.lisu-action-buttons{gap:8px}
+.lisu-action{
+  min-height:56px;
+  font-size:16px;
+  line-height:1.15;
+}
+.lisu-action small{font-size:11px}
+.lisu-sequence{margin-bottom:8px}
+.lisu-step-chip{
+  font-size:14px;
+  padding:6px 9px;
+}
+.lisu-controls{justify-content:center}
+.lisu-result-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:980px){
+  .lisu-stage{min-height:720px}
+  .lisu-stage-top{display:grid;grid-template-columns:1fr;gap:8px}
+  .lisu-stage-title{max-width:100%}
+  .lisu-status-pill{max-width:100%}
+  .lisu-dancers{inset:162px 18px 230px}
+  .lisu-person{width:92px;height:122px}
+  .lisu-person.leader{width:120px;height:152px}
+  .lisu-input-panel{grid-template-columns:1fr;left:16px;right:16px}
+  .lisu-tap{justify-self:center;width:98px;height:98px;font-size:20px}
+}
+
+/* 《笙起斑鸠舞》三轮游戏化 UI 重整：背景、人物、按钮、成绩均为独立图层 */
+:root{
+  --lisu-brown:#6f3a1d;
+  --lisu-gold:#ffc94f;
+  --lisu-green:#64aa45;
+  --lisu-blue:#3d93d1;
+  --lisu-orange:#df7a2d;
+  --lisu-purple:#8b57c8;
+  --panel-cream:#fff1c9;
+  --text-dark:#4f2b18;
+}
+.lisu-dance:has(.lisu-stage){width:min(1500px,98vw);background:#24160e;border-color:#8a4a25;overflow:hidden}
+.lisu-dance:has(.lisu-stage) .lisu-dance-inner{padding:0;position:relative}
+.lisu-dance:has(.lisu-stage) .lisu-dance-head,
+.lisu-dance:has(.lisu-stage)>.lisu-notice,
+.lisu-dance:has(.lisu-stage) .lisu-dance-inner > .lisu-notice,
+.lisu-dance:has(.lisu-stage) #lisuDanceStatus,
+.lisu-dance:has(.lisu-stage) .lisu-game-head{display:none!important}
+.lisu-stage{
+  aspect-ratio:16/9;
+  min-height:0!important;
+  width:100%;
+  margin:0;
+  border:0;
+  border-radius:18px;
+  background-image:linear-gradient(180deg,rgba(31,18,9,.08),rgba(31,18,9,.18)),var(--lisu-bg)!important;
+  background-size:cover!important;
+  background-position:center!important;
+  box-shadow:inset 0 0 0 7px var(--lisu-brown),inset 0 0 0 14px #d99a45;
+}
+.lisu-stage::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:11%;
+  background:repeating-linear-gradient(90deg,#164766 0 28px,#d08332 28px 44px,#8b2f26 44px 62px,#f2cf81 62px 78px,#2b7b88 78px 98px);
+  z-index:7;
+  box-shadow:0 -4px 0 rgba(83,42,20,.55);
+  pointer-events:none;
+}
+.lisu-stage-top{
+  position:absolute;
+  left:2.8%;right:2.8%;top:2.8%;
+  z-index:12;
+  display:grid;
+  grid-template-columns:260px 1fr 245px;
+  align-items:start;
+  gap:18px;
+  padding:0;
+}
+.lisu-music-plaque,.lisu-stage-title,.lisu-round-tools .lisu-status-pill,.lisu-left-panel,.lisu-score-panel{
+  border:4px solid #9b5a2a;
+  background:linear-gradient(180deg,rgba(255,241,198,.96),rgba(244,209,145,.96));
+  color:var(--text-dark);
+  box-shadow:0 6px 0 #6b361d,0 14px 24px rgba(42,22,10,.24);
+}
+.lisu-music-plaque{
+  min-height:86px;
+  padding:14px 18px;
+  border-radius:20px;
+  font-weight:900;
+  line-height:1.4;
+}
+.lisu-music-plaque b,.lisu-music-plaque span{display:block}
+.lisu-stage-title{
+  justify-self:center;
+  min-width:min(610px,100%);
+  max-width:680px;
+  padding:10px 22px 12px;
+  border-radius:24px;
+  text-align:center;
+}
+.lisu-stage-title h3{
+  margin:0;
+  font-size:clamp(36px,4.2vw,70px);
+  line-height:1;
+  color:#fff1bf;
+  -webkit-text-stroke:3px #6e341a;
+  text-shadow:0 5px 0 #3e1e11,0 9px 14px rgba(0,0,0,.34);
+}
+.lisu-stage-title p{
+  display:inline-block;
+  margin:8px 0 0;
+  padding:5px 22px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#9b5526,#6c361d);
+  color:#fff3c7;
+  font-size:clamp(19px,2.1vw,32px);
+  line-height:1.15;
+  text-shadow:0 2px 0 #38170b;
+}
+.lisu-round-tools{display:flex;align-items:flex-start;justify-content:flex-end;gap:12px}
+.lisu-round-tools .lisu-status-pill{
+  max-width:none;
+  padding:13px 18px;
+  border-radius:999px;
+  font-size:22px;
+}
+.lisu-mini-pause{
+  flex:0 0 auto;
+  width:68px;height:68px;
+  border-radius:50%;
+  border:6px solid #e7b564;
+  background:linear-gradient(180deg,#cf7333,#72351d);
+  color:#fff5c8;
+  font-size:32px;
+  font-weight:900;
+  box-shadow:0 5px 0 #6b361d;
+  cursor:pointer;
+}
+.lisu-dancers{
+  inset:19% 22% 27% 19%;
+  z-index:5;
+}
+.lisu-person{
+  width:94px;
+  height:128px;
+  opacity:.5;
+  filter:saturate(.45) brightness(.7);
+  transform:translate(-50%,-50%) scale(var(--scale,1));
+}
+.lisu-person.joined,.lisu-person.leader{opacity:1;filter:drop-shadow(0 10px 12px rgba(40,23,12,.24))}
+.lisu-person.leader{
+  width:168px;
+  height:210px;
+  z-index:10;
+}
+.lisu-character-img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  pointer-events:none;
+}
+.lisu-person.face-left .lisu-character-img{transform:scaleX(-1)}
+.lisu-person .label{display:none!important}
+.lisu-person.stepLeft{transform:translate(-58%,-51%) scale(var(--scale,1))}
+.lisu-person.stepRight{transform:translate(-42%,-51%) scale(var(--scale,1))}
+.lisu-person.drink{transform:translate(-50%,-45%) scale(var(--scale,1))}
+.lisu-person.wing{transform:translate(-50%,-53%) scale(var(--scale,1.03))}
+.lisu-person.turn{transform:translate(-50%,-50%) scale(var(--scale,1))}
+.lisu-left-panel{
+  position:absolute;
+  z-index:11;
+  left:3.2%;
+  top:24%;
+  width:178px;
+  min-height:270px;
+  border-radius:22px;
+  padding:16px;
+}
+.lisu-count-panel{
+  display:grid;
+  place-items:center;
+  gap:4px;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+.lisu-count-panel span{
+  display:grid;
+  place-items:center;
+  width:104px;height:104px;
+  font-size:80px;
+  font-weight:900;
+  color:white;
+  -webkit-text-stroke:3px rgba(110,52,25,.85);
+  text-shadow:0 0 18px currentColor,0 4px 0 rgba(94,41,20,.55);
+}
+.lisu-count-panel span:nth-child(1){color:#ff5b64}
+.lisu-count-panel span:nth-child(2){color:#ff9d2e}
+.lisu-count-panel span:nth-child(3){color:#76c846}
+.lisu-tip-panel h4,.lisu-formation-panel h4{
+  margin:0 0 10px;
+  padding:8px 10px;
+  border-radius:12px;
+  background:linear-gradient(180deg,#9b5526,#6c361d);
+  color:#fff2c8;
+  text-align:center;
+}
+.lisu-tip-panel .mini-flow{font-weight:900;line-height:1.75;color:#5b321d}
+.lisu-formation-panel ol{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.lisu-formation-panel li{
+  padding:9px 10px;
+  border-radius:999px;
+  background:#fff8df;
+  border:2px solid rgba(125,74,33,.2);
+  font-weight:900;
+}
+.lisu-formation-panel li.done{background:#e6f3cf;color:#3e7c31}
+.lisu-score-panel{
+  position:absolute;
+  z-index:11;
+  right:3.3%;
+  top:28%;
+  width:260px;
+  min-height:295px;
+  border-radius:24px;
+  padding:50px 20px 16px;
+}
+.lisu-score-panel h4{
+  position:absolute;
+  top:-28px;left:50%;
+  transform:translateX(-50%);
+  margin:0;
+  min-width:150px;
+  padding:10px 18px;
+  border-radius:14px;
+  background:linear-gradient(180deg,#c84f34,#8c2f22);
+  color:#fff2c8;
+  text-align:center;
+  font-size:24px;
+  box-shadow:0 5px 0 #5d2b19;
+}
+.lisu-score-panel p{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin:0;
+  padding:12px 0;
+  border-bottom:2px solid rgba(124,73,31,.18);
+  color:#5b321d;
+  font-weight:900;
+  font-size:19px;
+}
+.lisu-score-panel b{font-size:26px;color:#377d35}
+.npc-note{
+  margin-top:12px;
+  padding:12px;
+  border-radius:16px;
+  background:#fff8df;
+  color:#5b321d;
+  font-weight:900;
+  line-height:1.4;
+}
+.lisu-input-panel{
+  left:25%;
+  right:25%;
+  bottom:13.5%;
+  z-index:12;
+  grid-template-columns:1fr;
+  justify-items:center;
+}
+.lisu-beat-panel,.lisu-action-panel{
+  width:100%;
+  border:4px solid #9b5a2a;
+  border-radius:22px;
+  background:rgba(58,33,19,.86);
+  color:#fff3c8;
+  box-shadow:0 6px 0 #4c2414,0 14px 20px rgba(31,18,9,.24);
+}
+.lisu-beat-panel>b{display:none}
+.lisu-beats{
+  justify-content:center;
+  gap:48px;
+  min-height:62px;
+}
+.lisu-beat{
+  width:42px;height:42px;
+  border-width:4px;
+  background:#bfa786;
+}
+.lisu-beat.strong{
+  width:50px;height:50px;
+  background:var(--lisu-gold);
+}
+.lisu-beat::after{
+  content:attr(data-label);
+  position:absolute;
+  left:50%;top:100%;
+  transform:translate(-50%,8px);
+  color:#fff3c8;
+  font-weight:900;
+  font-size:18px;
+}
+.lisu-beat.strong::after{content:attr(data-label)}
+.lisu-beat.active{box-shadow:0 0 0 9px rgba(255,201,79,.24),0 0 24px rgba(255,201,79,1)}
+.lisu-beat-panel p{
+  margin:10px 0 0;
+  color:#fff4ca;
+  text-align:center;
+  font-size:16px;
+}
+.lisu-progress{height:9px;background:rgba(255,245,205,.28)}
+.lisu-tap{
+  position:absolute;
+  left:50%;
+  bottom:105%;
+  transform:translateX(-50%);
+  width:172px;
+  height:172px;
+  border-width:8px;
+  background:radial-gradient(circle at 40% 30%,#fff2bd,#ffc84c 45%,#df7a2d 72%,#9b3e22);
+  box-shadow:0 0 0 8px rgba(255,220,118,.58),0 0 34px rgba(255,201,79,.85),0 8px 0 #6b361d;
+  font-size:36px;
+}
+.lisu-tap:hover,.lisu-action:hover,.lisu-btn:hover{filter:brightness(1.05);transform:translateY(-2px)}
+.lisu-tap:active,.lisu-tap.hit{transform:translateX(-50%) scale(.94)}
+.lisu-action-panel{padding:14px 18px}
+.lisu-action-buttons{
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.lisu-action{
+  min-height:82px;
+  border-radius:999px;
+  font-size:22px;
+  color:white;
+  text-shadow:0 2px 0 rgba(61,31,16,.7);
+}
+.lisu-action[data-action="step"]{background:linear-gradient(180deg,#72b953,#3f8f37)}
+.lisu-action[data-action="drink"]{background:linear-gradient(180deg,#5bb9e7,#2478b8)}
+.lisu-action[data-action="wing"]{background:linear-gradient(180deg,#9a77dd,#7447b6)}
+.lisu-action[data-action="turn"]{background:linear-gradient(180deg,#f3a142,#d66d25)}
+.lisu-action.active{box-shadow:0 0 0 7px rgba(255,201,79,.32),0 0 25px rgba(255,201,79,.95)}
+.lisu-sequence{
+  justify-content:center;
+  gap:12px;
+}
+.lisu-step-chip{
+  min-width:82px;
+  text-align:center;
+  font-size:17px;
+  border-radius:18px;
+  border:2px solid rgba(111,58,29,.28);
+  cursor:pointer;
+  font-family:inherit;
+}
+.lisu-step-chip:disabled{cursor:default}
+.lisu-step-chip:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px);
+}
+.lisu-step-chip:focus-visible{
+  outline:4px solid rgba(255,201,79,.55);
+  outline-offset:2px;
+}
+.lisu-stage ~ .lisu-controls{
+  position:absolute;
+  left:22%;
+  right:22%;
+  bottom:2.8%;
+  z-index:13;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  margin:0;
+}
+.lisu-stage ~ .lisu-controls .lisu-btn{
+  min-height:62px;
+  border-radius:24px;
+  border:4px solid rgba(255,246,211,.62);
+  box-shadow:0 6px 0 rgba(76,37,18,.75),0 10px 20px rgba(42,24,12,.22);
+  font-size:24px;
+}
+.lisu-stage ~ .lisu-controls .lisu-btn.primary,.lisu-stage ~ .lisu-controls .lisu-btn.green{background:linear-gradient(180deg,#77b954,#3f8f37)}
+.lisu-stage ~ .lisu-controls .lisu-btn.secondary{background:linear-gradient(180deg,#4da5df,#2b77b5);color:white}
+.lisu-stage ~ .lisu-controls .lisu-btn:last-child{background:linear-gradient(180deg,#f09a3e,#d56e27);color:white}
+@media(max-width:1100px){
+  .lisu-stage-top{grid-template-columns:210px 1fr 190px;gap:10px}
+  .lisu-music-plaque{font-size:14px;min-height:70px;padding:10px 12px}
+  .lisu-stage-title h3{font-size:34px}
+  .lisu-stage-title p{font-size:18px}
+  .lisu-round-tools .lisu-status-pill{font-size:16px;padding:10px}
+  .lisu-mini-pause{width:54px;height:54px;font-size:24px}
+  .lisu-dancers{inset:22% 22% 29% 18%}
+  .lisu-person{width:72px;height:98px}
+  .lisu-person.leader{width:126px;height:158px}
+  .lisu-left-panel{width:135px;top:25%;padding:10px}
+  .lisu-count-panel span{width:74px;height:74px;font-size:56px}
+  .lisu-score-panel{width:205px;top:30%;padding:40px 14px 12px}
+  .lisu-score-panel h4{font-size:19px}
+  .lisu-score-panel p{font-size:15px;padding:8px 0}
+  .lisu-score-panel b{font-size:20px}
+  .lisu-input-panel{left:26%;right:26%;bottom:14%}
+  .lisu-tap{width:126px;height:126px;font-size:28px}
+  .lisu-action{min-height:62px;font-size:17px}
+  .lisu-beats{gap:24px}
+  .lisu-beat{width:30px;height:30px}.lisu-beat.strong{width:38px;height:38px}
+  .lisu-stage ~ .lisu-controls{left:20%;right:20%;gap:10px}
+  .lisu-stage ~ .lisu-controls .lisu-btn{font-size:18px;min-height:50px}
+}
+
+/* 2026-07 视口适配修正：保证底部按键完整可见，主操作按钮不遮挡人物 */
+.lisu-dance-overlay.show{
+  padding:8px;
+  align-items:center;
+}
+.lisu-dance:has(.lisu-stage){
+  width:min(1280px,96vw);
+  max-height:calc(100vh - 16px);
+  overflow:hidden;
+}
+.lisu-dance:has(.lisu-stage) .lisu-dance-inner{
+  height:100%;
+}
+.lisu-stage{
+  height:min(720px,calc(100vh - 16px));
+  aspect-ratio:auto;
+  border-radius:16px;
+}
+.lisu-stage-top{
+  left:2.2%;
+  right:2.2%;
+  top:2.2%;
+  grid-template-columns:220px 1fr 210px;
+  gap:12px;
+}
+.lisu-music-plaque{
+  min-height:72px;
+  padding:10px 14px;
+  font-size:15px;
+}
+.lisu-stage-title{
+  max-width:570px;
+  padding:8px 18px 10px;
+}
+.lisu-stage-title h3{
+  font-size:clamp(32px,3.7vw,54px);
+  -webkit-text-stroke:2px #6e341a;
+}
+.lisu-stage-title p{
+  font-size:clamp(18px,1.8vw,25px);
+  margin-top:6px;
+}
+.lisu-round-tools .lisu-status-pill{
+  padding:10px 14px;
+  font-size:18px;
+}
+.lisu-mini-pause{
+  width:56px;
+  height:56px;
+  border-width:5px;
+  font-size:26px;
+}
+.lisu-dancers{
+  inset:22% 22% 34% 18%;
+}
+.lisu-person{
+  width:78px;
+  height:106px;
+}
+.lisu-person.leader{
+  width:136px;
+  height:174px;
+}
+.lisu-left-panel{
+  top:28%;
+  width:138px;
+  min-height:230px;
+}
+.lisu-count-panel span{
+  width:82px;
+  height:82px;
+  font-size:62px;
+}
+.lisu-score-panel{
+  top:32%;
+  right:3%;
+  width:235px;
+  min-height:258px;
+  padding:42px 18px 14px;
+}
+.lisu-score-panel h4{
+  top:-24px;
+  font-size:21px;
+}
+.lisu-score-panel p{
+  padding:9px 0;
+  font-size:17px;
+}
+.lisu-score-panel b{
+  font-size:24px;
+}
+.npc-note{
+  padding:10px;
+  font-size:15px;
+}
+.lisu-input-panel{
+  left:28%;
+  right:28%;
+  bottom:13.5%;
+}
+.lisu-beat-panel,.lisu-action-panel{
+  padding:10px 14px;
+}
+.lisu-beats{
+  min-height:46px;
+  gap:34px;
+}
+.lisu-beat{
+  width:30px;
+  height:30px;
+}
+.lisu-beat.strong{
+  width:38px;
+  height:38px;
+}
+.lisu-beat-panel p{
+  margin:8px 0 0;
+  font-size:14px;
+  line-height:1.3;
+}
+.lisu-tap{
+  width:118px;
+  height:118px;
+  bottom:calc(100% + 18px);
+  border-width:7px;
+  font-size:28px;
+  box-shadow:0 0 0 6px rgba(255,220,118,.48),0 0 22px rgba(255,201,79,.76),0 7px 0 #6b361d;
+}
+.lisu-tap:hover{
+  transform:translateX(-50%) translateY(-2px);
+}
+.lisu-tap:focus-visible{
+  outline:4px solid rgba(255,245,196,.78);
+  outline-offset:5px;
+}
+.lisu-tap:disabled{
+  opacity:.76;
+  cursor:not-allowed;
+}
+.lisu-stage ~ .lisu-controls{
+  left:17%;
+  right:17%;
+  bottom:2.2%;
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+  gap:12px;
+  z-index:60;
+  pointer-events:auto;
+}
+.lisu-stage ~ .lisu-controls .lisu-btn{
+  min-height:52px;
+  padding:8px 12px;
+  font-size:20px;
+  border-radius:20px;
+  pointer-events:auto;
+  position:relative;
+  z-index:61;
+}
+
+@media(max-height:760px){
+  .lisu-stage{height:calc(100vh - 16px)}
+  .lisu-stage-top{grid-template-columns:190px 1fr 178px;gap:8px}
+  .lisu-music-plaque{font-size:13px;min-height:60px;padding:8px 10px}
+  .lisu-stage-title{max-width:500px;padding:7px 14px}
+  .lisu-stage-title h3{font-size:34px}
+  .lisu-stage-title p{font-size:17px}
+  .lisu-round-tools .lisu-status-pill{font-size:15px;padding:9px 10px}
+  .lisu-mini-pause{width:48px;height:48px;font-size:22px}
+  .lisu-dancers{inset:23% 22% 34% 18%}
+  .lisu-person{width:66px;height:90px}
+  .lisu-person.leader{width:116px;height:148px}
+  .lisu-left-panel{top:29%;width:112px;padding:8px}
+  .lisu-count-panel span{width:64px;height:64px;font-size:48px}
+  .lisu-score-panel{top:34%;width:200px;min-height:220px;padding:36px 13px 10px}
+  .lisu-score-panel h4{font-size:18px}
+  .lisu-score-panel p{font-size:14px;padding:7px 0}
+  .lisu-score-panel b{font-size:20px}
+  .npc-note{font-size:13px;line-height:1.32}
+  .lisu-input-panel{left:29%;right:29%;bottom:13.2%}
+  .lisu-beats{gap:24px;min-height:38px}
+  .lisu-beat{width:24px;height:24px}
+  .lisu-beat.strong{width:31px;height:31px}
+  .lisu-tap{width:96px;height:96px;font-size:23px;bottom:calc(100% + 14px)}
+  .lisu-tap:hover{transform:translateX(-50%) translateY(-1px)}
+  .lisu-stage ~ .lisu-controls{left:16%;right:16%;bottom:1.8%;gap:8px}
+  .lisu-stage ~ .lisu-controls .lisu-btn{min-height:44px;font-size:17px}
+}
+
+@media(max-width:900px){
+  .lisu-stage-top{
+    grid-template-columns:1fr 1.25fr auto;
+  }
+  .lisu-music-plaque{
+    font-size:12px;
+    min-height:auto;
+  }
+  .lisu-round-tools .lisu-status-pill{
+    display:none;
+  }
+  .lisu-score-panel{
+    right:2%;
+    width:180px;
+  }
+  .lisu-input-panel{
+    left:23%;
+    right:23%;
+  }
+  .lisu-stage ~ .lisu-controls{
+    left:8%;
+    right:8%;
+  }
+}
+
+/* 最终兜底：舞台界面的底部按钮固定到视口内，避免被 16:9 舞台或底部纹样裁掉 */
+.lisu-dance:has(.lisu-stage) .lisu-controls{
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:22px!important;
+  width:min(760px,72vw)!important;
+  transform:translateX(-50%)!important;
+  z-index:10050!important;
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(138px,1fr))!important;
+  gap:12px!important;
+  margin:0!important;
+  padding:8px!important;
+  border-radius:24px!important;
+  background:rgba(41,24,14,.34)!important;
+  backdrop-filter:blur(2px);
+  pointer-events:auto!important;
+}
+.lisu-dance:has(.lisu-stage) .lisu-controls .lisu-btn{
+  position:relative!important;
+  z-index:10051!important;
+  min-height:50px!important;
+  padding:8px 14px!important;
+  border-radius:20px!important;
+  font-size:clamp(16px,1.35vw,21px)!important;
+  pointer-events:auto!important;
+}
+.lisu-action-hint{
+  margin:0 0 10px;
+  padding:7px 12px;
+  border-radius:999px;
+  background:rgba(255,248,221,.92);
+  color:#63371e;
+  text-align:center;
+  font-weight:900;
+  font-size:15px;
+}
+.lisu-btn.is-running{
+  box-shadow:0 0 0 5px rgba(255,201,79,.28),0 6px 0 rgba(76,37,18,.75)!important;
+  filter:brightness(1.06);
+}
+
+/* 第二轮人物放大：只改显示盒尺寸，图片保持 object-fit:contain，不拉伸变形 */
+.lisu-stage:has(.lisu-action-panel) .lisu-dancers{
+  inset:20% 21% 33% 17%;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-person{
+  width:92px;
+  height:124px;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-person.leader{
+  width:158px;
+  height:202px;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-character-img{
+  object-fit:contain!important;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-person{
+  transition:left .55s ease,top .55s ease,transform .18s ease,filter .2s ease,opacity .2s ease;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-person.stepLeft{
+  transform:translate(-66%,-55%) scale(var(--scale,1.08)) rotate(-5deg)!important;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-person.stepRight{
+  transform:translate(-34%,-55%) scale(var(--scale,1.08)) rotate(5deg)!important;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-person.drink{
+  transform:translate(-50%,-39%) scale(var(--scale,1.04),.9) rotate(-4deg)!important;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-person.wing{
+  transform:translate(-50%,-60%) scale(var(--scale,1.14))!important;
+  filter:drop-shadow(0 0 16px rgba(255,201,79,.72))!important;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-person.turn{
+  transform:translate(-50%,-50%) scaleX(-1) scale(var(--scale,1.08))!important;
+  filter:drop-shadow(0 0 14px rgba(91,185,231,.65))!important;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-action.active{
+  transform:translateY(-4px) scale(1.06);
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-action.wrong{
+  animation:lisuWrongShake .22s ease;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-step-chip{
+  border:0;
+  cursor:pointer;
+  min-width:82px;
+  box-shadow:0 4px 0 rgba(106,62,31,.38);
+  transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
+  touch-action:manipulation;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-step-chip:hover,
+.lisu-stage:has(.lisu-action-panel) .lisu-step-chip:focus-visible{
+  transform:translateY(-2px);
+  outline:3px solid rgba(255,201,79,.55);
+  outline-offset:2px;
+}
+.lisu-stage:has(.lisu-action-panel) .lisu-step-chip.next{
+  box-shadow:0 0 0 5px rgba(255,201,79,.28),0 5px 0 rgba(106,62,31,.45);
+  animation:lisuStepPulse 1s ease-in-out infinite alternate;
+}
+@keyframes lisuStepPulse{
+  from{filter:brightness(1)}
+  to{filter:brightness(1.14)}
+}
+.lisu-formation-panel li.current{
+  background:#ffc94f!important;
+  color:#60351d!important;
+  border-color:#b97832!important;
+  box-shadow:0 0 0 5px rgba(255,201,79,.26);
+}
+.lisu-formation-panel li.done{
+  background:#dff2c7!important;
+  color:#2f6f31!important;
+}
+@keyframes lisuWrongShake{
+  25%{transform:translateX(-5px)}
+  75%{transform:translateX(5px)}
+}
+
+@media(max-height:760px){
+  .lisu-dance:has(.lisu-stage) .lisu-controls{
+    bottom:10px!important;
+    width:min(700px,70vw)!important;
+    gap:8px!important;
+    padding:6px!important;
+  }
+  .lisu-dance:has(.lisu-stage) .lisu-controls .lisu-btn{
+    min-height:42px!important;
+    font-size:16px!important;
+  }
+  .lisu-action-hint{font-size:13px;padding:6px 10px}
+  .lisu-stage:has(.lisu-action-panel) .lisu-dancers{
+    inset:22% 21% 34% 17%;
+  }
+  .lisu-stage:has(.lisu-action-panel) .lisu-person{
+    width:78px;
+    height:106px;
+  }
+  .lisu-stage:has(.lisu-action-panel) .lisu-person.leader{
+    width:136px;
+    height:174px;
+  }
+}
+
+/* 2026-07-23：斑鸠吃水舞文化简介与游戏内文化提示 */
+.lisu-culture-intro{
+  position:relative;
+  overflow:hidden;
+  padding:20px;
+  border:4px solid #a15a2b;
+  background:
+    linear-gradient(135deg,rgba(255,248,224,.96),rgba(255,232,169,.92)),
+    repeating-linear-gradient(90deg,#8a3f26 0 18px,#e1a83b 18px 30px,#1b6f78 30px 42px,#f6d37a 42px 54px);
+  box-shadow:0 14px 0 rgba(112,64,33,.22),0 24px 48px rgba(74,42,20,.22);
+}
+.lisu-culture-intro::before,
+.lisu-culture-intro::after{
+  content:"";
+  position:absolute;
+  left:18px;
+  right:18px;
+  height:12px;
+  border-radius:999px;
+  background:repeating-linear-gradient(90deg,#7d2f24 0 18px,#e19b35 18px 32px,#1b6f78 32px 46px,#f5d889 46px 58px);
+  opacity:.9;
+}
+.lisu-culture-intro::before{top:10px}
+.lisu-culture-intro::after{bottom:10px}
+.lisu-culture-intro .lisu-intro-grid{
+  grid-template-columns:minmax(280px,36%) 1fr;
+  gap:20px;
+  align-items:stretch;
+  position:relative;
+  z-index:1;
+  padding:14px 8px;
+}
+.lisu-culture-photo{
+  margin:0;
+  min-height:420px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border-radius:24px;
+  border:5px solid #8a4a25;
+  background:#fff6d9;
+  box-shadow:0 8px 0 #6e371f,0 16px 30px rgba(74,42,20,.22);
+}
+.lisu-culture-photo img{
+  width:100%;
+  height:100%;
+  min-height:360px;
+  object-fit:cover;
+  display:block;
+}
+.lisu-culture-photo figcaption{
+  padding:12px 14px;
+  text-align:center;
+  font-weight:900;
+  color:#6d371f;
+  background:linear-gradient(180deg,#fff7da,#f2c56d);
+}
+.lisu-culture-copy{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.lisu-culture-title{
+  padding:14px 18px;
+  border-radius:22px;
+  border:4px solid #9b5429;
+  background:linear-gradient(180deg,#fff8df,#f1c873);
+  box-shadow:0 6px 0 #713719;
+}
+.lisu-culture-title span{
+  display:inline-flex;
+  margin-bottom:4px;
+  padding:5px 12px;
+  border-radius:999px;
+  background:#8d3e2b;
+  color:#fff8dc;
+  font-size:14px;
+  font-weight:900;
+}
+.lisu-culture-title h3{
+  margin:0;
+  color:#6f321b;
+  font-size:clamp(25px,3vw,38px);
+  line-height:1.12;
+  text-shadow:0 2px 0 rgba(255,255,255,.82);
+}
+.lisu-culture-lead{
+  margin:0;
+  padding:14px 16px;
+  border-radius:18px;
+  background:rgba(255,250,233,.82);
+  border-left:8px solid #d89431;
+  color:#4d321d;
+  font-size:16px;
+  line-height:1.65;
+  font-weight:800;
+}
+.lisu-culture-keywords{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.lisu-culture-keywords span{
+  padding:7px 12px;
+  border-radius:999px;
+  background:#2f7f63;
+  color:white;
+  font-weight:900;
+  box-shadow:0 3px 0 rgba(41,80,52,.35);
+}
+.lisu-culture-points{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.lisu-culture-points section{
+  min-height:96px;
+  padding:12px 14px;
+  border-radius:18px;
+  border:3px solid rgba(165,96,43,.45);
+  background:rgba(255,249,232,.86);
+  box-shadow:0 4px 0 rgba(112,64,33,.16);
+}
+.lisu-culture-points b{
+  display:block;
+  margin-bottom:4px;
+  color:#8d3e2b;
+  font-size:18px;
+}
+.lisu-culture-points p{
+  margin:0;
+  color:#5a3a22;
+  line-height:1.5;
+  font-weight:750;
+}
+.lisu-heritage{
+  margin:0;
+  padding:10px 14px;
+  border-radius:16px;
+  background:linear-gradient(90deg,rgba(141,62,43,.95),rgba(183,105,45,.9));
+  color:#fff8dc;
+  font-weight:900;
+}
+.lisu-culture-intro .lisu-notice{
+  margin:0;
+  font-size:14px;
+  line-height:1.5;
+}
+.lisu-culture-intro .lisu-goals{
+  margin:0;
+}
+.lisu-culture-intro .lisu-controls{
+  margin-top:auto;
+}
+.lisu-culture-bubble{
+  position:absolute;
+  z-index:7;
+  left:50%;
+  top:17.5%;
+  transform:translateX(-50%);
+  width:min(520px,42vw);
+  padding:10px 14px;
+  border-radius:18px;
+  border:3px solid rgba(151,80,38,.58);
+  background:rgba(255,248,224,.88);
+  box-shadow:0 4px 0 rgba(112,64,33,.28);
+  color:#6d371f;
+  font-weight:900;
+  text-align:center;
+  line-height:1.35;
+  pointer-events:none;
+}
+.lisu-stage-action .lisu-culture-bubble{
+  top:20%;
+  width:min(560px,44vw);
+}
+.lisu-stage-formation .lisu-culture-bubble{
+  top:21%;
+  width:min(520px,40vw);
+}
+@media(max-width:980px){
+  .lisu-culture-intro .lisu-intro-grid{
+    grid-template-columns:1fr;
+  }
+  .lisu-culture-photo{
+    min-height:auto;
+  }
+  .lisu-culture-photo img{
+    min-height:240px;
+    max-height:320px;
+  }
+  .lisu-culture-points{
+    grid-template-columns:1fr;
+  }
+  .lisu-culture-bubble{
+    top:20%;
+    width:60vw;
+    font-size:13px;
+  }
+}
+
+/* 2026-07-24：第二轮“跟笙学跳”操作区细调——横向更长、纵向更窄，不遮挡人物；成绩框与文化提示齐平 */
+.lisu-stage:has(.lisu-action-panel) .lisu-input-panel{
+  left:22.5%!important;
+  right:24.5%!important;
+  bottom:13.8%!important;
+  max-width:none!important;
+  align-items:end!important;
+}
+
+.lisu-stage:has(.lisu-action-panel) .lisu-action-panel{
+  padding:8px 14px 10px!important;
+  border-radius:20px!important;
+  min-height:0!important;
+}
+
+.lisu-stage:has(.lisu-action-panel) .lisu-sequence{
+  margin:0 0 6px!important;
+  gap:8px!important;
+}
+
+.lisu-stage:has(.lisu-action-panel) .lisu-step-chip{
+  min-width:74px!important;
+  padding:6px 11px!important;
+  font-size:15px!important;
+  line-height:1.05!important;
+  border-radius:999px!important;
+}
+
+.lisu-stage:has(.lisu-action-panel) .lisu-action-hint{
+  margin:0 0 8px!important;
+  padding:6px 12px!important;
+  font-size:14px!important;
+  line-height:1.2!important;
+}
+
+.lisu-stage:has(.lisu-action-panel) .lisu-action-buttons{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+
+.lisu-stage:has(.lisu-action-panel) .lisu-action{
+  min-height:64px!important;
+  padding:8px 10px!important;
+  font-size:20px!important;
+  border-width:3px!important;
+  line-height:1.05!important;
+}
+
+.lisu-stage:has(.lisu-action-panel) .lisu-action small{
+  display:block!important;
+  margin-top:5px!important;
+  font-size:11px!important;
+  line-height:1!important;
+}
+
+.lisu-stage:has(.lisu-action-panel) .lisu-progress{
+  height:7px!important;
+  margin-top:8px!important;
+}
+
+.lisu-stage:has(.lisu-action-panel) .lisu-score-panel{
+  top:20%!important;
+  right:3.2%!important;
+}
+
+@media(max-height:760px){
+  .lisu-stage:has(.lisu-action-panel) .lisu-input-panel{
+    left:23%!important;
+    right:24%!important;
+    bottom:13.4%!important;
+  }
+  .lisu-stage:has(.lisu-action-panel) .lisu-action-panel{
+    padding:7px 12px 8px!important;
+  }
+  .lisu-stage:has(.lisu-action-panel) .lisu-action{
+    min-height:54px!important;
+    font-size:17px!important;
+  }
+  .lisu-stage:has(.lisu-action-panel) .lisu-action-hint{
+    margin-bottom:6px!important;
+    font-size:12px!important;
+  }
+  .lisu-stage:has(.lisu-action-panel) .lisu-step-chip{
+    min-width:66px!important;
+    font-size:13px!important;
+    padding:5px 9px!important;
+  }
+  .lisu-stage:has(.lisu-action-panel) .lisu-score-panel{
+    top:20%!important;
+  }
+}
+
+/* 2026-07-24：去掉傈僳族舞蹈界面底部彩色竖条装饰 */
+.lisu-stage::after{
+  display:none!important;
+  content:none!important;
+}
