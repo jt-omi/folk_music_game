@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>民族音乐节奏标注器</title>
+  <style>
+    :root { --paper:#fff8ea; --ink:#3f3428; --red:#b64032; --gold:#e1a83b; --green:#47785e; --line:#eadcc0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px; color: var(--ink); background: linear-gradient(135deg,#f4ead8,#fff8ea); font-family: "Microsoft YaHei", system-ui, sans-serif; }
+    h1, h2 { color: #7f2f2a; }
+    .wrap { max-width: 1160px; margin: auto; }
+    .card { margin: 14px 0; padding: 16px; border-radius: 22px; background: rgba(255,248,234,.96); border: 2px solid var(--line); box-shadow: 0 12px 26px rgba(74,55,37,.08); }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    label { display: grid; gap: 6px; font-weight: 800; color: #684f2d; }
+    input, select, textarea { width: 100%; min-height: 40px; border: 2px solid var(--line); border-radius: 12px; padding: 8px 10px; font: inherit; background: white; }
+    textarea { min-height: 110px; font-family: Consolas, monospace; }
+    button { min-height: 42px; border: 0; border-radius: 13px; padding: 9px 14px; font: inherit; font-weight: 800; cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 4px solid rgba(225,168,59,.5); outline-offset: 2px; }
+    .primary { background: var(--red); color: white; }
+    .secondary { background: var(--line); color: #684f2d; }
+    .green { background: var(--green); color: white; }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .timeline { position: relative; height: 160px; border-radius: 18px; background: #f4ead8; border: 2px solid var(--line); overflow: hidden; cursor: crosshair; }
+    .playhead { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--red); left: 0; z-index: 3; }
+    .marker { position: absolute; top: 22px; width: 14px; height: 92px; margin-left: -7px; border-radius: 999px; background: var(--gold); border: 3px solid white; box-shadow: 0 7px 14px rgba(127,47,42,.2); cursor: grab; }
+    .marker.feature { background: var(--green); top: 74px; height: 64px; }
+    .marker.selected { outline: 4px solid rgba(182,64,50,.35); transform: scale(1.08); }
+    .marker.flash { animation: flash .3s ease; }
+    .legend { display: flex; gap: 12px; color: #684f2d; font-size: 14px; }
+    .dot { display: inline-block; width: 13px; height: 13px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+    .steady { background: var(--gold); }
+    .feature { background: var(--green); }
+    .hint { color: #684f2d; line-height: 1.7; }
+    @keyframes flash { 50% { transform: scale(1.25); filter: brightness(1.25); } }
+    @media (max-width: 780px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>民族音乐节奏标注器</h1>
+    <p class="hint">教师工具不会出现在学生游戏菜单。请选择本地音频，设置片段范围，然后用空格键或鼠标点击标记节奏点。</p>
+
+    <section class="card">
+      <h2>一、音频与关卡信息</h2>
+      <div class="grid">
+        <label>选择本地音频<input type="file" id="audioFile" accept="audio/*"></label>
+        <label>游戏内音频路径<input id="audioPath" value="assets/audio/your-file.mp3"></label>
+        <label>民族名称<input id="ethnicGroup" value="演示民族关卡"></label>
+        <label>乐曲名称<input id="pieceTitle" value="占位节奏片段"></label>
+        <label>乐器名称<input id="instrument" value="占位民族乐器"></label>
+        <label>拍号<input id="timeSignature" value="4/4"></label>
+        <label>BPM<input id="bpm" type="number" value="90"></label>
+        <label>难度<select id="difficulty"><option value="easy">easy</option><option value="normal">normal</option><option value="hard">hard</option></select></label>
+        <label>片段开始秒<input id="startTime" type="number" step="0.01" value="0"></label>
+        <label>片段结束秒<input id="endTime" type="number" step="0.01" value="8"></label>
+        <label>乐器图片路径<input id="instrumentImage" value="assets/rhythm-placeholder-instrument.svg"></label>
+        <label>短音效路径<input id="hitSound" value="assets/audio/hit.wav"></label>
+      </div>
+      <label style="margin-top:12px">文化反馈<textarea id="cultureFeedback">你已经像小小演奏者一样，听见了强弱拍的循环。</textarea></label>
+      <audio id="audio" controls style="width:100%;margin-top:12px"></audio>
+    </section>
+
+    <section class="card">
+      <h2>二、播放与标记</h2>
+      <div class="row">
+        <button class="primary" id="play">播放片段</button>
+        <button class="secondary" id="pause">暂停</button>
+        <button class="secondary" id="undo">撤销上一次</button>
+        <button class="secondary" id="clear">清空当前组</button>
+        <button class="green" id="audition">试听标记</button>
+        <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="loop" style="width:auto">循环片段</label>
+        <label style="max-width:160px">速度<select id="rate"><option value="1">1.0x</option><option value="0.75">0.75x</option><option value="0.5">0.5x</option></select></label>
+        <label style="max-width:180px">标记组<select id="group"><option value="steady">稳定节拍</option><option value="feature">特色节奏</option></select></label>
+      </div>
+      <p class="hint">快捷键：空格 = 添加当前组标记；Delete = 删除选中标记。点击时间轴可添加标记，拖动标记可移动。</p>
+      <div class="legend"><span><i class="dot steady"></i>稳定节拍</span><span><i class="dot feature"></i>特色节奏</span></div>
+      <div class="timeline" id="timeline"><div class="playhead" id="playhead"></div></div>
+    </section>
+
+    <section class="card">
+      <h2>三、导出 / 导入 JSON</h2>
+      <div class="row">
+        <button class="primary" id="export">导出 JSON</button>
+        <button class="secondary" id="import">导入 JSON</button>
+      </div>
+      <textarea id="jsonBox" placeholder="导出的 JSON 会出现在这里，可直接复制到 rhythm-levels.json。"></textarea>
+    </section>
+  </div>
+
+  <script>
+    const audio = document.querySelector('#audio');
+    const timeline = document.querySelector('#timeline');
+    const playhead = document.querySelector('#playhead');
+    const markers = { steady: [], feature: [] };
+    let selected = null;
+    let dragging = null;
+    let auditionTimer = 0;
+
+    const value = id => document.querySelector('#' + id).value;
+    const number = id => Number(value(id)) || 0;
+    const durationMs = () => Math.max(1, (number('endTime') - number('startTime')) * 1000);
+    const currentMs = () => Math.max(0, (audio.currentTime - number('startTime')) * 1000);
+    const pct = ms => Math.max(0, Math.min(100, ms / durationMs() * 100));
+
+    document.querySelector('#audioFile').addEventListener('change', event => {
+      const file = event.target.files[0];
+      if (file) audio.src = URL.createObjectURL(file);
+    });
+    document.querySelector('#rate').addEventListener('change', () => audio.playbackRate = Number(value('rate')) || 1);
+    document.querySelector('#play').addEventListener('click', playSegment);
+    document.querySelector('#pause').addEventListener('click', () => audio.pause());
+    document.querySelector('#undo').addEventListener('click', undo);
+    document.querySelector('#clear').addEventListener('click', () => { markers[value('group')] = []; selected = null; renderMarkers(); });
+    document.querySelector('#audition').addEventListener('click', audition);
+    document.querySelector('#export').addEventListener('click', exportJson);
+    document.querySelector('#import').addEventListener('click', importJson);
+
+    function playSegment() {
+      clearTimeout(auditionTimer);
+      audio.playbackRate = Number(value('rate')) || 1;
+      audio.currentTime = number('startTime');
+      audio.play();
+    }
+
+    audio.addEventListener('timeupdate', () => {
+      if (audio.currentTime >= number('endTime')) {
+        if (document.querySelector('#loop').checked) audio.currentTime = number('startTime');
+        else audio.pause();
+      }
+      playhead.style.left = pct(currentMs()) + '%';
+    });
+
+    function addMarker(ms = currentMs(), group = value('group')) {
+      const safe = Math.round(Math.max(0, Math.min(durationMs(), ms)));
+      markers[group].push(safe);
+      markers[group].sort((a, b) => a - b);
+      selected = { group, ms: safe };
+      renderMarkers();
+    }
+
+    function renderMarkers() {
+      timeline.querySelectorAll('.marker').forEach(node => node.remove());
+      ['steady', 'feature'].forEach(group => {
+        markers[group].forEach(ms => {
+          const node = document.createElement('button');
+          node.className = 'marker ' + group + (selected && selected.group === group && selected.ms === ms ? ' selected' : '');
+          node.type = 'button';
+          node.style.left = pct(ms) + '%';
+          node.title = group + ' · ' + ms + ' ms';
+          node.addEventListener('click', event => { event.stopPropagation(); selected = { group, ms }; renderMarkers(); });
+          node.addEventListener('pointerdown', event => { event.stopPropagation(); dragging = { group, ms, node }; node.setPointerCapture(event.pointerId); });
+          node.addEventListener('pointermove', event => {
+            if (!dragging || dragging.node !== node) return;
+            const rect = timeline.getBoundingClientRect();
+            const nextMs = Math.round(Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)) * durationMs());
+            const index = markers[group].indexOf(ms);
+            if (index >= 0) markers[group][index] = nextMs;
+            dragging.ms = nextMs;
+            selected = { group, ms: nextMs };
+            node.style.left = pct(nextMs) + '%';
+            node.title = group + ' · ' + nextMs + ' ms';
+          });
+          node.addEventListener('pointerup', () => { dragging = null; renderMarkers(); });
+          timeline.appendChild(node);
+        });
+      });
+    }
+
+    timeline.addEventListener('click', event => {
+      const rect = timeline.getBoundingClientRect();
+      addMarker((event.clientX - rect.left) / rect.width * durationMs());
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.target.matches('input,textarea,select')) return;
+      if (event.code === 'Space') { event.preventDefault(); addMarker(); }
+      if (event.key === 'Delete' && selected) deleteSelected();
+    });
+
+    function undo() {
+      const group = value('group');
+      markers[group].pop();
+      selected = null;
+      renderMarkers();
+    }
+
+    function deleteSelected() {
+      markers[selected.group] = markers[selected.group].filter(ms => ms !== selected.ms);
+      selected = null;
+      renderMarkers();
+    }
+
+    function audition() {
+      playSegment();
+      const all = [...markers.steady.map(ms => ({ group: 'steady', ms })), ...markers.feature.map(ms => ({ group: 'feature', ms }))].sort((a, b) => a.ms - b.ms);
+      all.forEach(item => {
+        setTimeout(() => {
+          const node = [...timeline.querySelectorAll('.marker')].find(el => el.title.includes(item.ms + ' ms') && el.classList.contains(item.group));
+          node?.classList.add('flash');
+          setTimeout(() => node?.classList.remove('flash'), 320);
+        }, item.ms / (Number(value('rate')) || 1));
+      });
+    }
+
+    function buildLevel() {
+      return {
+        id: (value('ethnicGroup') + '-' + value('pieceTitle')).replace(/\s+/g, '-').toLowerCase(),
+        ethnicGroup: value('ethnicGroup'),
+        pieceTitle: value('pieceTitle'),
+        instrument: value('instrument'),
+        description: '请在游戏中补充适合学生阅读的简短文化介绍。',
+        audio: value('audioPath'),
+        instrumentImage: value('instrumentImage'),
+        hitSounds: [value('hitSound')],
+        startTime: number('startTime'),
+        endTime: number('endTime'),
+        bpm: number('bpm'),
+        timeSignature: value('timeSignature'),
+        taskType: 'teacher-export',
+        targetTimes: markers.feature.length ? markers.feature : markers.steady,
+        steadyBeatTimes: markers.steady,
+        featureRhythmTimes: markers.feature,
+        perfectTolerance: 70,
+        goodTolerance: 130,
+        acceptableTolerance: 210,
+        difficulty: value('difficulty'),
+        cultureFeedback: value('cultureFeedback')
+      };
+    }
+
+    function exportJson() {
+      document.querySelector('#jsonBox').value = JSON.stringify(buildLevel(), null, 2);
+    }
+
+    function importJson() {
+      const data = JSON.parse(document.querySelector('#jsonBox').value);
+      ['ethnicGroup','pieceTitle','instrument','audio','instrumentImage','timeSignature','difficulty','cultureFeedback'].forEach(key => {
+        const el = document.querySelector('#' + (key === 'audio' ? 'audioPath' : key));
+        if (el && data[key] !== undefined) el.value = data[key];
+      });
+      document.querySelector('#bpm').value = data.bpm || 90;
+      document.querySelector('#startTime').value = data.startTime || 0;
+      document.querySelector('#endTime').value = data.endTime || 8;
+      document.querySelector('#hitSound').value = data.hitSounds?.[0] || '';
+      markers.steady = data.steadyBeatTimes || [];
+      markers.feature = data.featureRhythmTimes || data.targetTimes || [];
+      renderMarkers();
+    }
+  </script>
+</body>
+</html>

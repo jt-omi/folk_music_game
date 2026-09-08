@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>作者用：强弱拍标注器</title>
+  <style>
+    :root {
+      --ink: #4a2b1a;
+      --muted: #7b6242;
+      --paper: #fff8e6;
+      --cream: #ffecc2;
+      --brown: #7a4324;
+      --dark: #4b2a19;
+      --gold: #ffc94f;
+      --orange: #f2a23c;
+      --green: #3fa766;
+      --red: #b64032;
+      --blue: #3f86bd;
+      --weak: #6b3d25;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      padding: 20px;
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 15% 16%, rgba(255,201,79,.24), transparent 25%),
+        linear-gradient(135deg, #f2dfb7, #fff9eb 45%, #dcefe6);
+    }
+    .wrap { width: min(1180px, 100%); margin: auto; }
+    h1 { margin: 0; color: #7f2f2a; font-size: clamp(26px, 4vw, 42px); }
+    h2 { margin: 0 0 12px; color: #7f2f2a; }
+    p { line-height: 1.7; }
+    .hint { color: var(--muted); margin: 8px 0 16px; }
+    .card {
+      margin: 14px 0;
+      padding: 16px;
+      border: 3px solid #c98b3a;
+      border-radius: 24px;
+      background: rgba(255,248,230,.95);
+      box-shadow: 0 14px 32px rgba(80,47,22,.13);
+    }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    label { display: grid; gap: 6px; color: #6b3f22; font-weight: 900; }
+    input, select, textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 9px 11px;
+      border: 2px solid #e4c58d;
+      border-radius: 14px;
+      background: white;
+      color: var(--ink);
+      font: inherit;
+    }
+    textarea { min-height: 230px; font-family: Consolas, "Microsoft YaHei", monospace; line-height: 1.45; }
+    button {
+      min-height: 48px;
+      padding: 10px 18px;
+      border: 0;
+      border-radius: 16px;
+      color: white;
+      font: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      touch-action: manipulation;
+      box-shadow: 0 8px 0 rgba(73,39,19,.2);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    button:hover { filter: brightness(1.05); }
+    button:active { transform: translateY(3px); box-shadow: 0 4px 0 rgba(73,39,19,.2); }
+    button:focus-visible { outline: 4px solid rgba(255,201,79,.55); outline-offset: 3px; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    .primary { background: linear-gradient(180deg, #d95335, #a12c24); }
+    .green { background: linear-gradient(180deg, #6fc45d, #3f8e37); }
+    .blue { background: linear-gradient(180deg, #65aee3, #3478b4); }
+    .soft { color: #6a3b20; background: linear-gradient(180deg, #f5dfad, #d8b56d); }
+    .orange { background: linear-gradient(180deg, #ffb24d, #dd7428); }
+    .purple { background: linear-gradient(180deg, #a97be2, #7245b8); }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .stage {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+      min-height: 420px;
+      border: 5px solid #8b4a25;
+      border-radius: 26px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(126,182,221,.82), rgba(244,188,112,.86) 55%, rgba(100,133,78,.86)),
+        repeating-linear-gradient(90deg, #1d4f65 0 24px, #d5872e 24px 38px, #8f2f26 38px 52px, #f0d28a 52px 66px);
+      box-shadow: inset 0 0 0 7px rgba(255,239,188,.72);
+    }
+    .stage-main {
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      text-align: center;
+    }
+    .clock {
+      position: absolute;
+      left: 24px;
+      top: 22px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: rgba(255,248,225,.92);
+      border: 3px solid #b97832;
+      font-weight: 900;
+      font-size: 22px;
+    }
+    .count {
+      position: absolute;
+      right: 378px;
+      top: 22px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: rgba(255,248,225,.92);
+      border: 3px solid #b97832;
+      font-weight: 900;
+      font-size: 22px;
+    }
+    .tap-pad {
+      width: min(270px, 62vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 10px solid #8a4a25;
+      color: #fff8d8;
+      font-size: clamp(28px, 5vw, 44px);
+      text-shadow: 0 4px 0 #6b2b1d;
+      background: radial-gradient(circle at 38% 30%, #fff1bd, #f4a15d 48%, #b64032);
+      box-shadow: 0 0 0 9px rgba(255,225,141,.7), 0 0 34px rgba(255,214,87,.8);
+    }
+    .tap-pad.hit { animation: hit .16s ease; }
+    @keyframes hit { 50% { transform: scale(.94); } }
+    .side {
+      padding: 24px 18px;
+      background: rgba(255,241,202,.9);
+      border-left: 5px solid rgba(139,74,37,.65);
+    }
+    .choice-title { font-size: 20px; font-weight: 900; margin-bottom: 12px; }
+    .beat-buttons { display: grid; gap: 12px; }
+    .beat-type {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 24px;
+      color: white;
+    }
+    .beat-type small { font-size: 14px; opacity: .9; }
+    .beat-type.selected { outline: 5px solid rgba(255,255,255,.72); filter: brightness(1.1); }
+    .strong-btn { background: linear-gradient(180deg, #ffd45c, #db8f23); color: #5d321d; }
+    .secondary-btn { background: linear-gradient(180deg, #f7b657, #c66b27); }
+    .weak-btn { background: linear-gradient(180deg, #805033, #4c2a1b); }
+    .mode-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; color: var(--muted); font-weight: 800; }
+    .mode-row input { width: auto; min-height: auto; }
+    .timeline {
+      position: relative;
+      height: 154px;
+      overflow: hidden;
+      border: 4px solid #a96931;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #fff4cf, #f5d999);
+    }
+    .lane-line {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 56px;
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(92,52,28,.24);
+    }
+    .marker {
+      position: absolute;
+      top: 40px;
+      width: 18px;
+      height: 40px;
+      border: 3px solid #64371f;
+      border-radius: 999px;
+      transform: translateX(-50%);
+      box-shadow: 0 3px 8px rgba(63,35,18,.2);
+    }
+    .marker.strong { width: 34px; background: var(--gold); border-color: #b8772c; box-shadow: 0 0 16px rgba(255,201,79,.8); }
+    .marker.secondary { width: 26px; background: var(--orange); border-color: #9d5d23; }
+    .marker.weak { background: var(--weak); }
+    .marker-label {
+      position: absolute;
+      top: 88px;
+      transform: translateX(-50%);
+      font-size: 12px;
+      font-weight: 900;
+      color: #6a3a20;
+      white-space: nowrap;
+    }
+    .status { min-height: 32px; margin-top: 10px; color: var(--muted); font-weight: 800; }
+    .ok { color: var(--green); }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    code { padding: 2px 6px; border-radius: 6px; background: #fff1c9; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 999px; color: white; background: var(--brown); font-size: 12px; }
+    @media (max-width: 860px) {
+      body { padding: 10px; }
+      .grid, .two, .stage { grid-template-columns: 1fr; }
+      .side { border-left: 0; border-top: 5px solid rgba(139,74,37,.65); }
+      .count { right: 20px; top: 82px; }
+      .clock { left: 20px; top: 20px; }
+      .stage-main { padding-top: 116px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>作者用：强弱拍标注器</h1>
+    <p class="hint">这个页面不会出现在学生菜单里。你播放音乐后，可以一边听一边标“强拍、弱拍、次强拍”。导出的 JSON 发给我，我就能把正确强弱拍放进正式游戏。</p>
+
+    <section class="card">
+      <div class="grid">
+        <label>本地音频文件
+          <input id="audioFile" type="file" accept="audio/*">
+        </label>
+        <label>或项目内音频路径
+          <input id="audioPath" value="assets/audio/lisu/banjiu-chishui.m4a">
+        </label>
+        <label>乐曲名称
+          <input id="pieceTitle" value="斑鸠吃水舞">
+        </label>
+        <label>拍号
+          <input id="timeSignature" value="4/4">
+        </label>
+        <label>片段开始秒
+          <input id="startTime" type="number" value="0" min="0" step="0.01">
+        </label>
+        <label>片段结束秒
+          <input id="endTime" type="number" value="43" min="0" step="0.01">
+        </label>
+        <label>播放速度
+          <select id="playbackRate">
+            <option value="0.7" selected>0.7 倍速，方便标注</option>
+            <option value="1">原速</option>
+            <option value="0.5">0.5 倍速</option>
+          </select>
+        </label>
+        <label>备注
+          <input id="note" value="作者实拍强弱拍">
+        </label>
+      </div>
+      <div class="controls">
+        <button class="primary" id="loadBtn" type="button">加载音频</button>
+        <button class="green" id="playBtn" type="button">开始播放并标注</button>
+        <button class="soft" id="pauseBtn" type="button">暂停</button>
+        <button class="soft" id="resumeBtn" type="button">继续</button>
+        <button class="soft" id="undoBtn" type="button">撤销上一拍</button>
+        <button class="soft" id="clearBtn" type="button">清空</button>
+      </div>
+      <div class="status" id="status">建议先点“加载音频”。如果不选文件，会默认加载项目里的《斑鸠吃水》音频。</div>
+    </section>
+
+    <section class="card">
+      <div class="stage">
+        <div class="clock">时间：<span id="clock">0.00</span>s</div>
+        <div class="count">已标：<span id="count">0</span> 拍</div>
+        <div class="stage-main">
+          <button class="tap-pad" id="tapBtn" type="button">标一拍</button>
+          <p class="hint">快捷键：<code>1</code> 强拍，<code>2</code> 弱拍，<code>3</code> 次强拍，<code>空格</code> 按当前选中的类型标一拍。</p>
+        </div>
+        <aside class="side">
+          <div class="choice-title">当前要标的拍子</div>
+          <div class="beat-buttons">
+            <button class="beat-type strong-btn selected" data-type="strong" type="button"><span>强拍</span><small>键盘 1</small></button>
+            <button class="beat-type weak-btn" data-type="weak" type="button"><span>弱拍</span><small>键盘 2</small></button>
+            <button class="beat-type secondary-btn" data-type="secondary" type="button"><span>次强拍</span><small>键盘 3</small></button>
+          </div>
+          <label class="mode-row"><input id="autoSuggest" type="checkbox" checked> 标完后按 4/4 自动建议下一拍：强、弱、次强、弱</label>
+          <p class="hint"><span class="badge">小窍门</span> 如果你不想每次切换，勾选自动建议就行；听到不一样时手动点右侧类型修正。</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>强弱拍时间轴</h2>
+      <div class="timeline" id="timeline"><span class="lane-line"></span></div>
+    </section>
+
+    <section class="card two">
+      <div>
+        <h2>导出给正式游戏</h2>
+        <textarea id="exportBox" readonly></textarea>
+        <div class="controls">
+          <button class="blue" id="exportBtn" type="button">生成 JSON</button>
+          <button class="soft" id="copyBtn" type="button">复制 JSON</button>
+        </div>
+      </div>
+      <div>
+        <h2>导入继续修改</h2>
+        <textarea id="importBox" placeholder="把之前导出的 JSON 粘贴到这里，再点导入。"></textarea>
+        <div class="controls">
+          <button class="orange" id="importBtn" type="button">导入 JSON</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <audio id="audio" preload="auto"></audio>
+
+  <script>
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+    const audio = $('#audio');
+    const markers = [];
+    const state = {
+      selectedType: 'strong',
+      loadedObjectUrl: '',
+      playing: false,
+      raf: 0
+    };
+
+    const typeLabel = {
+      strong: '强',
+      weak: '弱',
+      secondary: '次强'
+    };
+
+    function setStatus(text, ok = false) {
+      $('#status').textContent = text;
+      $('#status').classList.toggle('ok', ok);
+    }
+
+    function numberValue(id, fallback = 0) {
+      const value = Number($(id).value);
+      return Number.isFinite(value) ? value : fallback;
+    }
+
+    function textValue(id) {
+      return $(id).value.trim();
+    }
+
+    function setSelectedType(type) {
+      state.selectedType = type;
+      $$('.beat-type').forEach(button => button.classList.toggle('selected', button.dataset.type === type));
+    }
+
+    function autoTypeForIndex(index) {
+      const count = parseInt(textValue('#timeSignature').split('/')[0], 10) || 4;
+      const pos = index % count;
+      if (count === 4) {
+        if (pos === 0) return 'strong';
+        if (pos === 2) return 'secondary';
+        return 'weak';
+      }
+      return pos === 0 ? 'strong' : 'weak';
+    }
+
+    async function loadAudio() {
+      stop(false);
+      if (state.loadedObjectUrl) {
+        URL.revokeObjectURL(state.loadedObjectUrl);
+        state.loadedObjectUrl = '';
+      }
+      const file = $('#audioFile').files[0];
+      if (file) {
+        state.loadedObjectUrl = URL.createObjectURL(file);
+        audio.src = state.loadedObjectUrl;
+      } else {
+        audio.src = textValue('#audioPath');
+      }
+      audio.playbackRate = numberValue('#playbackRate', 0.7);
+      audio.currentTime = Math.max(0, numberValue('#startTime', 0));
+      audio.load();
+      setStatus('音频已加载。点击“开始播放并标注”后开始打强弱拍。', true);
+    }
+
+    async function play() {
+      if (!audio.src) await loadAudio();
+      const start = Math.max(0, numberValue('#startTime', 0));
+      audio.playbackRate = numberValue('#playbackRate', 0.7);
+      audio.currentTime = start;
+      state.playing = true;
+      tick();
+      try {
+        await audio.play();
+        setStatus('正在播放：按 1/2/3 或空格标强弱拍。', true);
+      } catch (error) {
+        state.playing = false;
+        setStatus('浏览器没有允许播放，请再点一次“开始播放并标注”。');
+      }
+    }
+
+    function pause() {
+      audio.pause();
+      state.playing = false;
+      cancelAnimationFrame(state.raf);
+      setStatus('已暂停。');
+    }
+
+    function resume() {
+      state.playing = true;
+      audio.playbackRate = numberValue('#playbackRate', 0.7);
+      audio.play().then(() => {
+        tick();
+        setStatus('继续播放，接着标注。', true);
+      }).catch(() => setStatus('请再点一次继续。'));
+    }
+
+    function stop(resetTime = true) {
+      audio.pause();
+      state.playing = false;
+      cancelAnimationFrame(state.raf);
+      if (resetTime) audio.currentTime = Math.max(0, numberValue('#startTime', 0));
+    }
+
+    function currentRelativeSeconds() {
+      return Math.max(0, audio.currentTime - Math.max(0, numberValue('#startTime', 0)));
+    }
+
+    function mark(type = state.selectedType) {
+      if (!state.playing) {
+        setStatus('请先开始播放，再标强弱拍。');
+        return;
+      }
+      const time = Number(currentRelativeSeconds().toFixed(3));
+      markers.push({ time, type });
+      markers.sort((a, b) => a.time - b.time);
+      $('#tapBtn').classList.add('hit');
+      setTimeout(() => $('#tapBtn').classList.remove('hit'), 130);
+      if ($('#autoSuggest').checked) setSelectedType(autoTypeForIndex(markers.length));
+      render();
+    }
+
+    function tick() {
+      $('#clock').textContent = currentRelativeSeconds().toFixed(2);
+      const end = numberValue('#endTime', 0);
+      if (end > 0 && audio.currentTime >= end) {
+        pause();
+        setStatus('片段播放结束，可以导出 JSON。', true);
+        return;
+      }
+      if (state.playing) state.raf = requestAnimationFrame(tick);
+    }
+
+    function render() {
+      $('#count').textContent = String(markers.length);
+      const start = Math.max(0, numberValue('#startTime', 0));
+      const end = Math.max(start + 1, numberValue('#endTime', Math.max(1, audio.duration || 43)));
+      const total = Math.max(1, end - start);
+      $('#timeline').innerHTML = '<span class="lane-line"></span>' + markers.map((item, index) => {
+        const left = Math.min(100, Math.max(0, item.time / total * 100));
+        return `<span class="marker ${item.type}" style="left:${left}%"></span><span class="marker-label" style="left:${left}%">${index + 1}.${typeLabel[item.type]} ${Math.round(item.time * 1000)}ms</span>`;
+      }).join('');
+    }
+
+    function exportJson() {
+      const output = {
+        pieceTitle: textValue('#pieceTitle'),
+        audio: textValue('#audioPath'),
+        timeSignature: textValue('#timeSignature'),
+        startTime: numberValue('#startTime', 0),
+        endTime: numberValue('#endTime', 43),
+        note: textValue('#note'),
+        targetTimes: markers.map(item => Number(item.time.toFixed(3))),
+        beatStrengths: markers.map(item => item.type),
+        beatLabels: markers.map(item => typeLabel[item.type]),
+        beatAnnotations: markers.map((item, index) => ({
+          index: index + 1,
+          time: Number(item.time.toFixed(3)),
+          timeMs: Math.round(item.time * 1000),
+          type: item.type,
+          label: typeLabel[item.type]
+        }))
+      };
+      $('#exportBox').value = JSON.stringify(output, null, 2);
+      setStatus('JSON 已生成。复制后发给我，我就能接入正式游戏。', true);
+    }
+
+    async function copyJson() {
+      if (!$('#exportBox').value.trim()) exportJson();
+      await navigator.clipboard.writeText($('#exportBox').value);
+      setStatus('已复制 JSON。', true);
+    }
+
+    function importJson() {
+      try {
+        const data = JSON.parse($('#importBox').value);
+        markers.length = 0;
+        const annotations = data.beatAnnotations || [];
+        if (annotations.length) {
+          annotations.forEach(item => markers.push({ time: Number(item.time), type: item.type || 'weak' }));
+        } else {
+          const times = data.targetTimes || [];
+          const strengths = data.beatStrengths || [];
+          times.forEach((time, index) => markers.push({ time: Number(time), type: strengths[index] || autoTypeForIndex(index) }));
+        }
+        if (data.pieceTitle) $('#pieceTitle').value = data.pieceTitle;
+        if (data.audio) $('#audioPath').value = data.audio;
+        if (data.timeSignature) $('#timeSignature').value = data.timeSignature;
+        if (typeof data.startTime === 'number') $('#startTime').value = data.startTime;
+        if (typeof data.endTime === 'number') $('#endTime').value = data.endTime;
+        if (data.note) $('#note').value = data.note;
+        render();
+        setStatus('已导入，可以继续修改。', true);
+      } catch (error) {
+        setStatus('导入失败：JSON 格式不正确。');
+      }
+    }
+
+    $$('.beat-type').forEach(button => button.addEventListener('click', () => setSelectedType(button.dataset.type)));
+    $('#loadBtn').addEventListener('click', loadAudio);
+    $('#playBtn').addEventListener('click', play);
+    $('#pauseBtn').addEventListener('click', pause);
+    $('#resumeBtn').addEventListener('click', resume);
+    $('#undoBtn').addEventListener('click', () => { markers.pop(); render(); });
+    $('#clearBtn').addEventListener('click', () => { markers.length = 0; render(); setStatus('已清空。'); });
+    $('#tapBtn').addEventListener('pointerdown', event => { event.preventDefault(); mark(); });
+    $('#exportBtn').addEventListener('click', exportJson);
+    $('#copyBtn').addEventListener('click', copyJson);
+    $('#importBtn').addEventListener('click', importJson);
+    $('#playbackRate').addEventListener('change', () => { audio.playbackRate = numberValue('#playbackRate', 0.7); });
+
+    document.addEventListener('keydown', event => {
+      if (event.target.matches('input, textarea, select')) return;
+      if (event.code === 'Space') {
+        event.preventDefault();
+        mark();
+      }
+      if (event.key === '1') { event.preventDefault(); setSelectedType('strong'); mark('strong'); }
+      if (event.key === '2') { event.preventDefault(); setSelectedType('weak'); mark('weak'); }
+      if (event.key === '3') { event.preventDefault(); setSelectedType('secondary'); mark('secondary'); }
+    });
+
+    audio.addEventListener('ended', () => {
+      state.playing = false;
+      cancelAnimationFrame(state.raf);
+      setStatus('音乐播放结束，可以导出 JSON。', true);
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+/* 发布版与手机端适配覆盖样式
+   只做布局兜底，不改关卡剧情、存档和小游戏判定逻辑。 */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+button,
+[role="button"],
+.node,
+.instrument-card,
+.lipuo-instrument,
+.lisu-action-button,
+.lisu-main-button {
+  touch-action: manipulation;
+}
+
+button:focus-visible,
+a:focus-visible,
+.node:focus-visible {
+  outline: 4px solid rgba(225, 168, 59, .55);
+  outline-offset: 3px;
+}
+
+@media (max-width: 860px) {
+  .app {
+    width: 100%;
+    padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+
+  .topbar {
+    border-radius: 18px;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .brand-mark {
+    width: 42px;
+    height: 42px;
+    font-size: 23px;
+  }
+
+  h1 {
+    font-size: clamp(20px, 7vw, 28px);
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .profile {
+    padding: 12px;
+  }
+
+  .avatar {
+    height: 220px;
+    width: min(180px, 54vw);
+  }
+
+  .menu {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .menu button,
+  .primary,
+  .secondary,
+  .choice {
+    min-height: 48px;
+    padding: 11px 12px;
+  }
+
+  .world {
+    min-height: auto;
+    padding: 14px;
+  }
+
+  .map {
+    min-height: 380px;
+  }
+
+  .modal {
+    width: min(96vw, 720px);
+    max-height: 86dvh;
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .instrument-grid,
+  .instrument-grid.three,
+  .video-grid,
+  .wardrobe-grid,
+  .badge-cabinet {
+    grid-template-columns: 1fr;
+  }
+
+  .instrument-card {
+    min-height: 148px;
+  }
+
+  .instrument-card img {
+    height: 96px;
+  }
+
+  .gal-stage {
+    min-height: min(72dvh, 520px);
+  }
+
+  .gal-dialogue-box {
+    max-height: 42dvh;
+    overflow: auto;
+  }
+}
+
+/* 手机竖屏时，16:9 音乐小游戏采用可缩放横屏舞台，避免按钮掉到屏幕外。 */
+@media (max-width: 900px) and (orientation: portrait) {
+  .lipuo-game-overlay.show,
+  .lisu-dance-overlay.show {
+    align-items: flex-start;
+    justify-content: center;
+    padding: 8px;
+    overflow: auto;
+  }
+
+  .lipuo-game,
+  .lisu-dance-game {
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    overflow: visible;
+    transform-origin: top center;
+  }
+
+  .lipuo-rhythm-stage,
+  .lisu-stage {
+    min-width: 760px;
+    transform: scale(calc((100vw - 16px) / 760));
+    transform-origin: top left;
+  }
+
+  .lipuo-rhythm-stage {
+    margin-bottom: calc((760px - 100vw + 16px) * -0.48);
+  }
+
+  .lisu-stage {
+    margin-bottom: calc((760px - 100vw + 16px) * -0.48);
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .lipuo-game-overlay.show,
+  .lisu-dance-overlay.show {
+    padding: 6px;
+    overflow: auto;
+  }
+
+  .lipuo-game,
+  .lisu-dance-game {
+    width: 100vw;
+    max-height: none;
+    border-radius: 18px;
+  }
+
+  .lipuo-game-inner,
+  .lisu-dance-inner {
+    padding: 8px;
+  }
+
+  .lipuo-rhythm-stage,
+  .lisu-stage {
+    min-height: calc(100dvh - 18px);
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 620px) {
+  .node {
+    min-width: 48px;
+    padding: 5px 8px;
+  }
+
+  .node strong {
+    font-size: 11px;
+  }
+
+  .reward-outfit,
+  .badge-award {
+    flex-direction: column;
+    text-align: center;
+  }
+}
